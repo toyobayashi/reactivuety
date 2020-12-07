@@ -1,0 +1,13 @@
+{
+  "extends": "./node_modules/@tybys/tsgo/tsconfig/tsconfig.modern.json",
+  "compilerOptions": {
+    "outDir": "./lib/esm-modern",
+    "jsx": "react",
+    "lib": [
+      "ES2020.Symbol.WellKnown"
+    ]
+  },
+  "include": [
+    "./src/**/*"
+  ]
+}

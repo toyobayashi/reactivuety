@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "jsx": "react",
+    
+    "module": "ES2020",
+    "target": "es5",
+    "importHelpers": true,
+    "noEmitHelpers": true
+  },
+  "include": [
+    "./src/**/*"
+  ]
+}
