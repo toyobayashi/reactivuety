@@ -2,22 +2,11 @@
 
 [Home](./index.md) &gt; [@tybys/reactivuety](./reactivuety.md) &gt; [onRenderTriggered](./reactivuety.onrendertriggered.md)
 
-## onRenderTriggered() function
+## onRenderTriggered variable
 
 
 <b>Signature:</b>
 
 ```typescript
-export declare function onRenderTriggered(fn: (e: DebuggerEvent) => void): void;
+onRenderTriggered: (hook: DebuggerHook) => WrappedHook | null
 ```
-
-## Parameters
-
-|  Parameter | Type | Description |
-|  --- | --- | --- |
-|  fn | (e: DebuggerEvent) =&gt; void |  |
-
-<b>Returns:</b>
-
-void
-

@@ -2,22 +2,11 @@
 
 [Home](./index.md) &gt; [@tybys/reactivuety](./reactivuety.md) &gt; [onBeforeUnmount](./reactivuety.onbeforeunmount.md)
 
-## onBeforeUnmount() function
+## onBeforeUnmount variable
 
 
 <b>Signature:</b>
 
 ```typescript
-export declare function onBeforeUnmount(fn: () => void): void;
+onBeforeUnmount: (hook: () => any) => WrappedHook | null
 ```
-
-## Parameters
-
-|  Parameter | Type | Description |
-|  --- | --- | --- |
-|  fn | () =&gt; void |  |
-
-<b>Returns:</b>
-
-void
-

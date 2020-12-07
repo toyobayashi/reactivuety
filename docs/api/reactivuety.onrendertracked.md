@@ -2,22 +2,11 @@
 
 [Home](./index.md) &gt; [@tybys/reactivuety](./reactivuety.md) &gt; [onRenderTracked](./reactivuety.onrendertracked.md)
 
-## onRenderTracked() function
+## onRenderTracked variable
 
 
 <b>Signature:</b>
 
 ```typescript
-export declare function onRenderTracked(fn: (e: DebuggerEvent) => void): void;
+onRenderTracked: (hook: DebuggerHook) => WrappedHook | null
 ```
-
-## Parameters
-
-|  Parameter | Type | Description |
-|  --- | --- | --- |
-|  fn | (e: DebuggerEvent) =&gt; void |  |
-
-<b>Returns:</b>
-
-void
-

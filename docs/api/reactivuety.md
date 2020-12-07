@@ -10,15 +10,9 @@ Use vue composition API with react.
 
 |  Function | Description |
 |  --- | --- |
+|  [computed(getter)](./reactivuety.computed.md) |  |
+|  [computed(options)](./reactivuety.computed_1.md) |  |
 |  [nextTick(fn)](./reactivuety.nexttick.md) |  |
-|  [onBeforeMount(fn)](./reactivuety.onbeforemount.md) |  |
-|  [onBeforeUnmount(fn)](./reactivuety.onbeforeunmount.md) |  |
-|  [onBeforeUpdate(fn)](./reactivuety.onbeforeupdate.md) |  |
-|  [onMounted(fn)](./reactivuety.onmounted.md) |  |
-|  [onRenderTracked(fn)](./reactivuety.onrendertracked.md) |  |
-|  [onRenderTriggered(fn)](./reactivuety.onrendertriggered.md) |  |
-|  [onUnmounted(fn)](./reactivuety.onunmounted.md) |  |
-|  [onUpdated(fn)](./reactivuety.onupdated.md) |  |
 |  [ref(value)](./reactivuety.ref.md) |  |
 |  [ref(value)](./reactivuety.ref_1.md) |  |
 |  [ref()](./reactivuety.ref_2.md) |  |
@@ -27,4 +21,41 @@ Use vue composition API with react.
 |  [shallowRef()](./reactivuety.shallowref_2.md) |  |
 |  [useForceUpdate()](./reactivuety.useforceupdate.md) |  |
 |  [useSetup(setup, props)](./reactivuety.usesetup.md) |  |
+|  [watch(sources, cb, options)](./reactivuety.watch.md) |  |
+|  [watch(source, cb, options)](./reactivuety.watch_1.md) |  |
+|  [watch(source, cb, options)](./reactivuety.watch_2.md) |  |
+|  [watchEffect(effect, options)](./reactivuety.watcheffect.md) |  |
+
+## Interfaces
+
+|  Interface | Description |
+|  --- | --- |
+|  [WatchOptions](./reactivuety.watchoptions.md) |  |
+|  [WatchOptionsBase](./reactivuety.watchoptionsbase.md) |  |
+
+## Variables
+
+|  Variable | Description |
+|  --- | --- |
+|  [onBeforeMount](./reactivuety.onbeforemount.md) |  |
+|  [onBeforeUnmount](./reactivuety.onbeforeunmount.md) |  |
+|  [onBeforeUpdate](./reactivuety.onbeforeupdate.md) |  |
+|  [onMounted](./reactivuety.onmounted.md) |  |
+|  [onRenderTracked](./reactivuety.onrendertracked.md) |  |
+|  [onRenderTriggered](./reactivuety.onrendertriggered.md) |  |
+|  [onUnmounted](./reactivuety.onunmounted.md) |  |
+|  [onUpdated](./reactivuety.onupdated.md) |  |
+
+## Type Aliases
+
+|  Type Alias | Description |
+|  --- | --- |
+|  [DebuggerHook](./reactivuety.debuggerhook.md) |  |
+|  [InvalidateCbRegistrator](./reactivuety.invalidatecbregistrator.md) |  |
+|  [MapSources](./reactivuety.mapsources.md) |  |
+|  [WatchCallback](./reactivuety.watchcallback.md) |  |
+|  [WatchEffect](./reactivuety.watcheffect.md) |  |
+|  [WatchSource](./reactivuety.watchsource.md) |  |
+|  [WatchStopHandle](./reactivuety.watchstophandle.md) |  |
+|  [WrappedHook](./reactivuety.wrappedhook.md) |  |
 

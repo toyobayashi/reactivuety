@@ -1,0 +1,212 @@
+import { callWithErrorHandling } from './errorHandling'
+import { isArray } from '@vue/shared'
+
+export interface SchedulerJob {
+  (): void
+  /**
+   * unique job id, only present on raw effects, e.g. component render effect
+   */
+  id?: number
+  /**
+   * Indicates whether the job is allowed to recursively trigger itself.
+   * By default, a job cannot trigger itself because some built-in method calls,
+   * e.g. Array.prototype.push actually performs reads as well (#1740) which
+   * can lead to confusing infinite loops.
+   * The allowed cases are component update functions and watch callbacks.
+   * Component update functions may update child component props, which in turn
+   * trigger flush: "pre" watch callbacks that mutates state that the parent
+   * relies on (#1801). Watch callbacks doesn't track its dependencies so if it
+   * triggers itself again, it's likely intentional and it is the user's
+   * responsibility to perform recursive state mutation that eventually
+   * stabilizes (#1727).
+   */
+  allowRecurse?: boolean
+}
+
+export type SchedulerCb = Function & { id?: number }
+export type SchedulerCbs = SchedulerCb | SchedulerCb[]
+
+let isFlushing = false
+let isFlushPending = false
+
+const queue: SchedulerJob[] = []
+let flushIndex = 0
+
+const pendingPreFlushCbs: SchedulerCb[] = []
+let activePreFlushCbs: SchedulerCb[] | null = null
+let preFlushIndex = 0
+
+const pendingPostFlushCbs: SchedulerCb[] = []
+let activePostFlushCbs: SchedulerCb[] | null = null
+let postFlushIndex = 0
+
+const resolvedPromise: Promise<any> = Promise.resolve()
+let currentFlushPromise: Promise<void> | null = null
+
+let currentPreFlushParentJob: SchedulerJob | null = null
+
+/** @public */
+export function nextTick (
+  fn?: () => void
+): Promise<void> {
+  const p = currentFlushPromise ?? resolvedPromise
+  return fn ? p.then(fn) : p
+}
+
+export function queueJob (job: SchedulerJob): void {
+  // the dedupe search uses the startIndex argument of Array.includes()
+  // by default the search index includes the current job that is being run
+  // so it cannot recursively trigger itself again.
+  // if the job is a watch() callback, the search will start with a +1 index to
+  // allow it recursively trigger itself - it is the user's responsibility to
+  // ensure it doesn't end up in an infinite loop.
+  if (
+    (!queue.length ||
+      !queue.includes(
+        job,
+        isFlushing && job.allowRecurse ? flushIndex + 1 : flushIndex
+      )) &&
+    job !== currentPreFlushParentJob
+  ) {
+    queue.push(job)
+    queueFlush()
+  }
+}
+
+function queueFlush (): void {
+  if (!isFlushing && !isFlushPending) {
+    isFlushPending = true
+    currentFlushPromise = resolvedPromise.then(flushJobs)
+  }
+}
+
+export function invalidateJob (job: SchedulerJob): void {
+  const i = queue.indexOf(job)
+  if (i > -1) {
+    queue.splice(i, 1)
+  }
+}
+
+function queueCb (
+  cb: SchedulerCbs,
+  activeQueue: SchedulerCb[] | null,
+  pendingQueue: SchedulerCb[],
+  index: number
+): void {
+  if (!isArray(cb)) {
+    if (
+      !activeQueue ||
+      !activeQueue.includes(
+        cb,
+        (cb as SchedulerJob).allowRecurse ? index + 1 : index
+      )
+    ) {
+      pendingQueue.push(cb)
+    }
+  } else {
+    // if cb is an array, it is a component lifecycle hook which can only be
+    // triggered by a job, which is already deduped in the main queue, so
+    // we can skip duplicate check here to improve perf
+    pendingQueue.push(...cb)
+  }
+  queueFlush()
+}
+
+export function queuePreFlushCb (cb: SchedulerCb): void {
+  queueCb(cb, activePreFlushCbs, pendingPreFlushCbs, preFlushIndex)
+}
+
+export function queuePostFlushCb (cb: SchedulerCbs): void {
+  queueCb(cb, activePostFlushCbs, pendingPostFlushCbs, postFlushIndex)
+}
+
+export function flushPreFlushCbs (
+  parentJob: SchedulerJob | null = null
+): void {
+  if (pendingPreFlushCbs.length) {
+    currentPreFlushParentJob = parentJob
+    activePreFlushCbs = [...new Set(pendingPreFlushCbs)]
+    pendingPreFlushCbs.length = 0
+
+    for (
+      preFlushIndex = 0;
+      preFlushIndex < activePreFlushCbs.length;
+      preFlushIndex++
+    ) {
+      activePreFlushCbs[preFlushIndex]()
+    }
+    activePreFlushCbs = null
+    preFlushIndex = 0
+    currentPreFlushParentJob = null
+    // recursively flush until it drains
+    flushPreFlushCbs(parentJob)
+  }
+}
+
+export function flushPostFlushCbs (): void {
+  if (pendingPostFlushCbs.length) {
+    const deduped = [...new Set(pendingPostFlushCbs)]
+    pendingPostFlushCbs.length = 0
+
+    // #1947 already has active queue, nested flushPostFlushCbs call
+    if (activePostFlushCbs) {
+      activePostFlushCbs.push(...deduped)
+      return
+    }
+
+    activePostFlushCbs = deduped
+
+    activePostFlushCbs.sort((a, b) => getId(a) - getId(b))
+
+    for (
+      postFlushIndex = 0;
+      postFlushIndex < activePostFlushCbs.length;
+      postFlushIndex++
+    ) {
+      activePostFlushCbs[postFlushIndex]()
+    }
+    activePostFlushCbs = null
+    postFlushIndex = 0
+  }
+}
+
+const getId = (job: SchedulerJob | SchedulerCb): number =>
+  job.id == null ? Infinity : job.id
+
+function flushJobs (): void {
+  isFlushPending = false
+  isFlushing = true
+
+  flushPreFlushCbs()
+
+  // Sort queue before flush.
+  // This ensures that:
+  // 1. Components are updated from parent to child. (because parent is always
+  //    created before the child so its render effect will have smaller
+  //    priority number)
+  // 2. If a component is unmounted during a parent component's update,
+  //    its update can be skipped.
+  queue.sort((a, b) => getId(a) - getId(b))
+
+  try {
+    for (flushIndex = 0; flushIndex < queue.length; flushIndex++) {
+      const job = queue[flushIndex]
+      if (job) {
+        callWithErrorHandling(job)
+      }
+    }
+  } finally {
+    flushIndex = 0
+    queue.length = 0
+
+    flushPostFlushCbs()
+
+    isFlushing = false
+    currentFlushPromise = null
+    // some postFlushCb queued jobs!
+    // keep flushing until it drains.
+    if (queue.length || pendingPostFlushCbs.length) {
+      flushJobs()
+    }
+  }
+}

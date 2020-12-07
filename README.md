@@ -41,8 +41,7 @@ export default {
 ```jsx
 import * as React from 'react'
 import * as marked from 'marked'
-import { effect, computed } from '@vue/reactivity'
-import { useSetup, onMounted, ref, shallowRef } from '@tybys/reactivuety'
+import { useSetup, onMounted, ref, shallowRef, watchEffect, computed } from '@tybys/reactivuety'
 import * as debounce from 'lodash/debounce'
 
 const MarkdownView = (props) => {
@@ -57,7 +56,7 @@ const MarkdownView = (props) => {
 
     // https://github.com/facebook/react/issues/6563
     onMounted(() => {
-      effect(() => {
+      watchEffect(() => {
         inputRef.current!.value = input.value
       })
     })
@@ -82,6 +81,6 @@ export default MarkdownView
 
 ## 注意
 
-由于 react 和 vue 的渲染机制不太一样，本库采用和 vue 类似的异步渲染机制，更新引用值或响应式对象的属性后会在 JavaScript 的下一个事件循环中重新渲染 react 组件，导致异步更新 `<input>` 和 `<textarea>` 的值时会出现 [光标自动移到末尾的问题](https://github.com/facebook/react/issues/6563)，所以要用 `ref` 手动同步输入的值，不能给它们绑定 `value` 属性。如果想要这样做，也可以使用 `useForceUpdate()` hook 在更改 `ref.value` 后立即调用 `forceUpdate()`。
+由于 react 和 vue 的数据更新机制不太一样，本库采用和 vue 类似的异步更新机制，更新引用值或响应式对象的属性后会在 JavaScript 的下一个事件循环中重新渲染 react 组件，导致异步更新 `<input>` 和 `<textarea>` 的值时会出现 [光标自动移到末尾的问题](https://github.com/facebook/react/issues/6563)，所以要用 `ref` 手动同步输入的值，不能给它们绑定 `value` 属性。如果想要这样做，也可以使用 `useForceUpdate()` hook 在更改 `ref.value` 后立即调用 `forceUpdate()`。
 
-从本库导入的 `ref()` 和 `shallowRef()` 返回的引用与 react 的 `useRef()` 具有相同的用法，其它组合式 API 请直接从 [`@vue/reactivity`](https://github.com/vuejs/vue-next/tree/master/packages/reactivity) 中导入。
+从本库导入的 `ref()` 和 `shallowRef()` 返回的引用与 react 的 `useRef()` 具有相同的用法，可以直接传给 JSX 里的 `ref` 属性。

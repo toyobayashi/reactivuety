@@ -1,10 +1,10 @@
 import { MutableRefObject } from 'react'
 import { ref as _ref, shallowRef as _shallowRef, Ref, UnwrapRef, toRaw, reactive } from '@vue/reactivity'
-import { isObject } from './shared'
+import { isObject } from '@vue/shared'
 
 // eslint-disable-next-line no-self-compare
 const hasChanged = (value: unknown, oldValue: unknown): boolean => value !== oldValue && (value === value || oldValue === oldValue)
-const convert = <T>(val: T): T extends object ? (T extends Ref ? T : UnwrapRef<T>) : T => isObject(val) ? reactive(val) : val as any
+const convert = <T>(val: T): T extends Record<any, any> ? (T extends Ref ? T : UnwrapRef<T>) : T => isObject(val) ? reactive(val as unknown as object) : val as any
 
 function addCurrentProperty (r: any): void {
   Object.defineProperty(r, 'current', {

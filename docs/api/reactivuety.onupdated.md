@@ -2,22 +2,11 @@
 
 [Home](./index.md) &gt; [@tybys/reactivuety](./reactivuety.md) &gt; [onUpdated](./reactivuety.onupdated.md)
 
-## onUpdated() function
+## onUpdated variable
 
 
 <b>Signature:</b>
 
 ```typescript
-export declare function onUpdated(fn: () => void): void;
+onUpdated: (hook: () => any) => WrappedHook | null
 ```
-
-## Parameters
-
-|  Parameter | Type | Description |
-|  --- | --- | --- |
-|  fn | () =&gt; void |  |
-
-<b>Returns:</b>
-
-void
-

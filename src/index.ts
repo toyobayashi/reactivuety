@@ -5,8 +5,12 @@
  */
 
 export {
+  computed
+} from './core/apiComputed'
+
+export {
   nextTick
-} from './scheduler'
+} from './core/scheduler'
 
 export {
   onBeforeMount,
@@ -16,8 +20,10 @@ export {
   onRenderTracked,
   onRenderTriggered,
   onUnmounted,
-  onUpdated
-} from './lifecycle'
+  onUpdated,
+  WrappedHook,
+  DebuggerHook
+} from './core/apiLifecycle'
 
 export {
   ref,
@@ -26,8 +32,21 @@ export {
 
 export {
   useForceUpdate
-} from './use-force-update'
+} from './useForceUpdate'
 
 export {
   useSetup
-} from './use-setup'
+} from './useSetup'
+
+export {
+  watch,
+  watchEffect,
+  InvalidateCbRegistrator,
+  MapSources,
+  WatchCallback,
+  WatchEffect,
+  WatchOptionsBase,
+  WatchSource,
+  WatchOptions,
+  WatchStopHandle
+} from './core/apiWatch'

@@ -3,8 +3,7 @@ import './MarkdownView.css'
 import * as React from 'react'
 import { RouteComponentProps } from 'react-router-dom'
 import * as marked from 'marked'
-import { effect, computed } from '@vue/reactivity'
-import { useSetup, onMounted, ref, shallowRef } from '../../..'
+import { useSetup, onMounted, ref, shallowRef, watchEffect, computed } from '../../..'
 
 const debounce: typeof import('lodash/debounce') = require('lodash/debounce')
 
@@ -24,7 +23,7 @@ const MarkdownView: React.FunctionComponent<RouteComponentProps> = (props) => {
 
     // https://github.com/facebook/react/issues/6563
     onMounted(() => {
-      effect(() => {
+      watchEffect(() => {
         console.log('set text' + input.value)
         inputRef.current!.value = input.value
       })
