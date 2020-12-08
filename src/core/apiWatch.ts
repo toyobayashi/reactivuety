@@ -283,7 +283,7 @@ function doWatch (
 //   return doWatch(getter, cb.bind(publicThis), options, this)
 // }
 
-function traverse<T extends unknown> (value: T, seen: Set<unknown> = new Set()): T {
+export function traverse<T extends unknown> (value: T, seen: Set<unknown> = new Set()): T {
   if (!isObject(value) || seen.has(value)) {
     return value
   }

@@ -1,32 +1,18 @@
-import { effect, stop, isRef, reactive, readonly } from '@vue/reactivity'
+import { effect, stop, reactive, readonly } from '@vue/reactivity'
 import { PropsWithChildren, useCallback, useEffect, useRef } from 'react'
 import { useForceUpdate } from './useForceUpdate'
 import { setCurrentInstance, ComponentInternalInstance, LifecycleHooks } from './core/component'
 import { clearAllLifecycles, invokeLifecycle } from './core/apiLifecycle'
 import { queueJob } from './core/scheduler'
-import { isMap, isObject, isSet } from '@vue/shared'
+import { traverse } from './core/apiWatch'
 
-function traverse<T extends unknown> (value: T, seen: Set<unknown> = new Set()): T {
-  if (!isObject(value) || seen.has(value)) {
-    return value
-  }
-  seen.add(value)
-  if (isRef(value)) {
-    traverse(value.value, seen)
-  } else if (Array.isArray(value)) {
-    for (let i = 0; i < value.length; i++) {
-      traverse(value[i], seen)
+function clearInstanceBoundEffect (instance?: ComponentInternalInstance): void {
+  if (instance) {
+    for (let i = 0; i < instance.effects.length; i++) {
+      stop(instance.effects[i])
     }
-  } else if (isSet(value) || isMap(value)) {
-    value.forEach((v: unknown) => {
-      traverse(v, seen)
-    })
-  } else {
-    for (const key in value) {
-      traverse(value[key], seen)
-    }
+    instance.effects.length = 0
   }
-  return value
 }
 
 /** @public */
@@ -41,32 +27,16 @@ export function useSetup<P, T> (setup: (props: Readonly<PropsWithChildren<P>>) =
     invokeLifecycle(instanceRef.current!, LifecycleHooks.UPDATED)
   }, [forceUpdate])
 
-  const updateOnlyCallback = useCallback(() => {
-    invokeLifecycle(instanceRef.current!, LifecycleHooks.BEFORE_UPDATE)
-    invokeLifecycle(instanceRef.current!, LifecycleHooks.UPDATED)
-  }, [])
-
   if (!instanceRef.current) {
     const reactiveProps = reactive({ ...props })
-    const propRunner = effect(() => {
-      traverse(reactiveProps)
-    }, {
-      lazy: true,
-      scheduler: (_job) => {
-        queueJob(updateOnlyCallback)
-      }
-    })
-    propRunner()
-    const readonlyProps = readonly(reactiveProps)
     const runner = effect(() => {
+      const readonlyProps = readonly(reactiveProps)
       setCurrentInstance(instanceRef.current!)
       let ret: T
       try {
         ret = setup(readonlyProps as any)
       } catch (err) {
-        for (let i = 0; i < instanceRef.current!.effects.length; i++) {
-          stop(instanceRef.current!.effects[i])
-        }
+        clearInstanceBoundEffect(instanceRef.current)
         clearAllLifecycles(instanceRef.current!)
         instanceRef.current = undefined
         setCurrentInstance(null)
@@ -77,9 +47,7 @@ export function useSetup<P, T> (setup: (props: Readonly<PropsWithChildren<P>>) =
         try {
           ret()
         } catch (err) {
-          for (let i = 0; i < instanceRef.current!.effects.length; i++) {
-            stop(instanceRef.current!.effects[i])
-          }
+          clearInstanceBoundEffect(instanceRef.current)
           clearAllLifecycles(instanceRef.current!)
           instanceRef.current = undefined
           setCurrentInstance(null)
@@ -104,7 +72,7 @@ export function useSetup<P, T> (setup: (props: Readonly<PropsWithChildren<P>>) =
     })
 
     instanceRef.current = {
-      effects: [runner, propRunner],
+      effects: [runner],
       data: undefined as any,
       props: reactiveProps,
       isMounted: false,
@@ -135,11 +103,9 @@ export function useSetup<P, T> (setup: (props: Readonly<PropsWithChildren<P>>) =
     invokeLifecycle(instanceRef.current!, LifecycleHooks.MOUNTED)
     return () => {
       invokeLifecycle(instanceRef.current!, LifecycleHooks.BEFORE_UNMOUNT)
-      for (let i = 0; i < instanceRef.current!.effects.length; i++) {
-        stop(instanceRef.current!.effects[i])
-      }
-      clearAllLifecycles(instanceRef.current!)
+      clearInstanceBoundEffect(instanceRef.current)
       invokeLifecycle(instanceRef.current!, LifecycleHooks.UNMOUNTED)
+      clearAllLifecycles(instanceRef.current!)
       instanceRef.current!.isMounted = false
       instanceRef.current!.isUnmounted = true
     }
