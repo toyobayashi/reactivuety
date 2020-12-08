@@ -21,16 +21,31 @@ export function useSetup<P, T> (setup: (props: Readonly<PropsWithChildren<P>>) =
 
   const instanceRef = useRef<ComponentInternalInstance<P, T>>()
 
+  const updateProps: { (): void; __called?: boolean } = useCallback(() => {
+    if (instanceRef.current) {
+      const keys = Object.keys(props)
+      for (let i = 0; i < keys.length; i++) {
+        const key = keys[i]
+        ;(instanceRef.current.props as any)[key] = (props as any)[key]
+      }
+      invokeLifecycle(instanceRef.current, LifecycleHooks.UPDATED)
+    }
+  }, [props])
+
+  if (!updateProps.__called) {
+    updateProps()
+    updateProps.__called = true
+  }
+
   const updateCallback = useCallback(() => {
-    invokeLifecycle(instanceRef.current!, LifecycleHooks.BEFORE_UPDATE)
     forceUpdate()
     invokeLifecycle(instanceRef.current!, LifecycleHooks.UPDATED)
   }, [forceUpdate])
 
   if (!instanceRef.current) {
     const reactiveProps = reactive({ ...props })
+    const readonlyProps = readonly(reactiveProps)
     const runner = effect(() => {
-      const readonlyProps = readonly(reactiveProps)
       setCurrentInstance(instanceRef.current!)
       let ret: T
       try {
@@ -87,15 +102,9 @@ export function useSetup<P, T> (setup: (props: Readonly<PropsWithChildren<P>>) =
       [LifecycleHooks.RENDER_TRIGGERED]: null
     }
     instanceRef.current.data = runner()
+  } else {
+    invokeLifecycle(instanceRef.current, LifecycleHooks.BEFORE_UPDATE)
   }
-
-  useEffect(() => {
-    const keys = Object.keys(props)
-    for (let i = 0; i < keys.length; i++) {
-      const key = keys[i]
-      ;(instanceRef.current!.props as any)[key] = (props as any)[key]
-    }
-  }, [props])
 
   useEffect(() => {
     instanceRef.current!.isMounted = true
