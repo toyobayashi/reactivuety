@@ -84,3 +84,5 @@ export default MarkdownView
 由于 react 和 vue 的数据更新机制不太一样，本库采用和 vue 类似的异步更新机制，更新引用值或响应式对象的属性后会在 JavaScript 的下一个事件循环中重新渲染 react 组件，导致异步更新 `<input>` 和 `<textarea>` 的值时会出现 [光标自动移到末尾的问题](https://github.com/facebook/react/issues/6563)，所以要用 `ref` 手动同步输入的值，不能给它们绑定 `value` 属性。如果想要这样做，也可以使用 `useForceUpdate()` hook 在更改 `ref.value` 后立即调用 `forceUpdate()`。
 
 从本库导入的 `ref()` 和 `shallowRef()` 返回的引用与 react 的 `useRef()` 具有相同的用法，可以直接传给 JSX 里的 `ref` 属性。
+
+`ref` 不会自动取值，传到 JSX 里要写 `.value`。
