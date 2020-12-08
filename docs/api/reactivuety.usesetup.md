@@ -8,17 +8,17 @@
 <b>Signature:</b>
 
 ```typescript
-export declare function useSetup<P, T>(setup: (props: Readonly<PropsWithChildren<P>>) => T, props: PropsWithChildren<P>): T;
+export declare function useSetup<P, R>(setup: (props: Readonly<PropsWithChildren<P>>) => R, props: PropsWithChildren<P>): R;
 ```
 
 ## Parameters
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  setup | (props: Readonly&lt;PropsWithChildren&lt;P&gt;&gt;) =&gt; T |  |
+|  setup | (props: Readonly&lt;PropsWithChildren&lt;P&gt;&gt;) =&gt; R |  |
 |  props | PropsWithChildren&lt;P&gt; |  |
 
 <b>Returns:</b>
 
-T
+R
 

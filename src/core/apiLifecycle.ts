@@ -1,4 +1,5 @@
 import { DebuggerEvent, pauseTracking, resetTracking } from '@vue/reactivity'
+import { invokeArrayFns } from '@vue/shared'
 import { LifecycleHooks, ComponentInternalInstance, currentInstance, setCurrentInstance, getCurrentInstance } from './component'
 import { callWithAsyncErrorHandling } from './errorHandling'
 
@@ -67,14 +68,10 @@ export const onRenderTriggered = createHook<DebuggerHook>(LifecycleHooks.RENDER_
 /** @public */
 export const onRenderTracked = createHook<DebuggerHook>(LifecycleHooks.RENDER_TRACKED)
 
-export function invokeLifecycle (target: ComponentInternalInstance, type: LifecycleHooks, ...args: any[]): void {
+export function invokeLifecycle (target: ComponentInternalInstance, type: LifecycleHooks, arg?: any): void {
   const methods = target[type]
   if (!methods || methods.length === 0) return
-  let f: Function
-  for (let i = 0; i < methods.length; i++) {
-    f = methods[i]
-    f(...args)
-  }
+  invokeArrayFns(methods, arg)
 }
 
 export function clearAllLifecycles (target: ComponentInternalInstance): void {

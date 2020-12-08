@@ -1,5 +1,5 @@
 import { effect, stop, reactive, readonly } from '@vue/reactivity'
-import { PropsWithChildren, useCallback, useEffect, useRef } from 'react'
+import { PropsWithChildren, ReactNode, useCallback, useEffect, useRef } from 'react'
 import { useForceUpdate } from './useForceUpdate'
 import { setCurrentInstance, ComponentInternalInstance, LifecycleHooks } from './core/component'
 import { clearAllLifecycles, invokeLifecycle } from './core/apiLifecycle'
@@ -16,10 +16,10 @@ function clearInstanceBoundEffect (instance?: ComponentInternalInstance): void {
 }
 
 /** @public */
-export function useSetup<P, T> (setup: (props: Readonly<PropsWithChildren<P>>) => T, props: PropsWithChildren<P>): T {
+export function useSetup<P, R> (setup: (props: Readonly<PropsWithChildren<P>>) => R, props: PropsWithChildren<P>): R {
   const forceUpdate = useForceUpdate()
 
-  const instanceRef = useRef<ComponentInternalInstance<P, T>>()
+  const instanceRef = useRef<ComponentInternalInstance<P, R>>()
 
   const updateProps: { (): void; __called?: boolean } = useCallback(() => {
     if (instanceRef.current) {
@@ -28,7 +28,7 @@ export function useSetup<P, T> (setup: (props: Readonly<PropsWithChildren<P>>) =
         const key = keys[i]
         ;(instanceRef.current.props as any)[key] = (props as any)[key]
       }
-      invokeLifecycle(instanceRef.current, LifecycleHooks.UPDATED)
+      invokeLifecycle(instanceRef.current, LifecycleHooks.UPDATED) // TODO
     }
   }, [props])
 
@@ -47,7 +47,7 @@ export function useSetup<P, T> (setup: (props: Readonly<PropsWithChildren<P>>) =
     const readonlyProps = readonly(reactiveProps)
     const runner = effect(() => {
       setCurrentInstance(instanceRef.current!)
-      let ret: T
+      let ret: R
       try {
         ret = setup(readonlyProps as any)
       } catch (err) {
@@ -58,9 +58,13 @@ export function useSetup<P, T> (setup: (props: Readonly<PropsWithChildren<P>>) =
         throw err
       }
       setCurrentInstance(null)
+      if (ret == null) {
+        invokeLifecycle(instanceRef.current!, LifecycleHooks.BEFORE_MOUNT)
+        return ret
+      }
       if (typeof ret === 'function') {
         try {
-          ret()
+          ret() // TODO
         } catch (err) {
           clearInstanceBoundEffect(instanceRef.current)
           clearAllLifecycles(instanceRef.current!)
@@ -88,7 +92,8 @@ export function useSetup<P, T> (setup: (props: Readonly<PropsWithChildren<P>>) =
 
     instanceRef.current = {
       effects: [runner],
-      data: undefined as any,
+      setupResult: null!,
+      render: null,
       props: reactiveProps,
       isMounted: false,
       isUnmounted: false,
@@ -101,7 +106,11 @@ export function useSetup<P, T> (setup: (props: Readonly<PropsWithChildren<P>>) =
       [LifecycleHooks.RENDER_TRACKED]: null,
       [LifecycleHooks.RENDER_TRIGGERED]: null
     }
-    instanceRef.current.data = runner()
+    const setupResult = runner()
+    instanceRef.current.setupResult = setupResult
+    if (typeof setupResult === 'function') {
+      instanceRef.current.render = setupResult as unknown as (() => ReactNode)
+    }
   } else {
     invokeLifecycle(instanceRef.current, LifecycleHooks.BEFORE_UPDATE)
   }
@@ -120,5 +129,5 @@ export function useSetup<P, T> (setup: (props: Readonly<PropsWithChildren<P>>) =
     }
   }, [])
 
-  return instanceRef.current.data
+  return instanceRef.current.setupResult
 }
