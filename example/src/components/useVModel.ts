@@ -12,7 +12,7 @@ export interface VModelTextProps extends VModelProps<string> {
   vModel_lazy?: Ref<string>
 }
 
-export interface VModelRatioProps extends VModelProps<string> {}
+export interface VModelRadioProps extends VModelProps<string> {}
 
 function useVModelPropName<P extends VModelProps<unknown>> (props: P, allows: Array<(keyof P)>): keyof P {
   const vModelNames = React.useMemo(
@@ -75,7 +75,7 @@ function useVModelText<E> (props: VModelTextInputProps<E, React.TextareaHTMLAttr
 }
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-function useVModelRatio<E extends HTMLInputElement> (props: VModelTextInputProps<E, React.InputHTMLAttributes<E>, VModelRatioProps>, ref: React.ForwardedRef<E>) {
+function useVModelRadio<E extends HTMLInputElement> (props: VModelTextInputProps<E, React.InputHTMLAttributes<E>, VModelRadioProps>, ref: React.ForwardedRef<E>) {
   const vModelName = useVModelPropName(props, ['vModel', 'vModel_trim', 'vModel_number'])
   const { checked, onChange, vModel, vModel_trim, vModel_number, defaultChecked, ...restProps } = props
   const usingVModel: Ref = props[vModelName]
@@ -124,4 +124,4 @@ function useVModelRatio<E extends HTMLInputElement> (props: VModelTextInputProps
   return { getRefCallback, onInputCallback, restProps }
 }
 
-export { useVModelText, useVModelRatio }
+export { useVModelText, useVModelRadio }

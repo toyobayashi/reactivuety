@@ -3,36 +3,18 @@ import './GithubCommitView.css'
 import * as React from 'react'
 import { RouteComponentProps } from 'react-router-dom'
 
-import { useSetup, ref, watch, shallowRef, onBeforeUpdate, onMounted } from '../../..'
+import { useSetup, ref, watch } from '../../..'
+import { InputRadio } from './Input'
 
 const apiURL = 'https://api.github.com/repos/vuejs/vue/commits?per_page=3&sha='
 
 const GithubCommitView: React.FunctionComponent<RouteComponentProps> = (props) => {
-  console.log('[render] GithubCommitView')
+  console.log('[GithubCommitView] render')
 
   const data = useSetup(() => {
     const branches = ref(['master', 'dev'])
     const currentBranch = ref('master')
     const commits = ref<any[] | null>(null)
-
-    const inputRefs = shallowRef<HTMLInputElement[]>([])
-
-    onBeforeUpdate(() => {
-      console.log('onBeforeUpdate')
-      inputRefs.value = []
-    })
-
-    onMounted(() => {
-      watch(currentBranch, (val) => {
-        inputRefs.value.forEach(i => {
-          if (i.value === val) {
-            i.checked = true
-          } else {
-            i.checked = false
-          }
-        })
-      }, { immediate: true })
-    })
 
     const truncate = (v: string): string => {
       return v.replace(/T|Z/g, ' ')
@@ -60,29 +42,22 @@ const GithubCommitView: React.FunctionComponent<RouteComponentProps> = (props) =
       currentBranch,
       commits,
       truncate,
-      formatDate,
-      inputRefs
+      formatDate
     }
   }, props)
 
   return (
     <div id="demo">
       <h1>Latest Vue.js Commits</h1>
-      {data.branches.value.map((branch, i) => {
-        // v-model="currentBranch"
+      {data.branches.value.map((branch) => {
         return (
           <span key={branch}>
-            <input
-              ref={el => { if (el) { data.inputRefs.value[i] = el } }}
+            <InputRadio
               type="radio"
               id={branch}
               value={branch}
               name="branch"
-              onInput={(e) => {
-                data.inputRefs.value.forEach(i => { i.checked = false })
-                data.inputRefs.value[i].checked = true
-                data.currentBranch.value = (e.target as HTMLInputElement).value
-              }}
+              vModel={data.currentBranch}
             />
             <label htmlFor={branch}>{branch}</label>
           </span>
