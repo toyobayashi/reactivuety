@@ -6,6 +6,8 @@ import { clearAllLifecycles, invokeLifecycle } from './core/apiLifecycle'
 import { queueJob } from './core/scheduler'
 import { traverse } from './core/apiWatch'
 
+const instanceStack: ComponentInternalInstance[] = []
+
 function clearInstanceBoundEffect (instance?: ComponentInternalInstance): void {
   if (instance) {
     for (let i = 0; i < instance.effects.length; i++) {
@@ -28,7 +30,7 @@ export function useSetup<P, R> (setup: (props: Readonly<PropsWithChildren<P>>) =
         const key = keys[i]
         ;(instanceRef.current.props as any)[key] = (props as any)[key]
       }
-      invokeLifecycle(instanceRef.current, LifecycleHooks.UPDATED) // TODO
+      // invokeLifecycle(instanceRef.current, LifecycleHooks.UPDATED) // TODO
     }
   }, [props])
 
@@ -39,13 +41,14 @@ export function useSetup<P, R> (setup: (props: Readonly<PropsWithChildren<P>>) =
 
   const updateCallback = useCallback(() => {
     forceUpdate()
-    invokeLifecycle(instanceRef.current!, LifecycleHooks.UPDATED)
   }, [forceUpdate])
 
   if (!instanceRef.current) {
     const reactiveProps = reactive({ ...props })
     const readonlyProps = readonly(reactiveProps)
     const runner = effect(() => {
+      const reset = instanceStack.length > 0 ? instanceStack[instanceStack.length - 1] : null
+      instanceStack.push(instanceRef.current!)
       setCurrentInstance(instanceRef.current!)
       let ret: R
       try {
@@ -54,10 +57,12 @@ export function useSetup<P, R> (setup: (props: Readonly<PropsWithChildren<P>>) =
         clearInstanceBoundEffect(instanceRef.current)
         clearAllLifecycles(instanceRef.current!)
         instanceRef.current = undefined
-        setCurrentInstance(null)
+        instanceStack.pop()
+        setCurrentInstance(reset)
         throw err
       }
-      setCurrentInstance(null)
+      instanceStack.pop()
+      setCurrentInstance(reset)
       if (ret == null) {
         invokeLifecycle(instanceRef.current!, LifecycleHooks.BEFORE_MOUNT)
         return ret
@@ -69,7 +74,6 @@ export function useSetup<P, R> (setup: (props: Readonly<PropsWithChildren<P>>) =
           clearInstanceBoundEffect(instanceRef.current)
           clearAllLifecycles(instanceRef.current!)
           instanceRef.current = undefined
-          setCurrentInstance(null)
           throw err
         }
         invokeLifecycle(instanceRef.current!, LifecycleHooks.BEFORE_MOUNT)
@@ -114,6 +118,12 @@ export function useSetup<P, R> (setup: (props: Readonly<PropsWithChildren<P>>) =
   } else {
     invokeLifecycle(instanceRef.current, LifecycleHooks.BEFORE_UPDATE)
   }
+
+  useEffect(() => {
+    if (instanceRef.current!.isMounted) {
+      invokeLifecycle(instanceRef.current!, LifecycleHooks.UPDATED)
+    }
+  })
 
   useEffect(() => {
     instanceRef.current!.isMounted = true
