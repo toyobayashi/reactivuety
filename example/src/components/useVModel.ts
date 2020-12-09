@@ -1,6 +1,11 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { Ref } from '@vue/reactivity'
+import { looseIndexOf, looseEqual, toNumber, isSet } from '@vue/shared'
 import * as React from 'react'
+
+function tryTrim (o: any): any {
+  return typeof o === 'string' ? o.trim() : o
+}
 
 export interface VModelProps<T> {
   vModel?: Ref<T>
@@ -237,4 +242,82 @@ function useVModelCheckbox<
   return { getRefCallback, onInputCallback, restProps }
 }
 
-export { useVModelText, useVModelRadio, useVModelCheckbox }
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+function useVModelSelect<
+  E extends HTMLSelectElement,
+  P extends React.DetailedHTMLProps<React.SelectHTMLAttributes<E>, E> & VModelProps<boolean | string | any[]> & CheckboxProps
+> (props: P, ref: React.ForwardedRef<E>) {
+  const vModelName = useVModelPropName(props, ['vModel', 'vModel_trim', 'vModel_number'])
+  const { value, onChange, vModel, vModel_trim, vModel_number, defaultValue, ...restProps } = props
+  const usingVModel = props[vModelName]
+  const vModelValue = usingVModel?.value
+  const domRef = React.useRef<any>(null)
+
+  const getRefCallback = React.useCallback((el) => {
+    domRef.current = el
+    if (ref) {
+      if (typeof ref === 'function') {
+        ref(el)
+      } else if (typeof ref === 'object' && ref !== null) {
+        ref.current = el
+      }
+    }
+  }, [ref])
+
+  React.useEffect(() => {
+    if (domRef.current) {
+      const el: HTMLSelectElement = domRef.current
+      const isMultiple = props.multiple
+      const val = usingVModel?.value ?? value ?? defaultValue ?? ''
+
+      for (let i = 0, l = el.options.length; i < l; i++) {
+        const option = el.options[i]
+        const optionValue = getValue(option)
+        if (isMultiple) {
+          if (Array.isArray(val)) {
+            option.selected = looseIndexOf(val, optionValue) > -1
+          } else {
+            option.selected = (val as unknown as Set<any>).has(optionValue)
+          }
+        } else {
+          if (looseEqual(getValue(option), val)) {
+            el.selectedIndex = i
+            return
+          }
+        }
+      }
+      if (!isMultiple) {
+        el.selectedIndex = -1
+      }
+    }
+  }, [value, usingVModel, vModelValue, defaultValue, props.multiple])
+
+  const onInputCallback = React.useCallback((e) => {
+    if (usingVModel) {
+      const isSetModel = isSet(usingVModel.value)
+      const el = e.target
+      const selectedVal = Array.prototype.filter
+        .call(el.options, (o: HTMLOptionElement) => o.selected)
+        .map(
+          (o: HTMLOptionElement) =>
+            (vModelName === 'vModel_number') ? toNumber(getValue(o)) : ((vModelName === 'vModel_trim') ? tryTrim(getValue(o)) : getValue(o))
+        )
+      usingVModel.value = (
+        el.multiple
+          ? isSetModel
+            ? new Set(selectedVal)
+            : selectedVal
+          : selectedVal[0]
+      )
+    }
+    if (typeof onChange === 'function') onChange(e)
+  }, [onChange, usingVModel, vModelName])
+
+  return { getRefCallback, onInputCallback, restProps }
+}
+
+function getValue (el: HTMLOptionElement | HTMLInputElement): any {
+  return '_value' in el ? (el as any)._value : el.value
+}
+
+export { useVModelText, useVModelRadio, useVModelCheckbox, useVModelSelect }
