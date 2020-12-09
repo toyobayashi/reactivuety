@@ -2,19 +2,22 @@
 import { Ref } from '@vue/reactivity'
 import * as React from 'react'
 
-export interface VModelProps<T> {
-  vModel?: Ref<T>
-  vModel_trim?: Ref<string>
-  vModel_number?: Ref<number>
+export interface VModelProps {
+  vModel?: Ref
+  vModel_trim?: Ref
+  vModel_number?: Ref
 }
 
-export interface VModelTextProps extends VModelProps<string> {
-  vModel_lazy?: Ref<string>
+export interface VModelTextProps extends VModelProps {
+  vModel_lazy?: Ref
 }
 
-export interface VModelRadioProps extends VModelProps<string> {}
+export interface VModelRadioProps extends VModelProps {}
 
-function useVModelPropName<P extends VModelProps<unknown>> (props: P, allows: Array<(keyof P)>): keyof P {
+function useVModelPropName<P extends VModelProps> (props: P, allows: Array<(keyof VModelProps)>): keyof VModelProps
+function useVModelPropName<P extends VModelProps> (props: P, allows: Array<(keyof VModelTextProps)>): keyof VModelTextProps
+function useVModelPropName<P extends VModelProps> (props: P, allows: Array<(keyof VModelRadioProps)>): keyof VModelRadioProps
+function useVModelPropName (props: any, allows: any[]): string {
   const vModelNames = React.useMemo(
     () => allows.filter(n => (n in props)),
     allows.map(p => props[p])
@@ -25,14 +28,14 @@ function useVModelPropName<P extends VModelProps<unknown>> (props: P, allows: Ar
   return vModelNames[0]
 }
 
-export type VModelTextInputProps<E, A extends React.HTMLAttributes<E>, V extends VModelProps<unknown>> =
+export type VModelTextInputProps<E, A extends React.HTMLAttributes<E>, V extends VModelProps> =
   React.DetailedHTMLProps<A, E> & V
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 function useVModelText<E> (props: VModelTextInputProps<E, React.InputHTMLAttributes<E> | React.InputHTMLAttributes<E>, VModelTextProps>, ref: React.ForwardedRef<E>) {
   const vModelName = useVModelPropName(props, ['vModel', 'vModel_lazy', 'vModel_trim', 'vModel_number'])
   const { value, onInput, onChange, vModel, vModel_lazy, vModel_trim, vModel_number, defaultValue, ...restProps } = props
-  const usingVModel: Ref = props[vModelName]
+  const usingVModel = props[vModelName]
   const vModelValue = usingVModel?.value
   const domRef = React.useRef<any>(null)
 
@@ -65,9 +68,9 @@ function useVModelText<E> (props: VModelTextInputProps<E, React.InputHTMLAttribu
       }
     }
     if (vModelName === 'vModel_lazy') {
-      if (onChange) onChange(e)
+      if (typeof onChange === 'function') onChange(e)
     } else {
-      if (onInput) onInput(e)
+      if (typeof onInput === 'function') onInput(e)
     }
   }, [onInput, onChange, usingVModel, vModelName])
 
@@ -78,7 +81,7 @@ function useVModelText<E> (props: VModelTextInputProps<E, React.InputHTMLAttribu
 function useVModelRadio<E extends HTMLInputElement> (props: VModelTextInputProps<E, React.InputHTMLAttributes<E>, VModelRadioProps>, ref: React.ForwardedRef<E>) {
   const vModelName = useVModelPropName(props, ['vModel', 'vModel_trim', 'vModel_number'])
   const { checked, onChange, vModel, vModel_trim, vModel_number, defaultChecked, ...restProps } = props
-  const usingVModel: Ref = props[vModelName]
+  const usingVModel = props[vModelName]
   const vModelValue = usingVModel?.value
   const domRef = React.useRef<any>(null)
 
@@ -118,7 +121,7 @@ function useVModelRadio<E extends HTMLInputElement> (props: VModelTextInputProps
         usingVModel.value = e.target.value
       }
     }
-    if (onChange) onChange(e)
+    if (typeof onChange === 'function') onChange(e)
   }, [onChange, usingVModel, vModelName])
 
   return { getRefCallback, onInputCallback, restProps }

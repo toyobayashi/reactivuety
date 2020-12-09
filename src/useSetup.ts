@@ -1,12 +1,10 @@
 import { effect, stop, reactive, readonly } from '@vue/reactivity'
 import { PropsWithChildren, ReactNode, useCallback, useEffect, useRef } from 'react'
 import { useForceUpdate } from './useForceUpdate'
-import { setCurrentInstance, ComponentInternalInstance, LifecycleHooks } from './core/component'
+import { setCurrentInstance, ComponentInternalInstance, LifecycleHooks, getCurrentInstance } from './core/component'
 import { clearAllLifecycles, invokeLifecycle } from './core/apiLifecycle'
 import { queueJob } from './core/scheduler'
 import { traverse } from './core/apiWatch'
-
-const instanceStack: ComponentInternalInstance[] = []
 
 function clearInstanceBoundEffect (instance?: ComponentInternalInstance): void {
   if (instance) {
@@ -47,8 +45,7 @@ export function useSetup<P, R> (setup: (props: Readonly<PropsWithChildren<P>>) =
     const reactiveProps = reactive({ ...props })
     const readonlyProps = readonly(reactiveProps)
     const runner = effect(() => {
-      const reset = instanceStack.length > 0 ? instanceStack[instanceStack.length - 1] : null
-      instanceStack.push(instanceRef.current!)
+      const reset = getCurrentInstance()
       setCurrentInstance(instanceRef.current!)
       let ret: R
       try {
@@ -57,11 +54,9 @@ export function useSetup<P, R> (setup: (props: Readonly<PropsWithChildren<P>>) =
         clearInstanceBoundEffect(instanceRef.current)
         clearAllLifecycles(instanceRef.current!)
         instanceRef.current = undefined
-        instanceStack.pop()
         setCurrentInstance(reset)
         throw err
       }
-      instanceStack.pop()
       setCurrentInstance(reset)
       if (ret == null) {
         invokeLifecycle(instanceRef.current!, LifecycleHooks.BEFORE_MOUNT)
