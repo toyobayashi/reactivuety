@@ -53,7 +53,6 @@ const GithubCommitView: React.FunctionComponent<RouteComponentProps> = (props) =
         return (
           <span key={branch}>
             <InputRadio
-              type="radio"
               id={branch}
               value={branch}
               name="branch"

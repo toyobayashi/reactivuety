@@ -29,7 +29,7 @@ export type VModelTextInputProps<E, A extends React.HTMLAttributes<E>, V extends
   React.DetailedHTMLProps<A, E> & V
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-function useVModelText<E> (props: VModelTextInputProps<E, React.TextareaHTMLAttributes<E> | React.InputHTMLAttributes<E>, VModelTextProps>, ref: React.ForwardedRef<E>) {
+function useVModelText<E> (props: VModelTextInputProps<E, React.InputHTMLAttributes<E> | React.InputHTMLAttributes<E>, VModelTextProps>, ref: React.ForwardedRef<E>) {
   const vModelName = useVModelPropName(props, ['vModel', 'vModel_lazy', 'vModel_trim', 'vModel_number'])
   const { value, onInput, onChange, vModel, vModel_lazy, vModel_trim, vModel_number, defaultValue, ...restProps } = props
   const usingVModel: Ref = props[vModelName]

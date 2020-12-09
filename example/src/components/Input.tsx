@@ -5,7 +5,7 @@ const InputText = React.forwardRef<HTMLInputElement, React.DetailedHTMLProps<Rea
   console.log('[InputText] render')
   const { vModelName, getRefCallback, onInput, onChange, onInputCallback, restProps } = useVModelText(props, ref)
 
-  const type = (restProps as React.InputHTMLAttributes<HTMLInputElement>).type
+  const type = restProps.type
   if (type === 'radio' || type === 'checkbox') {
     throw new Error('input type error')
   }
@@ -18,13 +18,9 @@ const InputText = React.forwardRef<HTMLInputElement, React.DetailedHTMLProps<Rea
 const InputRadio = React.forwardRef<HTMLInputElement, React.DetailedHTMLProps<React.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement> & VModelRadioProps>((props, ref) => {
   console.log('[InputRadio] render')
   const { getRefCallback, onInputCallback, restProps } = useVModelRadio(props, ref)
+  const { type, ...continueRestProps } = restProps
 
-  const type = (restProps as React.InputHTMLAttributes<HTMLInputElement>).type
-  if (type !== 'radio' && type !== 'checkbox') {
-    throw new Error('input type error')
-  }
-
-  return (<input ref={getRefCallback} onChange={onInputCallback} {...restProps} />)
+  return (<input type='radio' ref={getRefCallback} onChange={onInputCallback} {...continueRestProps} />)
 })
 
 export { InputText, InputRadio }
