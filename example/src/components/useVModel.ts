@@ -2,18 +2,20 @@
 import { Ref } from '@vue/reactivity'
 import * as React from 'react'
 
-export interface VModelProps {
-  vModel?: Ref
-  vModel_trim?: Ref
-  vModel_number?: Ref
+export interface VModelProps<T> {
+  vModel?: Ref<T>
+  vModel_trim?: Ref<T>
+  vModel_number?: Ref<T>
 }
 
-export interface VModelPropsWithLazy extends VModelProps {
-  vModel_lazy?: Ref
+export interface VModelPropsWithLazy<T> extends VModelProps<T> {
+  vModel_lazy?: Ref<T>
 }
 
-function useVModelPropName<P extends VModelProps> (props: P, allows: Array<(keyof VModelProps)>): keyof VModelProps
-function useVModelPropName<P extends VModelProps> (props: P, allows: Array<(keyof VModelPropsWithLazy)>): keyof VModelPropsWithLazy
+export interface CheckboxProps { trueValue?: string; falseValue?: string }
+
+function useVModelPropName<P extends VModelProps<T>, T> (props: P, allows: Array<(keyof VModelProps<T>)>): keyof VModelProps<T>
+function useVModelPropName<P extends VModelProps<T>, T> (props: P, allows: Array<(keyof VModelPropsWithLazy<T>)>): keyof VModelPropsWithLazy<T>
 function useVModelPropName (props: any, allows: any[]): string {
   const vModelNames = React.useMemo(
     () => allows.filter(n => (n in props)),
@@ -28,7 +30,7 @@ function useVModelPropName (props: any, allows: any[]): string {
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 function useVModelText<
   E extends HTMLInputElement | HTMLTextAreaElement,
-  P extends React.DetailedHTMLProps<React.InputHTMLAttributes<E>, E> & VModelPropsWithLazy
+  P extends React.DetailedHTMLProps<React.InputHTMLAttributes<E>, E> & VModelPropsWithLazy<string>
 > (props: P, ref: React.ForwardedRef<E>) {
   const vModelName = useVModelPropName(props, ['vModel', 'vModel_lazy', 'vModel_trim', 'vModel_number'])
   const { value, onInput, onChange, vModel, vModel_lazy, vModel_trim, vModel_number, defaultValue, ...restProps } = props
@@ -77,7 +79,7 @@ function useVModelText<
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 function useVModelRadio<
   E extends HTMLInputElement,
-  P extends React.DetailedHTMLProps<React.InputHTMLAttributes<E>, E> & VModelProps
+  P extends React.DetailedHTMLProps<React.InputHTMLAttributes<E>, E> & VModelProps<any>
 > (props: P, ref: React.ForwardedRef<E>) {
   const vModelName = useVModelPropName(props, ['vModel', 'vModel_trim', 'vModel_number'])
   const { checked, onChange, vModel, vModel_trim, vModel_number, defaultChecked, ...restProps } = props
@@ -108,23 +110,131 @@ function useVModelRadio<
         domRef.current.checked = false
       }
     }
-  }, [checked, usingVModel, vModelValue])
+  }, [checked, usingVModel, vModelValue, props.value])
 
   const onInputCallback = React.useCallback((e) => {
     if (usingVModel) {
       if (vModelName === 'vModel_number') {
-        const v = parseFloat(e.target.value)
-        usingVModel.value = Number.isNaN(v) ? e.target.value : v
+        const v = parseFloat(props.value as any)
+        usingVModel.value = Number.isNaN(v) ? props.value : v
       } else if (vModelName === 'vModel_trim') {
-        usingVModel.value = e.target.value.trim()
+        usingVModel.value = typeof props.value === 'string' ? props.value.trim() : props.value
       } else {
-        usingVModel.value = e.target.value
+        usingVModel.value = props.value
       }
     }
     if (typeof onChange === 'function') onChange(e)
-  }, [onChange, usingVModel, vModelName])
+  }, [onChange, usingVModel, vModelName, props.value])
 
   return { getRefCallback, onInputCallback, restProps }
 }
 
-export { useVModelText, useVModelRadio }
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+function useVModelCheckbox<
+  E extends HTMLInputElement,
+  P extends React.DetailedHTMLProps<React.InputHTMLAttributes<E>, E> & VModelProps<boolean | string | any[]> & CheckboxProps
+> (props: P, ref: React.ForwardedRef<E>) {
+  const vModelName = useVModelPropName(props, ['vModel', 'vModel_trim', 'vModel_number'])
+  const { checked, onChange, vModel, vModel_trim, vModel_number, defaultChecked, trueValue, falseValue, ...restProps } = props
+  const usingVModel = props[vModelName]
+  const vModelValue = usingVModel?.value
+  const domRef = React.useRef<any>(null)
+
+  const getRefCallback = React.useCallback((el) => {
+    domRef.current = el
+    if (ref) {
+      if (typeof ref === 'function') {
+        ref(el)
+      } else if (typeof ref === 'object' && ref !== null) {
+        ref.current = el
+      }
+    }
+  }, [ref])
+
+  // 有 trueValue | falseValue 类型为 string
+  // 有 value 类型为 array | boolean
+  // 没有 类型为 boolean
+
+  React.useEffect(() => {
+    if (domRef.current) {
+      if (usingVModel?.value != null) {
+        if (Array.isArray(usingVModel.value)) {
+          // eslint-disable-next-line @typescript-eslint/prefer-includes
+          domRef.current.checked = usingVModel.value.indexOf(props.value) !== -1
+        } else if (typeof usingVModel.value === 'string') {
+          domRef.current.checked = usingVModel.value === (trueValue)
+        } else {
+          domRef.current.checked = !!usingVModel.value
+        }
+      } else if (checked != null) {
+        domRef.current.checked = checked
+      } else if (defaultChecked != null) {
+        domRef.current.checked = defaultChecked
+      } else {
+        domRef.current.checked = false
+      }
+    }
+  }, [checked, usingVModel, vModelValue, trueValue, props.value])
+
+  const onInputCallback = React.useCallback((e) => {
+    if (usingVModel) {
+      if (vModelName === 'vModel_number') {
+        if (Array.isArray(usingVModel.value)) {
+          const v = parseFloat(e.target.value)
+          const val = Number.isNaN(v) ? e.target.value : v
+          if (e.target.checked) {
+            usingVModel.value.push(val ?? 'on')
+          } else {
+            const index = usingVModel.value.indexOf(val ?? 'on')
+            if (index !== -1) usingVModel.value.splice(index, 1)
+          }
+        } else {
+          if (e.target.checked) {
+            const v = typeof trueValue === 'string' ? parseFloat(trueValue) : NaN
+            const val = Number.isNaN(v) ? e.target.checked : v
+            usingVModel.value = val
+          } else {
+            const v = typeof falseValue === 'string' ? parseFloat(falseValue) : NaN
+            const val = Number.isNaN(v) ? e.target.checked : v
+            usingVModel.value = val
+          }
+        }
+      } else if (vModelName === 'vModel_trim') {
+        if (Array.isArray(usingVModel.value)) {
+          if (e.target.checked) {
+            usingVModel.value.push(e.target.value ? e.target.value.trim() : 'on')
+          } else {
+            const index = usingVModel.value.indexOf(e.target.value ? e.target.value.trim() : 'on')
+            if (index !== -1) usingVModel.value.splice(index, 1)
+          }
+        } else {
+          if (e.target.checked) {
+            usingVModel.value = typeof trueValue === 'string' ? trueValue.trim() : e.target.checked
+          } else {
+            usingVModel.value = typeof falseValue === 'string' ? falseValue.trim() : e.target.checked
+          }
+        }
+      } else {
+        if (Array.isArray(usingVModel.value)) {
+          if (e.target.checked) {
+            usingVModel.value.push(e.target.value ? e.target.value : 'on')
+          } else {
+            const index = usingVModel.value.indexOf(e.target.value ? e.target.value : 'on')
+            if (index !== -1) usingVModel.value.splice(index, 1)
+          }
+        } else {
+          if (e.target.checked) {
+            usingVModel.value = typeof trueValue === 'string' ? trueValue : e.target.checked
+          } else {
+            usingVModel.value = typeof falseValue === 'string' ? falseValue : e.target.checked
+          }
+        }
+      }
+    }
+    if (typeof onChange === 'function') onChange(e)
+  }, [onChange, usingVModel, vModelName, trueValue, falseValue])
+
+  return { getRefCallback, onInputCallback, restProps }
+}
+
+export { useVModelText, useVModelRadio, useVModelCheckbox }

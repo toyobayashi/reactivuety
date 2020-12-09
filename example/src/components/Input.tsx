@@ -1,7 +1,7 @@
 import * as React from 'react'
-import { useVModelRadio, useVModelText, VModelProps, VModelPropsWithLazy } from './useVModel'
+import { useVModelRadio, useVModelText, VModelProps, VModelPropsWithLazy, CheckboxProps, useVModelCheckbox } from './useVModel'
 
-const InputText = React.forwardRef<HTMLInputElement, React.DetailedHTMLProps<React.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement> & VModelPropsWithLazy>((props, ref) => {
+const InputText = React.forwardRef<HTMLInputElement, React.DetailedHTMLProps<React.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement> & VModelPropsWithLazy<string>>((props, ref) => {
   console.log('[InputText] render')
   const { vModelName, getRefCallback, onInput, onChange, onInputCallback, restProps } = useVModelText(props, ref)
 
@@ -15,11 +15,18 @@ const InputText = React.forwardRef<HTMLInputElement, React.DetailedHTMLProps<Rea
     : (<input {...restProps} ref={getRefCallback} onInput={onInputCallback} onChange={onChange} />)
 })
 
-const InputRadio = React.forwardRef<HTMLInputElement, Omit<React.DetailedHTMLProps<React.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>, 'type'> & VModelProps>((props, ref) => {
+const InputRadio = React.forwardRef<HTMLInputElement, Omit<React.DetailedHTMLProps<React.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>, 'type'> & VModelProps<any>>((props, ref) => {
   console.log('[InputRadio] render')
   const { getRefCallback, onInputCallback, restProps } = useVModelRadio(props, ref)
 
   return (<input {...restProps} type='radio' ref={getRefCallback} onChange={onInputCallback} />)
 })
 
-export { InputText, InputRadio }
+const InputCheckbox = React.forwardRef<HTMLInputElement, Omit<React.DetailedHTMLProps<React.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>, 'type'> & VModelProps<boolean | string | any[]> & CheckboxProps>((props, ref) => {
+  console.log('[InputCheckbox] render')
+  const { getRefCallback, onInputCallback, restProps } = useVModelCheckbox(props, ref)
+
+  return (<input {...restProps} type='checkbox' ref={getRefCallback} onChange={onInputCallback} />)
+})
+
+export { InputText, InputRadio, InputCheckbox }
