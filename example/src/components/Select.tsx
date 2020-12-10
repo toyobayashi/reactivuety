@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { useVModelSelect, VModelProps } from './useVModel'
+import { useDomRef, useVModelSelect, VModelProps } from './useVModel'
 
 const Select = React.forwardRef<HTMLSelectElement, React.DetailedHTMLProps<React.SelectHTMLAttributes<HTMLSelectElement>, HTMLSelectElement> & VModelProps<any>>((props, ref) => {
   console.log('[Select] render')
@@ -12,22 +12,11 @@ const Option = React.forwardRef<HTMLOptionElement, React.DetailedHTMLProps<React
   console.log('[Option] render')
 
   const { value, ...restProps } = props
-  const domRef = React.useRef<any>(null)
-
-  const getRefCallback = React.useCallback((el) => {
-    domRef.current = el
-    if (ref) {
-      if (typeof ref === 'function') {
-        ref(el)
-      } else if (typeof ref === 'object' && ref !== null) {
-        ref.current = el
-      }
-    }
-  }, [ref])
+  const [domRef, getRefCallback] = useDomRef(ref)
 
   React.useEffect(() => {
     if (domRef.current) {
-      const el: HTMLSelectElement = domRef.current
+      const el: HTMLOptionElement = domRef.current
 
       el.value = value as any
       if (typeof value !== 'string') {

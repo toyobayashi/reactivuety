@@ -32,6 +32,23 @@ function useVModelPropName (props: any, allows: any[]): string {
   return vModelNames[0]
 }
 
+export function useDomRef<E> (ref: React.ForwardedRef<E>): [React.MutableRefObject<E>, (el: E) => void] {
+  const domRef = React.useRef<any>(null)
+
+  const getRefCallback = React.useCallback((el: E) => {
+    domRef.current = el
+    if (ref) {
+      if (typeof ref === 'function') {
+        ref(el)
+      } else {
+        ref.current = el
+      }
+    }
+  }, [ref])
+
+  return [domRef, getRefCallback]
+}
+
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 function useVModelText<
   E extends HTMLInputElement | HTMLTextAreaElement,
@@ -41,18 +58,7 @@ function useVModelText<
   const { value, onInput, onChange, vModel, vModel_lazy, vModel_trim, vModel_number, defaultValue, onCompositionStart, onCompositionEnd, ...restProps } = props
   const usingVModel = props[vModelName]
   const vModelValue = usingVModel?.value
-  const domRef = React.useRef<any>(null)
-
-  const getRefCallback = React.useCallback((el) => {
-    domRef.current = el
-    if (ref) {
-      if (typeof ref === 'function') {
-        ref(el)
-      } else if (typeof ref === 'object' && ref !== null) {
-        ref.current = el
-      }
-    }
-  }, [ref])
+  const [domRef, getRefCallback] = useDomRef(ref)
 
   React.useEffect(() => {
     if (domRef.current) {
@@ -155,18 +161,7 @@ function useVModelRadio<
   const { checked, onChange, vModel, vModel_trim, vModel_number, defaultChecked, ...restProps } = props
   const usingVModel = props[vModelName]
   const vModelValue = usingVModel?.value
-  const domRef = React.useRef<any>(null)
-
-  const getRefCallback = React.useCallback((el) => {
-    domRef.current = el
-    if (ref) {
-      if (typeof ref === 'function') {
-        ref(el)
-      } else if (typeof ref === 'object' && ref !== null) {
-        ref.current = el
-      }
-    }
-  }, [ref])
+  const [domRef, getRefCallback] = useDomRef(ref)
 
   React.useEffect(() => {
     if (domRef.current) {
@@ -208,18 +203,7 @@ function useVModelCheckbox<
   const { checked, onChange, vModel, vModel_trim, vModel_number, defaultChecked, trueValue, falseValue, ...restProps } = props
   const usingVModel = props[vModelName]
   const vModelValue = usingVModel?.value
-  const domRef = React.useRef<any>(null)
-
-  const getRefCallback = React.useCallback((el) => {
-    domRef.current = el
-    if (ref) {
-      if (typeof ref === 'function') {
-        ref(el)
-      } else if (typeof ref === 'object' && ref !== null) {
-        ref.current = el
-      }
-    }
-  }, [ref])
+  const [domRef, getRefCallback] = useDomRef(ref)
 
   // 有 trueValue | falseValue 类型为 string
   // 有 value 类型为 array | boolean
@@ -316,18 +300,7 @@ function useVModelSelect<
   const { value, onChange, vModel, vModel_trim, vModel_number, defaultValue, ...restProps } = props
   const usingVModel = props[vModelName]
   const vModelValue = usingVModel?.value
-  const domRef = React.useRef<any>(null)
-
-  const getRefCallback = React.useCallback((el) => {
-    domRef.current = el
-    if (ref) {
-      if (typeof ref === 'function') {
-        ref(el)
-      } else if (typeof ref === 'object' && ref !== null) {
-        ref.current = el
-      }
-    }
-  }, [ref])
+  const [domRef, getRefCallback] = useDomRef(ref)
 
   React.useEffect(() => {
     if (domRef.current) {
