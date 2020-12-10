@@ -74,8 +74,9 @@ export function useSetup<P, R> (setup: (props: Readonly<PropsWithChildren<P>>) =
         invokeLifecycle(instanceRef.current!, LifecycleHooks.BEFORE_MOUNT)
         return ret
       }
+      traverse(ret, new Set())
       invokeLifecycle(instanceRef.current!, LifecycleHooks.BEFORE_MOUNT)
-      return traverse(ret, new Set())
+      return ret
     }, {
       lazy: true,
       scheduler: (_job) => {
