@@ -78,7 +78,7 @@ function useVModelText<
         el.value = newValue as any
       }
     }
-  }, [value, usingVModel, vModelValue, vModelName])
+  }, [value, usingVModel, vModelValue, vModelName, domRef.current])
 
   const onCompositionStartCallback = React.useCallback((e) => {
     if (vModelName !== 'vModel_lazy') {
@@ -165,31 +165,38 @@ function useVModelRadio<
 
   React.useEffect(() => {
     if (domRef.current) {
-      if (usingVModel?.value != null) {
-        domRef.current.checked = usingVModel.value === props.value
-      } else if (checked != null) {
-        domRef.current.checked = checked
-      } else if (defaultChecked != null) {
-        domRef.current.checked = defaultChecked
+      const el: HTMLInputElement = domRef.current
+      if (typeof props.value !== 'string') {
+        (el as any)._value = props.value
       } else {
-        domRef.current.checked = false
+        el.value = props.value
+      }
+      if (usingVModel?.value != null) {
+        el.checked = looseEqual(usingVModel.value, props.value)
+      } else if (checked != null) {
+        el.checked = checked
+      } else if (defaultChecked != null) {
+        el.checked = defaultChecked
+      } else {
+        el.checked = false
       }
     }
-  }, [checked, usingVModel, vModelValue, props.value])
+  }, [checked, usingVModel, vModelValue, props.value, domRef.current])
 
   const onInputCallback = React.useCallback((e) => {
     if (usingVModel) {
+      const el: HTMLInputElement = e.target
+      const val = getValue(el)
       if (vModelName === 'vModel_number') {
-        const v = parseFloat(props.value as any)
-        usingVModel.value = Number.isNaN(v) ? props.value : v
+        usingVModel.value = toNumber(val)
       } else if (vModelName === 'vModel_trim') {
-        usingVModel.value = typeof props.value === 'string' ? props.value.trim() : props.value
+        usingVModel.value = tryTrim(val)
       } else {
-        usingVModel.value = props.value
+        usingVModel.value = val
       }
     }
     if (typeof onChange === 'function') onChange(e)
-  }, [onChange, usingVModel, vModelName, props.value])
+  }, [onChange, usingVModel, vModelName])
 
   return { getRefCallback, onInputCallback, restProps }
 }
@@ -228,7 +235,7 @@ function useVModelCheckbox<
         domRef.current.checked = false
       }
     }
-  }, [checked, usingVModel, vModelValue, trueValue, props.value])
+  }, [checked, usingVModel, vModelValue, trueValue, props.value, domRef.current])
 
   const onInputCallback = React.useCallback((e) => {
     if (usingVModel) {
@@ -328,7 +335,7 @@ function useVModelSelect<
         el.selectedIndex = -1
       }
     }
-  }, [value, usingVModel, vModelValue, defaultValue, props.multiple])
+  }, [value, usingVModel, vModelValue, defaultValue, props.multiple, domRef.current])
 
   const onInputCallback = React.useCallback((e) => {
     if (usingVModel) {

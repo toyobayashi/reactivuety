@@ -18,12 +18,13 @@ const Option = React.forwardRef<HTMLOptionElement, React.DetailedHTMLProps<React
     if (domRef.current) {
       const el: HTMLOptionElement = domRef.current
 
-      el.value = value as any
       if (typeof value !== 'string') {
         (el as any)._value = value
+      } else {
+        el.value = value
       }
     }
-  }, [value])
+  }, [value, domRef.current])
 
   return (<option {...restProps} ref={getRefCallback}>{props.children}</option>)
 })
