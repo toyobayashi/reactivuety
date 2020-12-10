@@ -50,3 +50,22 @@ export {
   WatchOptions,
   WatchStopHandle
 } from './core/apiWatch'
+
+export {
+  Input
+} from './components/Input'
+
+export {
+  Textarea
+} from './components/Textarea'
+
+export {
+  Select,
+  Option
+} from './components/Select'
+
+export {
+  VModelProps,
+  VModelPropsWithLazy,
+  CheckboxProps
+} from './dom/useVModel'

@@ -41,37 +41,25 @@ export default {
 ```jsx
 import * as React from 'react'
 import * as marked from 'marked'
-import { useSetup, onMounted, ref, shallowRef, watchEffect, computed } from '@tybys/reactivuety'
+import { useSetup, ref, computed, Textarea } from '@tybys/reactivuety'
 import * as debounce from 'lodash/debounce'
 
 const MarkdownView = (props) => {
   const data = useSetup(() => {
     const input = ref('# hello')
-    const inputRef = shallowRef(null)
-    const compiledMarkdown = computed(() => marked(input.value))
+    const compiledMarkdown = computed(() => ({ __html: marked(input.value) }))
 
     const update = debounce((e) => {
       input.value = e.target.value
     }, 300)
 
-    // https://github.com/facebook/react/issues/6563
-    onMounted(() => {
-      watchEffect(() => {
-        inputRef.current!.value = input.value
-      })
-    })
-
-    return { input, inputRef, compiledMarkdown, update }
+    return { input, compiledMarkdown, update }
   }, props)
-
-  const html = React.useMemo(() => ({
-    __html: data.compiledMarkdown.value
-  }), [data.compiledMarkdown.value])
 
   return (
     <div id="editor">
-      <textarea ref={data.inputRef} onInput={data.update}></textarea>
-      <div dangerouslySetInnerHTML={html}></div>
+      <Textarea value={data.input.value} onInput={data.update} />
+      <div dangerouslySetInnerHTML={data.compiledMarkdown.value}></div>
     </div>
   )
 }
@@ -81,8 +69,37 @@ export default MarkdownView
 
 ## 注意
 
-由于 react 和 vue 的数据更新机制不太一样，本库采用和 vue 类似的异步更新机制，更新引用值或响应式对象的属性后会在 JavaScript 的下一个事件循环中重新渲染 react 组件，导致异步更新 `<input>` 和 `<textarea>` 的值时会出现 [光标自动移到末尾的问题](https://github.com/facebook/react/issues/6563)，所以要用 `ref` 手动同步输入的值，不能给它们绑定 `value` 属性。如果想要这样做，也可以使用 `useForceUpdate()` hook 在更改 `ref.value` 后立即调用 `forceUpdate()`。
+* 只有在 `useSetup` 中 **返回** 的响应式对象才能被组件收集观测到。
 
-从本库导入的 `ref()` 和 `shallowRef()` 返回的引用与 react 的 `useRef()` 具有相同的用法，可以直接传给 JSX 里的 `ref` 属性。
+* 由于 React 的 `<input>` `<select>` `<textarea>` 等 **受控组件** 的状态更新机制和 vue 不太一样，所以不能直接在这些组件上绑定响应值，应使用本库提供的 `<Input>` `<Select>` `<Option>` `<Textarea>` 组件，它们都是使用 **非受控组件** 实现的，可以和异步响应机制配合的很好，而且支持和 vue 一样用 `vModel` 双向绑定，传入 `vModel` 的应该是一个 `Ref`，该对象必须在 setup 中返回，不可在外部创建。
 
-`ref` 不会自动取值，传到 JSX 里要写 `.value`。
+  ```jsx
+  import { useSetup, ref, Input } from '@tybys/reactivuety'
+
+  export default function (props) {
+    const data = useSetup(
+      () => ({ inputValue: ref('') }),
+      props
+    )
+
+    return (<Input vModel={data.inputValue} />) // <-- 传的是 ref
+    /*
+      return (<Input
+        value={data.inputValue.value} // <-- 要取值
+        onInput={(e) => { data.inputValue.value = e.target.value }}
+      />)
+    */
+  }
+  ```
+
+* `<Input>` 和 `<Textarea>` 的 `onChange` 事件是原生的，而不是 React 的合成事件。
+
+* 除了 `vModel`，**不应该** 在任何属性传入响应性的数据。
+
+* 从本库导入的 `ref()` 和 `shallowRef()` 返回的引用与 react 的 `useRef()` 具有相同的用法，可以直接传给 JSX 里的 `ref` 属性。
+
+* `ref` 不会自动取值，传到 JSX 里要写 `.value`。
+
+* 优先从本库导入响应性 API，本库未提供的再从 `@vue/reactivity` 中导入使用。
+
+* 生命周期钩子必须在 `useSetup` 中使用。

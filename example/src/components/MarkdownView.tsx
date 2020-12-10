@@ -3,9 +3,7 @@ import './MarkdownView.css'
 import * as React from 'react'
 import { RouteComponentProps } from 'react-router-dom'
 import * as marked from 'marked'
-import { useSetup, ref, computed } from '../../..'
-
-import { Textarea } from './Textarea'
+import { useSetup, ref, computed, Textarea } from '../../..'
 
 const debounce: typeof import('lodash/debounce') = require('lodash/debounce')
 

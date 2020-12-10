@@ -30,6 +30,9 @@ Use vue composition API with react.
 
 |  Interface | Description |
 |  --- | --- |
+|  [CheckboxProps](./reactivuety.checkboxprops.md) |  |
+|  [VModelProps](./reactivuety.vmodelprops.md) |  |
+|  [VModelPropsWithLazy](./reactivuety.vmodelpropswithlazy.md) |  |
 |  [WatchOptions](./reactivuety.watchoptions.md) |  |
 |  [WatchOptionsBase](./reactivuety.watchoptionsbase.md) |  |
 
@@ -37,6 +40,7 @@ Use vue composition API with react.
 
 |  Variable | Description |
 |  --- | --- |
+|  [Input](./reactivuety.input.md) |  |
 |  [onBeforeMount](./reactivuety.onbeforemount.md) |  |
 |  [onBeforeUnmount](./reactivuety.onbeforeunmount.md) |  |
 |  [onBeforeUpdate](./reactivuety.onbeforeupdate.md) |  |
@@ -45,6 +49,9 @@ Use vue composition API with react.
 |  [onRenderTriggered](./reactivuety.onrendertriggered.md) |  |
 |  [onUnmounted](./reactivuety.onunmounted.md) |  |
 |  [onUpdated](./reactivuety.onupdated.md) |  |
+|  [Option\_2](./reactivuety.option_2.md) |  |
+|  [Select](./reactivuety.select.md) |  |
+|  [Textarea](./reactivuety.textarea.md) |  |
 
 ## Type Aliases
 

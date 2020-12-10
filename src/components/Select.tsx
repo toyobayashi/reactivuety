@@ -1,16 +1,15 @@
 import * as React from 'react'
-import { useDomRef, useVModelSelect, VModelProps } from './useVModel'
+import { useDomRef, useVModelSelect, VModelProps } from '../dom/useVModel'
 
+/** @public */
 const Select = React.forwardRef<HTMLSelectElement, React.DetailedHTMLProps<React.SelectHTMLAttributes<HTMLSelectElement>, HTMLSelectElement> & VModelProps<any> & { value?: any }>((props, ref) => {
-  console.log('[Select] render')
   const { getRefCallback, onInputCallback, restProps } = useVModelSelect(props, ref)
 
   return (<select {...restProps} ref={getRefCallback} onChange={onInputCallback}>{props.children}</select>)
 })
 
+/** @public */
 const Option = React.forwardRef<HTMLOptionElement, React.DetailedHTMLProps<React.OptionHTMLAttributes<HTMLOptionElement>, HTMLOptionElement> & { value?: any }>((props, ref) => {
-  console.log('[Option] render')
-
   const { value, ...restProps } = props
   const [domRef, getRefCallback] = useDomRef(ref)
 

@@ -3,8 +3,7 @@ import './GithubCommitView.css'
 import * as React from 'react'
 import { RouteComponentProps } from 'react-router-dom'
 
-import { useSetup, ref, watch } from '../../..'
-import { InputRadio } from './Input'
+import { useSetup, ref, watch, Input } from '../../..'
 
 const apiURL = 'https://api.github.com/repos/vuejs/vue/commits?per_page=3&sha='
 
@@ -52,7 +51,8 @@ const GithubCommitView: React.FunctionComponent<RouteComponentProps> = (props) =
       {data.branches.value.map((branch) => {
         return (
           <span key={branch}>
-            <InputRadio
+            <Input
+              type='radio'
               id={branch}
               value={branch}
               name="branch"

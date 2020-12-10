@@ -7,16 +7,19 @@ function tryTrim (o: any): any {
   return typeof o === 'string' ? o.trim() : o
 }
 
+/** @public */
 export interface VModelProps<T> {
   vModel?: Ref<T>
   vModel_trim?: Ref<T>
   vModel_number?: Ref<T>
 }
 
+/** @public */
 export interface VModelPropsWithLazy<T> extends VModelProps<T> {
   vModel_lazy?: Ref<T>
 }
 
+/** @public */
 export interface CheckboxProps { value?: any; trueValue?: any; falseValue?: any }
 
 function useVModelPropName<P extends VModelProps<T>, T> (props: P, allows: Array<(keyof VModelProps<T>)>): keyof VModelProps<T>
@@ -65,7 +68,7 @@ function useVModelText<
       const el: HTMLInputElement | HTMLTextAreaElement = domRef.current
       const val = usingVModel?.value ?? value ?? defaultValue
       if ((el as any).composing) return
-      if (document.activeElement === el) {
+      if (typeof document !== 'undefined' && document.activeElement === el) {
         if ((vModelName === 'vModel_trim') && el.value.trim() === val) {
           return
         }
@@ -92,9 +95,11 @@ function useVModelText<
       const target = e.target
       if (target.composing) {
         target.composing = false
-        const e = document.createEvent('HTMLEvents')
-        e.initEvent('input', true, true)
-        target.dispatchEvent(e)
+        if (typeof document !== 'undefined') {
+          const e = document.createEvent('HTMLEvents')
+          e.initEvent('input', true, true)
+          target.dispatchEvent(e)
+        }
       }
     }
   }, [vModelName])

@@ -4,6 +4,7 @@
     "outDir": "./lib/esm-modern",
     "jsx": "react",
     "lib": [
+      "DOM",
       "ES2020.Symbol.WellKnown"
     ]
   },

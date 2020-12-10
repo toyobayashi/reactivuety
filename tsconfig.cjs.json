@@ -5,6 +5,7 @@
     "jsx": "react",
     "sourceMap": false,
     "lib": [
+      "DOM",
       "ES2020.Symbol.WellKnown"
     ]
   },
