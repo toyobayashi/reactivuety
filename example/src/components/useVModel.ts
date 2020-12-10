@@ -35,10 +35,10 @@ function useVModelPropName (props: any, allows: any[]): string {
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 function useVModelText<
   E extends HTMLInputElement | HTMLTextAreaElement,
-  P extends React.DetailedHTMLProps<React.InputHTMLAttributes<E>, E> & VModelPropsWithLazy<string>
+  P extends React.DetailedHTMLProps<React.InputHTMLAttributes<E>, E> & VModelPropsWithLazy<string | number>
 > (props: P, ref: React.ForwardedRef<E>) {
   const vModelName = useVModelPropName(props, ['vModel', 'vModel_lazy', 'vModel_trim', 'vModel_number'])
-  const { value, onInput, onChange, vModel, vModel_lazy, vModel_trim, vModel_number, defaultValue, ...restProps } = props
+  const { value, onInput, onChange, vModel, vModel_lazy, vModel_trim, vModel_number, defaultValue, onCompositionStart, onCompositionEnd, ...restProps } = props
   const usingVModel = props[vModelName]
   const vModelValue = usingVModel?.value
   const domRef = React.useRef<any>(null)
@@ -56,29 +56,94 @@ function useVModelText<
 
   React.useEffect(() => {
     if (domRef.current) {
-      domRef.current.value = usingVModel?.value ?? value ?? defaultValue ?? ''
-    }
-  }, [value, usingVModel, vModelValue])
-
-  const onInputCallback = React.useCallback((e) => {
-    if (usingVModel) {
-      if (vModelName === 'vModel_number') {
-        const v = parseFloat(e.target.value)
-        usingVModel.value = Number.isNaN(v) ? e.target.value : v
-      } else if (vModelName === 'vModel_trim') {
-        usingVModel.value = e.target.value.trim()
-      } else {
-        usingVModel.value = e.target.value
+      const el: HTMLInputElement | HTMLTextAreaElement = domRef.current
+      const val = usingVModel?.value ?? value ?? defaultValue
+      if ((el as any).composing) return
+      if (document.activeElement === el) {
+        if ((vModelName === 'vModel_trim') && el.value.trim() === val) {
+          return
+        }
+        if (((vModelName === 'vModel_number') || el.type === 'number') && toNumber(el.value) === val) {
+          return
+        }
+      }
+      const newValue = val == null ? '' : val
+      if (el.value !== newValue) {
+        el.value = newValue as any
       }
     }
+  }, [value, usingVModel, vModelValue, vModelName])
+
+  const onCompositionStartCallback = React.useCallback((e) => {
+    if (vModelName !== 'vModel_lazy') {
+      e.target.composing = true
+    }
+    if (typeof onCompositionStart === 'function') onCompositionStart(e)
+  }, [onCompositionStart, vModelName])
+
+  const _onCompositionEnd = React.useCallback((e) => {
+    if (vModelName !== 'vModel_lazy') {
+      const target = e.target
+      if (target.composing) {
+        target.composing = false
+        const e = document.createEvent('HTMLEvents')
+        e.initEvent('input', true, true)
+        target.dispatchEvent(e)
+      }
+    }
+  }, [vModelName])
+
+  const onCompositionEndCallback = React.useCallback((e) => {
+    _onCompositionEnd(e)
+    if (typeof onCompositionEnd === 'function') onCompositionEnd(e)
+  }, [_onCompositionEnd, onCompositionEnd])
+
+  const onChangeCallback = React.useCallback((e) => {
+    _onCompositionEnd(e)
+    if (typeof onChange === 'function') onChange(e)
+  }, [_onCompositionEnd, onChange])
+
+  const onInputCallback = React.useCallback((e) => {
+    if (e.target.composing) return
+
+    if (usingVModel) {
+      const el: HTMLInputElement | HTMLTextAreaElement = e.target
+      const castToNumber = (vModelName === 'vModel_number') || el.type === 'number'
+      let domValue: string | number = el.value
+      if (vModelName === 'vModel_trim') {
+        domValue = domValue.trim()
+      } else if (castToNumber) {
+        domValue = toNumber(domValue)
+      }
+      usingVModel.value = domValue
+    }
+
     if (vModelName === 'vModel_lazy') {
-      if (typeof onChange === 'function') onChange(e)
+      onChangeCallback(e)
     } else {
       if (typeof onInput === 'function') onInput(e)
     }
-  }, [onInput, onChange, usingVModel, vModelName])
+  }, [onInput, onChangeCallback, usingVModel, vModelName])
 
-  return { vModelName, getRefCallback, onInput, onChange, onInputCallback, restProps }
+  React.useEffect(() => {
+    if (domRef.current) {
+      const el: HTMLInputElement | HTMLTextAreaElement = domRef.current
+      if (vModelName === 'vModel_lazy') {
+        el.addEventListener('change', onInputCallback)
+      } else {
+        el.addEventListener('change', onChangeCallback)
+      }
+    }
+    return () => {
+      if (domRef.current) {
+        const el: HTMLInputElement | HTMLTextAreaElement = domRef.current
+        el.removeEventListener('change', onChangeCallback)
+        el.removeEventListener('change', onInputCallback)
+      }
+    }
+  }, [onChangeCallback, onInputCallback, domRef.current])
+
+  return { vModelName, getRefCallback, onInput, onChangeCallback, onInputCallback, onCompositionStartCallback, onCompositionEndCallback, restProps }
 }
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
