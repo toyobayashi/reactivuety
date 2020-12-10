@@ -3,7 +3,7 @@ import './GithubCommitView.css'
 import * as React from 'react'
 import { RouteComponentProps } from 'react-router-dom'
 
-import { useSetup, ref, watch, Input } from '../../..'
+import { useSetup, ref, watch, Input/* , onBeforeMount, onMounted, onBeforeUpdate, onUpdated, onBeforeUnmount, onUnmounted */ } from '../../..'
 
 const apiURL = 'https://api.github.com/repos/vuejs/vue/commits?per_page=3&sha='
 
@@ -11,6 +11,12 @@ const GithubCommitView: React.FunctionComponent<RouteComponentProps> = (props) =
   console.log('[GithubCommitView] render')
 
   const data = useSetup(() => {
+    // onBeforeMount(() => console.log('onBeforeMount'))
+    // onMounted(() => console.log('onMounted'))
+    // onBeforeUpdate(() => console.log('onBeforeUpdate'))
+    // onUpdated(() => console.log('onUpdated'))
+    // onBeforeUnmount(() => console.log('onBeforeUnmount'))
+    // onUnmounted(() => console.log('onUnmounted'))
     const branches = ref(['master', 'dev'])
     const currentBranch = ref('master')
     const commits = ref<any[] | null>(null)
