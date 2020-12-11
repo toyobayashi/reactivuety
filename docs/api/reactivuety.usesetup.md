@@ -8,17 +8,17 @@
 <b>Signature:</b>
 
 ```typescript
-export declare function useSetup<P>(setup: (props: Readonly<PropsWithChildren<P>>) => () => ReactElement, props: PropsWithChildren<P>): () => ReactElement;
+export declare function useSetup<P>(setup: SetupFunction<P, () => ReactElement | null>, props: PropsWithChildren<P>): () => ReactElement | null;
 ```
 
 ## Parameters
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  setup | (props: Readonly&lt;PropsWithChildren&lt;P&gt;&gt;) =&gt; () =&gt; ReactElement |  |
+|  setup | [SetupFunction](./reactivuety.setupfunction.md)<!-- -->&lt;P, () =&gt; ReactElement \| null&gt; |  |
 |  props | PropsWithChildren&lt;P&gt; |  |
 
 <b>Returns:</b>
 
-() =&gt; ReactElement
+() =&gt; ReactElement \| null
 

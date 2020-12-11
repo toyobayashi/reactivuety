@@ -12,6 +12,10 @@ Use vue composition API with react.
 |  --- | --- |
 |  [computed(getter)](./reactivuety.computed.md) |  |
 |  [computed(options)](./reactivuety.computed_1.md) |  |
+|  [createSetupHook(setup)](./reactivuety.createsetuphook.md) |  |
+|  [createSetupHook(setup)](./reactivuety.createsetuphook_1.md) |  |
+|  [defineComponent(setup)](./reactivuety.definecomponent.md) |  |
+|  [defineComponent(setup, render)](./reactivuety.definecomponent_1.md) |  |
 |  [nextTick(fn)](./reactivuety.nexttick.md) |  |
 |  [ref(value)](./reactivuety.ref.md) |  |
 |  [ref(value)](./reactivuety.ref_1.md) |  |
@@ -61,6 +65,7 @@ Use vue composition API with react.
 |  [DebuggerHook](./reactivuety.debuggerhook.md) |  |
 |  [InvalidateCbRegistrator](./reactivuety.invalidatecbregistrator.md) |  |
 |  [MapSources](./reactivuety.mapsources.md) |  |
+|  [SetupFunction](./reactivuety.setupfunction.md) |  |
 |  [WatchCallback](./reactivuety.watchcallback.md) |  |
 |  [WatchEffect](./reactivuety.watcheffect.md) |  |
 |  [WatchSource](./reactivuety.watchsource.md) |  |

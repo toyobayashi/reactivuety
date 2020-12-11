@@ -9,6 +9,10 @@ export {
 } from './core/apiComputed'
 
 export {
+  defineComponent
+} from './core/apiDefineComponent'
+
+export {
   nextTick
 } from './core/scheduler'
 
@@ -35,6 +39,8 @@ export {
 } from './useForceUpdate'
 
 export {
+  createSetupHook,
+  SetupFunction,
   useSetup
 } from './useSetup'
 

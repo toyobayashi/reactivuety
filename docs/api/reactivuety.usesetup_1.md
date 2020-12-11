@@ -8,14 +8,14 @@
 <b>Signature:</b>
 
 ```typescript
-export declare function useSetup<P, R extends object>(setup: (props: Readonly<PropsWithChildren<P>>) => R, props: PropsWithChildren<P>): R;
+export declare function useSetup<P, R extends object>(setup: SetupFunction<P, R>, props: PropsWithChildren<P>): R;
 ```
 
 ## Parameters
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  setup | (props: Readonly&lt;PropsWithChildren&lt;P&gt;&gt;) =&gt; R |  |
+|  setup | [SetupFunction](./reactivuety.setupfunction.md)<!-- -->&lt;P, R&gt; |  |
 |  props | PropsWithChildren&lt;P&gt; |  |
 
 <b>Returns:</b>

@@ -24,7 +24,7 @@ type LifecycleHook<T extends (...args: any[]) => any> = T[] | null
 export interface ComponentInternalInstance<P = any, S = any> {
   effects: ReactiveEffect[]
   setupResult: S
-  render: (() => ReactElement) | null
+  render: (() => ReactElement | null) | null
   props: UnwrapNestedRefs<PropsWithChildren<P>>
 
   isMounted: boolean

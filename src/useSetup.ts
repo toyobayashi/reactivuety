@@ -16,13 +16,19 @@ function clearInstanceBoundEffect (instance?: ComponentInternalInstance): void {
 }
 
 /** @public */
-export function useSetup<P> (setup: (props: Readonly<PropsWithChildren<P>>) => () => ReactElement, props: PropsWithChildren<P>): () => ReactElement
+export type SetupFunction<P = any, R = any> = (props: Readonly<PropsWithChildren<P>>) => R
 
 /** @public */
-export function useSetup<P, R extends object> (setup: (props: Readonly<PropsWithChildren<P>>) => R, props: PropsWithChildren<P>): R
+export function useSetup<P> (setup: SetupFunction<P, () => ReactElement | null>, props: PropsWithChildren<P>): () => ReactElement | null
+
+/** @public */
+export function useSetup<P, R extends object> (setup: SetupFunction<P, R>, props: PropsWithChildren<P>): R
 
 /** @public */
 export function useSetup<P> (setup: (props: Readonly<PropsWithChildren<P>>) => any, props: PropsWithChildren<P>): any {
+  if (typeof setup !== 'function') {
+    throw new TypeError('setup is not a function')
+  }
   const forceUpdate = useForceUpdate()
 
   const instanceRef = useRef<ComponentInternalInstance<P, any>>()
@@ -128,4 +134,19 @@ export function useSetup<P> (setup: (props: Readonly<PropsWithChildren<P>>) => a
   }, [])
 
   return instanceRef.current.render ?? instanceRef.current.setupResult
+}
+
+/** @public */
+export function createSetupHook<P> (setup: SetupFunction<P, () => ReactElement | null>): (props: PropsWithChildren<P>) => () => ReactElement | null
+
+/** @public */
+export function createSetupHook<P, R extends object> (setup: SetupFunction<P, R>): (props: PropsWithChildren<P>) => R
+
+export function createSetupHook<P> (setup: SetupFunction<P, any>): (props: PropsWithChildren<P>) => any {
+  if (typeof setup !== 'function') {
+    throw new TypeError('setup is not a function')
+  }
+  return function (props) {
+    return useSetup(setup, props)
+  }
 }
