@@ -19,7 +19,7 @@ function clearInstanceBoundEffect (instance?: ComponentInternalInstance): void {
 export type SetupFunction<P = any, R = any> = (props: Readonly<PropsWithChildren<P>>) => R
 
 /** @public */
-export function useSetup<P> (setup: SetupFunction<P, () => ReactElement | null>, props: PropsWithChildren<P>): () => ReactElement | null
+export function useSetup<P> (setup: SetupFunction<P, (context?: any) => ReactElement | null>, props: PropsWithChildren<P>): (context?: any) => ReactElement | null
 
 /** @public */
 export function useSetup<P, R extends object> (setup: SetupFunction<P, R>, props: PropsWithChildren<P>): R
@@ -137,7 +137,7 @@ export function useSetup<P> (setup: (props: Readonly<PropsWithChildren<P>>) => a
 }
 
 /** @public */
-export function createSetupHook<P> (setup: SetupFunction<P, () => ReactElement | null>): (props: PropsWithChildren<P>) => () => ReactElement | null
+export function createSetupHook<P> (setup: SetupFunction<P, (context?: any) => ReactElement | null>): (props: PropsWithChildren<P>) => (context?: any) => ReactElement | null
 
 /** @public */
 export function createSetupHook<P, R extends object> (setup: SetupFunction<P, R>): (props: PropsWithChildren<P>) => R

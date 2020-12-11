@@ -8,14 +8,14 @@
 <b>Signature:</b>
 
 ```typescript
-export declare function defineComponent<P>(setup: SetupFunction<P, () => ReactElement>): FunctionComponent<P>;
+export declare function defineComponent<P>(setup: SetupFunction<P, (context?: any) => ReactElement | null>): FunctionComponent<P>;
 ```
 
 ## Parameters
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  setup | [SetupFunction](./reactivuety.setupfunction.md)<!-- -->&lt;P, () =&gt; ReactElement&gt; |  |
+|  setup | [SetupFunction](./reactivuety.setupfunction.md)<!-- -->&lt;P, (context?: any) =&gt; ReactElement \| null&gt; |  |
 
 <b>Returns:</b>
 
