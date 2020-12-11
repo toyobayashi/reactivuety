@@ -1,5 +1,5 @@
 import { DebuggerEvent, ReactiveEffect, Ref, UnwrapRef } from '@vue/reactivity'
-import { PropsWithChildren, ReactNode } from 'react'
+import { PropsWithChildren, ReactElement } from 'react'
 
 type UnwrapNestedRefs<T> = T extends Ref ? T : UnwrapRef<T>
 
@@ -24,7 +24,7 @@ type LifecycleHook<T extends (...args: any[]) => any> = T[] | null
 export interface ComponentInternalInstance<P = any, S = any> {
   effects: ReactiveEffect[]
   setupResult: S
-  render: (() => ReactNode) | null
+  render: (() => ReactElement) | null
   props: UnwrapNestedRefs<PropsWithChildren<P>>
 
   isMounted: boolean

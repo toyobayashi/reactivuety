@@ -21,6 +21,7 @@ Use vue composition API with react.
 |  [shallowRef()](./reactivuety.shallowref_2.md) |  |
 |  [useForceUpdate()](./reactivuety.useforceupdate.md) |  |
 |  [useSetup(setup, props)](./reactivuety.usesetup.md) |  |
+|  [useSetup(setup, props)](./reactivuety.usesetup_1.md) |  |
 |  [watch(sources, cb, options)](./reactivuety.watch.md) |  |
 |  [watch(source, cb, options)](./reactivuety.watch_1.md) |  |
 |  [watch(source, cb, options)](./reactivuety.watch_2.md) |  |

@@ -1,5 +1,5 @@
-import { effect, stop, reactive, readonly } from '@vue/reactivity'
-import { PropsWithChildren, ReactNode, useCallback, useEffect, useRef } from 'react'
+import { effect, stop, reactive, readonly, ReactiveEffect, ReactiveEffectOptions } from '@vue/reactivity'
+import { PropsWithChildren, ReactElement, useCallback, useEffect, useRef } from 'react'
 import { useForceUpdate } from './useForceUpdate'
 import { setCurrentInstance, ComponentInternalInstance, LifecycleHooks, getCurrentInstance } from './core/component'
 import { clearAllLifecycles, invokeLifecycle } from './core/apiLifecycle'
@@ -16,10 +16,16 @@ function clearInstanceBoundEffect (instance?: ComponentInternalInstance): void {
 }
 
 /** @public */
-export function useSetup<P, R> (setup: (props: Readonly<PropsWithChildren<P>>) => R, props: PropsWithChildren<P>): R {
+export function useSetup<P> (setup: (props: Readonly<PropsWithChildren<P>>) => () => ReactElement, props: PropsWithChildren<P>): () => ReactElement
+
+/** @public */
+export function useSetup<P, R extends object> (setup: (props: Readonly<PropsWithChildren<P>>) => R, props: PropsWithChildren<P>): R
+
+/** @public */
+export function useSetup<P> (setup: (props: Readonly<PropsWithChildren<P>>) => any, props: PropsWithChildren<P>): any {
   const forceUpdate = useForceUpdate()
 
-  const instanceRef = useRef<ComponentInternalInstance<P, R>>()
+  const instanceRef = useRef<ComponentInternalInstance<P, any>>()
 
   const updateProps: { (): void; __called?: boolean } = useCallback(() => {
     if (instanceRef.current) {
@@ -28,7 +34,6 @@ export function useSetup<P, R> (setup: (props: Readonly<PropsWithChildren<P>>) =
         const key = keys[i]
         ;(instanceRef.current.props as any)[key] = (props as any)[key]
       }
-      // invokeLifecycle(instanceRef.current, LifecycleHooks.UPDATED) // TODO
     }
   }, [props])
 
@@ -38,60 +43,16 @@ export function useSetup<P, R> (setup: (props: Readonly<PropsWithChildren<P>>) =
   }
 
   const updateCallback = useCallback(() => {
+    invokeLifecycle(instanceRef.current!, LifecycleHooks.BEFORE_UPDATE)
     forceUpdate()
-  }, [forceUpdate])
+    invokeLifecycle(instanceRef.current!, LifecycleHooks.UPDATED)
+  }, [])
 
   if (!instanceRef.current) {
     const reactiveProps = reactive({ ...props })
     const readonlyProps = readonly(reactiveProps)
-    const runner = effect(() => {
-      const reset = getCurrentInstance()
-      setCurrentInstance(instanceRef.current!)
-      let ret: R
-      try {
-        ret = setup(readonlyProps as any)
-      } catch (err) {
-        clearInstanceBoundEffect(instanceRef.current)
-        clearAllLifecycles(instanceRef.current!)
-        instanceRef.current = undefined
-        setCurrentInstance(reset)
-        throw err
-      }
-      setCurrentInstance(reset)
-      if (ret == null) {
-        invokeLifecycle(instanceRef.current!, LifecycleHooks.BEFORE_MOUNT)
-        return ret
-      }
-      if (typeof ret === 'function') {
-        try {
-          ret() // TODO
-        } catch (err) {
-          clearInstanceBoundEffect(instanceRef.current)
-          clearAllLifecycles(instanceRef.current!)
-          instanceRef.current = undefined
-          throw err
-        }
-        invokeLifecycle(instanceRef.current!, LifecycleHooks.BEFORE_MOUNT)
-        return ret
-      }
-      traverse(ret, new Set())
-      invokeLifecycle(instanceRef.current!, LifecycleHooks.BEFORE_MOUNT)
-      return ret
-    }, {
-      lazy: true,
-      scheduler: (_job) => {
-        queueJob(updateCallback)
-      },
-      onTrack (e) {
-        invokeLifecycle(instanceRef.current!, LifecycleHooks.RENDER_TRACKED, e)
-      },
-      onTrigger (e) {
-        invokeLifecycle(instanceRef.current!, LifecycleHooks.RENDER_TRIGGERED, e)
-      }
-    })
-
     instanceRef.current = {
-      effects: [runner],
+      effects: [],
       setupResult: null!,
       render: null,
       props: reactiveProps,
@@ -106,20 +67,51 @@ export function useSetup<P, R> (setup: (props: Readonly<PropsWithChildren<P>>) =
       [LifecycleHooks.RENDER_TRACKED]: null,
       [LifecycleHooks.RENDER_TRIGGERED]: null
     }
-    const setupResult = runner()
-    instanceRef.current.setupResult = setupResult
-    if (typeof setupResult === 'function') {
-      instanceRef.current.render = setupResult as unknown as (() => ReactNode)
+    let runner: ReactiveEffect | null = null
+    const reset = getCurrentInstance()
+    setCurrentInstance(instanceRef.current)
+    let ret: any
+    try {
+      ret = setup(readonlyProps as any)
+    } catch (err) {
+      clearInstanceBoundEffect(instanceRef.current)
+      clearAllLifecycles(instanceRef.current)
+      instanceRef.current = undefined
+      setCurrentInstance(reset)
+      throw err
     }
-  } else {
-    invokeLifecycle(instanceRef.current, LifecycleHooks.BEFORE_UPDATE)
-  }
+    setCurrentInstance(reset)
+    const createEffectOptions = (): ReactiveEffectOptions => ({
+      lazy: true,
+      scheduler: (_job) => {
+        queueJob(updateCallback)
+      },
+      onTrack (e) {
+        invokeLifecycle(instanceRef.current!, LifecycleHooks.RENDER_TRACKED, e)
+      },
+      onTrigger (e) {
+        invokeLifecycle(instanceRef.current!, LifecycleHooks.RENDER_TRIGGERED, e)
+      }
+    })
+    if (ret == null) {
+      invokeLifecycle(instanceRef.current, LifecycleHooks.BEFORE_MOUNT)
+    } else if (typeof ret === 'function') {
+      runner = effect(() => ret(), createEffectOptions())
+      invokeLifecycle(instanceRef.current, LifecycleHooks.BEFORE_MOUNT)
+      instanceRef.current.render = runner
+    } else {
+      runner = effect(() => {
+        traverse(ret, new Set())
+      }, createEffectOptions())
+      runner()
+      invokeLifecycle(instanceRef.current, LifecycleHooks.BEFORE_MOUNT)
+    }
 
-  useEffect(() => {
-    if (instanceRef.current!.isMounted) {
-      invokeLifecycle(instanceRef.current!, LifecycleHooks.UPDATED)
+    instanceRef.current.setupResult = ret
+    if (runner) {
+      instanceRef.current.effects.push(runner)
     }
-  })
+  }
 
   useEffect(() => {
     instanceRef.current!.isMounted = true
@@ -135,5 +127,5 @@ export function useSetup<P, R> (setup: (props: Readonly<PropsWithChildren<P>>) =
     }
   }, [])
 
-  return instanceRef.current.setupResult
+  return instanceRef.current.render ?? instanceRef.current.setupResult
 }
