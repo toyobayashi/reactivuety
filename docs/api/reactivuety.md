@@ -14,8 +14,8 @@ Use vue composition API with react.
 |  [computed(options)](./reactivuety.computed_1.md) |  |
 |  [createSetupHook(setup)](./reactivuety.createsetuphook.md) |  |
 |  [createSetupHook(setup)](./reactivuety.createsetuphook_1.md) |  |
-|  [defineComponent(setup)](./reactivuety.definecomponent.md) |  |
-|  [defineComponent(setup, render)](./reactivuety.definecomponent_1.md) |  |
+|  [defineComponent(setup, name)](./reactivuety.definecomponent.md) |  |
+|  [defineComponent(setup, render, name)](./reactivuety.definecomponent_1.md) |  |
 |  [nextTick(fn)](./reactivuety.nexttick.md) |  |
 |  [ref(value)](./reactivuety.ref.md) |  |
 |  [ref(value)](./reactivuety.ref_1.md) |  |

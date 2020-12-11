@@ -8,7 +8,7 @@
 <b>Signature:</b>
 
 ```typescript
-export declare function defineComponent<P, R extends object>(setup: SetupFunction<P, R>, render: (state: R, props: PropsWithChildren<P>, context?: any) => ReactElement | null): FunctionComponent<P>;
+export declare function defineComponent<P, R extends object>(setup: SetupFunction<P, R>, render: (state: R, props: PropsWithChildren<P>, context?: any) => ReactElement | null, name?: string): FunctionComponent<P>;
 ```
 
 ## Parameters
@@ -17,6 +17,7 @@ export declare function defineComponent<P, R extends object>(setup: SetupFunctio
 |  --- | --- | --- |
 |  setup | [SetupFunction](./reactivuety.setupfunction.md)<!-- -->&lt;P, R&gt; |  |
 |  render | (state: R, props: PropsWithChildren&lt;P&gt;, context?: any) =&gt; ReactElement \| null |  |
+|  name | string |  |
 
 <b>Returns:</b>
 

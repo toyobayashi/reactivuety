@@ -9,5 +9,6 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, React.DetailedHTMLProps<R
     ? (<textarea {...restProps} ref={getRefCallback} onInput={onInput} onCompositionStart={onCompositionStartCallback} onCompositionEnd={onCompositionEndCallback} />)
     : (<textarea {...restProps} ref={getRefCallback} onInput={onInputCallback} onCompositionStart={onCompositionStartCallback} onCompositionEnd={onCompositionEndCallback} />)
 })
+Textarea.displayName = 'Textarea'
 
 export { Textarea }

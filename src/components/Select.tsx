@@ -7,6 +7,7 @@ const Select = React.forwardRef<HTMLSelectElement, React.DetailedHTMLProps<React
 
   return (<select {...restProps} ref={getRefCallback} onChange={onInputCallback}>{props.children}</select>)
 })
+Select.displayName = 'Select'
 
 /** @public */
 const Option = React.forwardRef<HTMLOptionElement, React.DetailedHTMLProps<React.OptionHTMLAttributes<HTMLOptionElement>, HTMLOptionElement> & { value?: any }>((props, ref) => {
@@ -29,5 +30,6 @@ const Option = React.forwardRef<HTMLOptionElement, React.DetailedHTMLProps<React
 
   return (<option {...restProps} ref={getRefCallback}>{props.children}</option>)
 })
+Option.displayName = 'Option'
 
 export { Select, Option }
