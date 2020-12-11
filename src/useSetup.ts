@@ -102,9 +102,13 @@ export function useSetup<P> (setup: (props: Readonly<PropsWithChildren<P>>) => a
     if (ret == null) {
       invokeLifecycle(instanceRef.current, LifecycleHooks.BEFORE_MOUNT)
     } else if (typeof ret === 'function') {
-      runner = effect(() => ret(), createEffectOptions())
+      let _args: any[] = []
+      runner = effect(() => ret(..._args), createEffectOptions())
       invokeLifecycle(instanceRef.current, LifecycleHooks.BEFORE_MOUNT)
-      instanceRef.current.render = runner
+      instanceRef.current.render = function (...args: any[]): any {
+        _args = args
+        return runner!()
+      }
     } else {
       runner = effect(() => {
         traverse(ret, new Set())
