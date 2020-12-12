@@ -107,7 +107,9 @@ export function useSetup<P> (setup: (props: Readonly<PropsWithChildren<P>>) => a
       invokeLifecycle(instanceRef.current, LifecycleHooks.BEFORE_MOUNT)
       instanceRef.current.render = function (...args: any[]): any {
         _args = args
-        return runner!()
+        const r = runner!()
+        _args = []
+        return r
       }
     } else {
       runner = effect(() => {
