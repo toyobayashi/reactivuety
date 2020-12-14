@@ -13,6 +13,13 @@ export {
 } from './core/apiDefineComponent'
 
 export {
+  AsyncComponentResolveResult,
+  AsyncComponentLoader,
+  AsyncComponentOptions,
+  defineAsyncComponent
+} from './core/apiAsyncComponent'
+
+export {
   nextTick
 } from './core/scheduler'
 

@@ -14,6 +14,7 @@ Use vue composition API with react.
 |  [computed(options)](./reactivuety.computed_1.md) |  |
 |  [createSetupHook(setup)](./reactivuety.createsetuphook.md) |  |
 |  [createSetupHook(setup)](./reactivuety.createsetuphook_1.md) |  |
+|  [defineAsyncComponent(source)](./reactivuety.defineasynccomponent.md) |  |
 |  [defineComponent(setup, name)](./reactivuety.definecomponent.md) |  |
 |  [defineComponent(setup, render, name)](./reactivuety.definecomponent_1.md) |  |
 |  [nextTick(fn)](./reactivuety.nexttick.md) |  |
@@ -35,6 +36,7 @@ Use vue composition API with react.
 
 |  Interface | Description |
 |  --- | --- |
+|  [AsyncComponentOptions](./reactivuety.asynccomponentoptions.md) |  |
 |  [CheckboxProps](./reactivuety.checkboxprops.md) |  |
 |  [VModelProps](./reactivuety.vmodelprops.md) |  |
 |  [VModelPropsWithLazy](./reactivuety.vmodelpropswithlazy.md) |  |
@@ -62,6 +64,8 @@ Use vue composition API with react.
 
 |  Type Alias | Description |
 |  --- | --- |
+|  [AsyncComponentLoader](./reactivuety.asynccomponentloader.md) |  |
+|  [AsyncComponentResolveResult](./reactivuety.asynccomponentresolveresult.md) |  |
 |  [DebuggerHook](./reactivuety.debuggerhook.md) |  |
 |  [InvalidateCbRegistrator](./reactivuety.invalidatecbregistrator.md) |  |
 |  [MapSources](./reactivuety.mapsources.md) |  |

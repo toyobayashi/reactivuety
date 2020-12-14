@@ -1,10 +1,10 @@
 import * as React from 'react'
 import { HashRouter, Switch, Route, Link } from 'react-router-dom'
-import { createAsyncComponent } from './utils/async-component'
+import { defineAsyncComponent } from '../..'
 
-const MarkdownView = createAsyncComponent(import('./components/MarkdownView'))
-const GithubCommitView = createAsyncComponent(import('./components/GithubCommitView'))
-const GridComponent = createAsyncComponent(import('./components/GridComponent'))
+const MarkdownView = defineAsyncComponent(() => import('./components/MarkdownView'))
+const GithubCommitView = defineAsyncComponent(() => import('./components/GithubCommitView'))
+const GridComponent = defineAsyncComponent(() => import('./components/GridComponent'))
 
 const Home: React.FunctionComponent = () => {
   return (
