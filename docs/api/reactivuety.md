@@ -17,7 +17,11 @@ Use vue composition API with react.
 |  [defineAsyncComponent(source)](./reactivuety.defineasynccomponent.md) |  |
 |  [defineComponent(setup, name)](./reactivuety.definecomponent.md) |  |
 |  [defineComponent(setup, render, name)](./reactivuety.definecomponent_1.md) |  |
+|  [inject(key)](./reactivuety.inject.md) |  |
+|  [inject(key, defaultValue, treatDefaultAsFactory)](./reactivuety.inject_1.md) |  |
+|  [inject(key, defaultValue, treatDefaultAsFactory)](./reactivuety.inject_2.md) |  |
 |  [nextTick(fn)](./reactivuety.nexttick.md) |  |
+|  [provide(key, value)](./reactivuety.provide.md) |  |
 |  [ref(value)](./reactivuety.ref.md) |  |
 |  [ref(value)](./reactivuety.ref_1.md) |  |
 |  [ref()](./reactivuety.ref_2.md) |  |
@@ -38,6 +42,7 @@ Use vue composition API with react.
 |  --- | --- |
 |  [AsyncComponentOptions](./reactivuety.asynccomponentoptions.md) |  |
 |  [CheckboxProps](./reactivuety.checkboxprops.md) |  |
+|  [InjectionKey](./reactivuety.injectionkey.md) |  |
 |  [VModelProps](./reactivuety.vmodelprops.md) |  |
 |  [VModelPropsWithLazy](./reactivuety.vmodelpropswithlazy.md) |  |
 |  [WatchOptions](./reactivuety.watchoptions.md) |  |

@@ -20,6 +20,12 @@ export {
 } from './core/apiAsyncComponent'
 
 export {
+  inject,
+  provide,
+  InjectionKey
+} from './core/apiInject'
+
+export {
   nextTick
 } from './core/scheduler'
 

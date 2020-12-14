@@ -5,6 +5,7 @@ import { setCurrentInstance, ComponentInternalInstance, LifecycleHooks, getCurre
 import { clearAllLifecycles, invokeLifecycle } from './core/apiLifecycle'
 import { queueJob } from './core/scheduler'
 import { traverse } from './core/apiWatch'
+import { getCurrentRenderingInstance, setCurrentRenderingInstance } from './core/apiInject'
 
 function clearInstanceBoundEffect (instance?: ComponentInternalInstance): void {
   if (instance) {
@@ -54,6 +55,7 @@ export function useSetup<P> (setup: (props: Readonly<PropsWithChildren<P>>) => a
     invokeLifecycle(instanceRef.current!, LifecycleHooks.UPDATED)
   }, [])
 
+  let parent: ComponentInternalInstance | null = null
   if (!instanceRef.current) {
     const reactiveProps = reactive({ ...props })
     const readonlyProps = readonly(reactiveProps)
@@ -62,6 +64,8 @@ export function useSetup<P> (setup: (props: Readonly<PropsWithChildren<P>>) => a
       setupResult: null!,
       render: null,
       props: reactiveProps,
+      parent: null,
+      provides: null,
       isMounted: false,
       isUnmounted: false,
       [LifecycleHooks.BEFORE_MOUNT]: null,
@@ -73,6 +77,10 @@ export function useSetup<P> (setup: (props: Readonly<PropsWithChildren<P>>) => a
       [LifecycleHooks.RENDER_TRACKED]: null,
       [LifecycleHooks.RENDER_TRIGGERED]: null
     }
+    parent = getCurrentRenderingInstance()
+    setCurrentRenderingInstance(instanceRef.current)
+    instanceRef.current.parent = parent
+    instanceRef.current.provides = parent ? parent.provides : null
     let runner: ReactiveEffect | null = null
     const reset = getCurrentInstance()
     setCurrentInstance(instanceRef.current)
@@ -84,6 +92,7 @@ export function useSetup<P> (setup: (props: Readonly<PropsWithChildren<P>>) => a
       clearAllLifecycles(instanceRef.current)
       instanceRef.current = undefined
       setCurrentInstance(reset)
+      setCurrentRenderingInstance(parent)
       throw err
     }
     setCurrentInstance(reset)
@@ -128,6 +137,7 @@ export function useSetup<P> (setup: (props: Readonly<PropsWithChildren<P>>) => a
   useEffect(() => {
     instanceRef.current!.isMounted = true
     instanceRef.current!.isUnmounted = false
+    setCurrentRenderingInstance(parent)
     invokeLifecycle(instanceRef.current!, LifecycleHooks.MOUNTED)
     return () => {
       invokeLifecycle(instanceRef.current!, LifecycleHooks.BEFORE_UNMOUNT)

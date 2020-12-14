@@ -27,6 +27,9 @@ export interface ComponentInternalInstance<P = any, S = any> {
   render: ((context?: any) => ReactElement | null) | null
   props: UnwrapNestedRefs<PropsWithChildren<P>>
 
+  parent: ComponentInternalInstance | null
+  provides: Record<string | symbol, any> | null
+
   isMounted: boolean
   isUnmounted: boolean
 
