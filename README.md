@@ -140,6 +140,140 @@ export default (props) => {
 }
 ```
 
+## Other usage
+
+### nextTick
+
+Similar to vue 3.
+
+``` jsx
+import { nextTick, ref } from '@tybys/reactivuety'
+export default defineComponent(() => {
+  const a = ref('a')
+  const onClick = () => {
+    a.value = 'b'
+    console.log(document.getElementById('a').innerHTML) // a
+    nextTick(() => {
+      console.log(document.getElementById('a').innerHTML) // b
+    })
+  }
+
+  return () => (<div id="a" onClick={onClick}>{a.value}</div>)
+}) 
+```
+
+### Lifecycles
+
+Similar to vue 3.
+
+``` jsx
+import {
+  onBeforeMount,
+  onBeforeUnmount,
+  onBeforeUpdate,
+  onMounted,
+  onRenderTracked,
+  onRenderTriggered,
+  onUnmounted,
+  onUpdated
+} from '@tybys/reactivuety'
+
+export default defineComponent(() => {
+  onBeforeMount(() => {})
+  onBeforeUnmount(() => {})
+  onBeforeUpdate(() => {})
+  onMounted(() => {})
+  onRenderTracked((e) => {})
+  onRenderTriggered((e) => {})
+  onUnmounted(() => {})
+  onUpdated(() => {})
+  // ...
+}) 
+```
+
+### Async component
+
+Similar to vue 3. But no `suspensible` option.
+
+```jsx
+import { defineAsyncComponent } from '@tybys/reactivuety'
+
+const MyComponent = defineAsyncComponent(() => import('./MyComponent'))
+
+const MyComponent2 = defineAsyncComponent({
+  loader: () => import('./MyComponent'),
+  delay: 200,
+  loadingComponent: () => (<MyLoading />),
+  errorComponent: ({ error }) => (<div>{error?.message}</div>),
+  timeout: Infinity
+  onError: (error, retry, fail) => {}
+})
+```
+
+### Provide / Inject
+
+Similar to vue 3.
+
+In parent:
+
+```jsx
+import { provide, ref } from '@tybys/reactivuety'
+export default defineComponent(() => {
+  const a = ref('')
+  provide('a', a)
+  // ...
+})
+```
+
+In children (can be deep):
+
+```jsx
+import { inject } from '@tybys/reactivuety'
+export default defineComponent(() => {
+  const a = inject('a')
+  // ...
+})
+```
+
+### vModel
+
+Similar to vue 3.
+
+Support `<Input>` / `<Select>` / `<Option>` / `<Textarea>`
+
+Also support modifiers: `vModel_lazy` / `vModel_number` / `vModel_trim`
+
+```jsx
+import { defineComponent, ref, Input } from '@tybys/reactivuety'
+
+export default defineComponent(() => {
+  const inputValue = ref('')
+
+  return () => (<Input vModel={inputValue} />) // <-- pass ref
+  /*
+    be equivalent to
+    return () => (<Input
+      value={inputValue.value} // <-- pass value
+      onInput={(e) => { inputValue.value = e.target.value }}
+    />)
+  */
+})
+```
+
+### react compatible ref
+
+```jsx
+import { ref, onMounted } from '@tybys/reactivuety'
+export default defineComponent(() => {
+  const a = ref(null)
+  onMounted(() => {
+    console.log(a.current) // <div>reactivuety</div>
+  })
+
+  return () => (<div ref={a}>reactivuety</div>)
+})
+```
+
 ## Note
 
 * setup function is only called once, the first argument is readonly props `Proxy`
@@ -152,24 +286,9 @@ export default (props) => {
 
 * lifecycle hooks should be called in setup function.
 
-* `<Select>` `<Option>` `<Textarea>` vModel
+* `inject()` should be called in setup function.
 
-  ```jsx
-  import { defineComponent, ref, Input } from '@tybys/reactivuety'
-
-  export default defineComponent(() => {
-    const inputValue = ref('')
-
-    return () => (<Input vModel={inputValue} />) // <-- pass ref
-    /*
-      be equivalent to
-      return () => (<Input
-        value={inputValue.value} // <-- pass value
-        onInput={(e) => { inputValue.value = e.target.value }}
-      />)
-    */
-  })
-  ```
+* if `provide()` is called outside of setup function, it will provide your variable to root.
 
 * the `onChange` event of `<Input>` and `<Textarea>` is native, not react's.
 
