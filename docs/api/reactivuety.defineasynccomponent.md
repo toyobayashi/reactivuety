@@ -8,7 +8,7 @@
 <b>Signature:</b>
 
 ```typescript
-export declare function defineAsyncComponent<P = any>(source: AsyncComponentLoader<P> | AsyncComponentOptions<P>): React.ComponentType<P>;
+export declare function defineAsyncComponent<P = any>(source: AsyncComponentLoader<P> | AsyncComponentOptions<P>): React.ForwardRefExoticComponent<React.PropsWithChildren<React.PropsWithoutRef<P> & React.RefAttributes<any>>>;
 ```
 
 ## Parameters
@@ -19,5 +19,5 @@ export declare function defineAsyncComponent<P = any>(source: AsyncComponentLoad
 
 <b>Returns:</b>
 
-React.ComponentType&lt;P&gt;
+React.ForwardRefExoticComponent&lt;React.PropsWithChildren&lt;React.PropsWithoutRef&lt;P&gt; &amp; React.RefAttributes&lt;any&gt;&gt;&gt;
 

@@ -8,7 +8,7 @@
 <b>Signature:</b>
 
 ```typescript
-export declare function defineComponent<P>(setup: SetupFunction<P, (context?: any) => ReactElement | null>, name?: string): FunctionComponent<P>;
+export declare function defineComponent<P>(setup: SetupFunction<P, (context?: any) => ReactElement | null>, name?: string): ForwardRefExoticComponent<PropsWithChildren<PropsWithoutRef<P> & RefAttributes<any>>>;
 ```
 
 ## Parameters
@@ -20,5 +20,5 @@ export declare function defineComponent<P>(setup: SetupFunction<P, (context?: an
 
 <b>Returns:</b>
 
-FunctionComponent&lt;P&gt;
+ForwardRefExoticComponent&lt;PropsWithChildren&lt;PropsWithoutRef&lt;P&gt; &amp; RefAttributes&lt;any&gt;&gt;&gt;
 

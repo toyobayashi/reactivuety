@@ -26,7 +26,7 @@ export interface AsyncComponentOptions<P = any> {
 }
 
 /** @public */
-export function defineAsyncComponent<P = any> (source: AsyncComponentLoader<P> | AsyncComponentOptions<P>): React.FunctionComponent<P> {
+export function defineAsyncComponent<P = any> (source: AsyncComponentLoader<P> | AsyncComponentOptions<P>): React.ForwardRefExoticComponent<React.PropsWithChildren<React.PropsWithoutRef<P> & React.RefAttributes<any>>> {
   if (isFunction(source)) {
     source = { loader: source }
   }
@@ -92,8 +92,8 @@ export function defineAsyncComponent<P = any> (source: AsyncComponentLoader<P> |
 
   const AsyncComponentWrapper = defineComponent<P>((props) => {
     if (ResolvedComp) {
-      return () => (
-        <ResolvedComp {...props} />
+      return (ref) => (
+        ref !== undefined ? <ResolvedComp {...props} ref={ref} /> : <ResolvedComp {...props} />
       )
     }
 
@@ -135,9 +135,9 @@ export function defineAsyncComponent<P = any> (source: AsyncComponentLoader<P> |
         error.value = err
       })
 
-    return () => {
+    return (ref) => {
       if (loaded.value && ResolvedComp) {
-        return (<ResolvedComp {...props} />)
+        return ref !== undefined ? (<ResolvedComp {...props} ref={ref} />) : (<ResolvedComp {...props} />)
       } else if (error.value && ErrorComponent) {
         return (<ErrorComponent error={error.value} />)
       } else if (LoadingComponent && !delayed.value) {
