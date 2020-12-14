@@ -1,6 +1,6 @@
 {
   "name": "@tybys/reactivuety",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Use vue composition API with react",
   "typings": "./lib/cjs-modern/index.d.ts",
   "module": "./lib/esm/index.js",
