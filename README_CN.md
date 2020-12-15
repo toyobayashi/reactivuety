@@ -171,6 +171,7 @@ import {
   onBeforeMount,
   onBeforeUnmount,
   onBeforeUpdate,
+  onErrorCaptured,
   onMounted,
   onRenderTracked,
   onRenderTriggered,
@@ -182,6 +183,7 @@ export default defineComponent(() => {
   onBeforeMount(() => {})
   onBeforeUnmount(() => {})
   onBeforeUpdate(() => {})
+  onErrorCaptured((err, type) => {}) // <-- 没有 instance 参数
   onMounted(() => {})
   onRenderTracked((e) => {})
   onRenderTriggered((e) => {})
@@ -241,8 +243,6 @@ export default defineComponent(() => {
 
 支持 `<Input>` / `<Select>` / `<Option>` / `<Textarea>`
 
-修饰符也支持 `vModel_lazy` / `vModel_number` / `vModel_trim`
-
 ```jsx
 import { defineComponent, ref, Input } from '@tybys/reactivuety'
 
@@ -257,6 +257,38 @@ export default defineComponent(() => {
       onInput={(e) => { inputValue.value = e.target.value }}
     />)
   */
+})
+```
+
+修饰符也支持 `vModel_lazy` / `vModel_number` / `vModel_trim`
+
+```jsx
+import { defineComponent, ref, Input } from '@tybys/reactivuety'
+
+export default defineComponent(() => {
+  const inputValue = ref('')
+
+  return () => (<Input vModel_lazy={inputValue} />)
+  /* return () => (
+    <Input
+      value={inputValue.value}
+      onChange={(e) => { inputValue.value = e.target.value }}
+    />
+  )
+})
+```
+
+### 兼容 react 的 ref
+
+```jsx
+import { ref, onMounted } from '@tybys/reactivuety'
+export default defineComponent(() => {
+  const a = ref(null)
+  onMounted(() => {
+    console.log(a.current) // <div>reactivuety</div>
+  })
+
+  return () => (<div ref={a}>reactivuety</div>)
 })
 ```
 
@@ -283,8 +315,6 @@ export default defineComponent(() => {
 * `<Input>` 和 `<Textarea>` 的 `onChange` 事件是原生的，而不是 React 的合成事件。
 
 * 除了 `vModel` 和 `ref`，**不应该** 给任何属性传入响应式对象。
-
-* 从本库导入的 `ref()` 和 `shallowRef()` 返回的引用与 react 的 `useRef()` 具有相同的用法，可以直接传给 JSX 里的 `ref` 属性。
 
 * `ref` 不会自动取值，传到 JSX 里要写 `.value`。
 

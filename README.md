@@ -171,6 +171,7 @@ import {
   onBeforeMount,
   onBeforeUnmount,
   onBeforeUpdate,
+  onErrorCaptured,
   onMounted,
   onRenderTracked,
   onRenderTriggered,
@@ -182,6 +183,7 @@ export default defineComponent(() => {
   onBeforeMount(() => {})
   onBeforeUnmount(() => {})
   onBeforeUpdate(() => {})
+  onErrorCaptured((err, type) => {}) // <-- No instance
   onMounted(() => {})
   onRenderTracked((e) => {})
   onRenderTriggered((e) => {})
@@ -241,8 +243,6 @@ Similar to vue 3.
 
 Support `<Input>` / `<Select>` / `<Option>` / `<Textarea>`
 
-Also support modifiers: `vModel_lazy` / `vModel_number` / `vModel_trim`
-
 ```jsx
 import { defineComponent, ref, Input } from '@tybys/reactivuety'
 
@@ -257,6 +257,24 @@ export default defineComponent(() => {
       onInput={(e) => { inputValue.value = e.target.value }}
     />)
   */
+})
+```
+
+Also support modifiers: `vModel_lazy` / `vModel_number` / `vModel_trim`
+
+```jsx
+import { defineComponent, ref, Input } from '@tybys/reactivuety'
+
+export default defineComponent(() => {
+  const inputValue = ref('')
+
+  return () => (<Input vModel_lazy={inputValue} />)
+  /* return () => (
+    <Input
+      value={inputValue.value}
+      onChange={(e) => { inputValue.value = e.target.value }}
+    />
+  )
 })
 ```
 
@@ -292,4 +310,4 @@ export default defineComponent(() => {
 
 * the `onChange` event of `<Input>` and `<Textarea>` is native, not react's.
 
-* the ref object returned by `ref()` and `shallowRef()` in this package can pass to JSX ref prop directly.
+* Import `ref` `shallowRef` `computed` from this package, and other reactive API from `@vue/reactivity`.
