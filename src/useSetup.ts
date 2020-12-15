@@ -75,7 +75,8 @@ export function useSetup<P> (setup: (props: Readonly<PropsWithChildren<P>>) => a
       [LifecycleHooks.BEFORE_UNMOUNT]: null,
       [LifecycleHooks.UNMOUNTED]: null,
       [LifecycleHooks.RENDER_TRACKED]: null,
-      [LifecycleHooks.RENDER_TRIGGERED]: null
+      [LifecycleHooks.RENDER_TRIGGERED]: null,
+      [LifecycleHooks.ERROR_CAPTURED]: null
     }
     parent = getCurrentRenderingInstance()
     setCurrentRenderingInstance(instanceRef.current)

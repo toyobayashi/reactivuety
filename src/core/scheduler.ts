@@ -1,4 +1,4 @@
-import { callWithErrorHandling } from './errorHandling'
+import { callWithErrorHandling, ErrorCodes } from './errorHandling'
 import { isArray } from '@vue/shared'
 
 export interface SchedulerJob {
@@ -192,7 +192,7 @@ function flushJobs (): void {
     for (flushIndex = 0; flushIndex < queue.length; flushIndex++) {
       const job = queue[flushIndex]
       if (job) {
-        callWithErrorHandling(job)
+        callWithErrorHandling(job, null, ErrorCodes.SCHEDULER)
       }
     }
   } finally {

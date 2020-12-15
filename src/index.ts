@@ -26,20 +26,32 @@ export {
 } from './core/apiInject'
 
 export {
+  ErrorTypes,
+  ErrorCodes,
+  setGlobalErrorHandler
+} from './core/errorHandling'
+
+export {
   nextTick
 } from './core/scheduler'
+
+export {
+  LifecycleHooks
+} from './core/component'
 
 export {
   onBeforeMount,
   onBeforeUnmount,
   onBeforeUpdate,
+  onErrorCaptured,
   onMounted,
   onRenderTracked,
   onRenderTriggered,
   onUnmounted,
   onUpdated,
   WrappedHook,
-  DebuggerHook
+  DebuggerHook,
+  ErrorCapturedHook
 } from './core/apiLifecycle'
 
 export {

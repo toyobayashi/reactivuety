@@ -6,6 +6,13 @@
 
 Use vue composition API with react.
 
+## Enumerations
+
+|  Enumeration | Description |
+|  --- | --- |
+|  [ErrorCodes](./reactivuety.errorcodes.md) |  |
+|  [LifecycleHooks](./reactivuety.lifecyclehooks.md) |  |
+
 ## Functions
 
 |  Function | Description |
@@ -25,6 +32,7 @@ Use vue composition API with react.
 |  [ref(value)](./reactivuety.ref.md) |  |
 |  [ref(value)](./reactivuety.ref_1.md) |  |
 |  [ref()](./reactivuety.ref_2.md) |  |
+|  [setGlobalErrorHandler(handler)](./reactivuety.setglobalerrorhandler.md) |  |
 |  [shallowRef(value)](./reactivuety.shallowref.md) |  |
 |  [shallowRef(value)](./reactivuety.shallowref_1.md) |  |
 |  [shallowRef()](./reactivuety.shallowref_2.md) |  |
@@ -56,6 +64,7 @@ Use vue composition API with react.
 |  [onBeforeMount](./reactivuety.onbeforemount.md) |  |
 |  [onBeforeUnmount](./reactivuety.onbeforeunmount.md) |  |
 |  [onBeforeUpdate](./reactivuety.onbeforeupdate.md) |  |
+|  [onErrorCaptured](./reactivuety.onerrorcaptured.md) |  |
 |  [onMounted](./reactivuety.onmounted.md) |  |
 |  [onRenderTracked](./reactivuety.onrendertracked.md) |  |
 |  [onRenderTriggered](./reactivuety.onrendertriggered.md) |  |
@@ -72,6 +81,8 @@ Use vue composition API with react.
 |  [AsyncComponentLoader](./reactivuety.asynccomponentloader.md) |  |
 |  [AsyncComponentResolveResult](./reactivuety.asynccomponentresolveresult.md) |  |
 |  [DebuggerHook](./reactivuety.debuggerhook.md) |  |
+|  [ErrorCapturedHook](./reactivuety.errorcapturedhook.md) |  |
+|  [ErrorTypes](./reactivuety.errortypes.md) |  |
 |  [InvalidateCbRegistrator](./reactivuety.invalidatecbregistrator.md) |  |
 |  [MapSources](./reactivuety.mapsources.md) |  |
 |  [SetupFunction](./reactivuety.setupfunction.md) |  |

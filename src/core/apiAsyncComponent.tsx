@@ -1,8 +1,9 @@
 import { isFunction, isObject } from '@vue/shared'
 import { defineComponent } from './apiDefineComponent'
 import { ref } from '../ref'
-import { handleError } from './errorHandling'
+import { ErrorCodes, handleError } from './errorHandling'
 import * as React from 'react'
+import { getCurrentInstance } from './component'
 
 /** @public */
 export type AsyncComponentResolveResult<P = any> = React.ComponentType<P> | { default: React.ComponentType<P> } // es modules
@@ -100,7 +101,9 @@ export function defineAsyncComponent<P = any> (source: AsyncComponentLoader<P> |
     const onError = (err: Error): void => {
       pendingRequest = null
       handleError(
-        err
+        err,
+        getCurrentInstance(),
+        ErrorCodes.ASYNC_COMPONENT_LOADER
       )
     }
 

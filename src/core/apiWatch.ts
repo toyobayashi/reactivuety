@@ -27,7 +27,8 @@ import {
 } from './component'
 import {
   callWithErrorHandling,
-  callWithAsyncErrorHandling
+  callWithAsyncErrorHandling,
+  ErrorCodes
 } from './errorHandling'
 
 const queuePostRenderEffect = queuePostFlushCb
@@ -149,14 +150,14 @@ function doWatch (
         } else if (isReactive(s)) {
           return traverse(s)
         } else if (isFunction(s)) {
-          return callWithErrorHandling(s)
+          return callWithErrorHandling(s, instance, ErrorCodes.WATCH_GETTER)
         }
       })
   } else if (isFunction(source)) {
     if (cb) {
       // getter with cb
       getter = () =>
-        callWithErrorHandling(source)
+        callWithErrorHandling(source, instance, ErrorCodes.WATCH_GETTER)
     } else {
       // no cb -> simple effect
       getter = () => {
@@ -169,6 +170,8 @@ function doWatch (
         }
         return callWithErrorHandling(
           source,
+          instance,
+          ErrorCodes.WATCH_CALLBACK,
           [onInvalidate]
         )
       }
@@ -185,7 +188,7 @@ function doWatch (
   let cleanup: () => void
   const onInvalidate: InvalidateCbRegistrator = (fn: () => void) => {
     cleanup = runner.options.onStop = () => {
-      callWithErrorHandling(fn)
+      callWithErrorHandling(fn, instance, ErrorCodes.WATCH_CLEANUP)
     }
   }
 
@@ -203,7 +206,7 @@ function doWatch (
         if (cleanup) {
           cleanup()
         }
-        callWithAsyncErrorHandling(cb, [
+        callWithAsyncErrorHandling(cb, instance, ErrorCodes.WATCH_CALLBACK, [
           newValue,
           // pass undefined as the old value when it's changed for the first time
           oldValue === INITIAL_WATCHER_VALUE ? undefined : oldValue,

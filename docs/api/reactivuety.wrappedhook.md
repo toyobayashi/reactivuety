@@ -8,5 +8,5 @@
 <b>Signature:</b>
 
 ```typescript
-export declare type WrappedHook = (...args: any[]) => any[] | undefined;
+export declare type WrappedHook = (...args: any[]) => any;
 ```

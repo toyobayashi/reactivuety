@@ -4,7 +4,7 @@ import { LifecycleHooks, ComponentInternalInstance, currentInstance, setCurrentI
 import { callWithAsyncErrorHandling } from './errorHandling'
 
 /** @public */
-export type WrappedHook = (...args: any[]) => any[] | undefined
+export type WrappedHook = (...args: any[]) => any
 
 export function injectHook<
   H extends { (...args: any[]): any; __weh?: WrappedHook }
@@ -30,7 +30,7 @@ export function injectHook<
         // This assumes the hook does not synchronously trigger other hooks, which
         // can only be false when the user does something really funky.
         setCurrentInstance(target)
-        const res = callWithAsyncErrorHandling(hook, args)
+        const res = callWithAsyncErrorHandling(hook, target, type, args)
         setCurrentInstance(null)
         resetTracking()
         return res
@@ -64,9 +64,13 @@ export const onUnmounted = createHook(LifecycleHooks.UNMOUNTED)
 /** @public */
 export type DebuggerHook = (e: DebuggerEvent) => void
 /** @public */
+export type ErrorCapturedHook = (err: unknown, info: string) => boolean | undefined
+/** @public */
 export const onRenderTriggered = createHook<DebuggerHook>(LifecycleHooks.RENDER_TRIGGERED)
 /** @public */
 export const onRenderTracked = createHook<DebuggerHook>(LifecycleHooks.RENDER_TRACKED)
+/** @public */
+export const onErrorCaptured = createHook<ErrorCapturedHook>(LifecycleHooks.ERROR_CAPTURED)
 
 export function invokeLifecycle (target: ComponentInternalInstance, type: LifecycleHooks, arg?: any): void {
   const methods = target[type]
@@ -83,7 +87,8 @@ export function clearAllLifecycles (target: ComponentInternalInstance): void {
     LifecycleHooks.BEFORE_UNMOUNT,
     LifecycleHooks.UNMOUNTED,
     LifecycleHooks.RENDER_TRIGGERED,
-    LifecycleHooks.RENDER_TRACKED
+    LifecycleHooks.RENDER_TRACKED,
+    LifecycleHooks.ERROR_CAPTURED
   ]
 
   for (let i = 0; i < lifecycles.length; i++) {

@@ -1,8 +1,10 @@
 import { DebuggerEvent, ReactiveEffect, Ref, UnwrapRef } from '@vue/reactivity'
 import { PropsWithChildren, ReactElement } from 'react'
+import { ErrorTypes } from './errorHandling'
 
 type UnwrapNestedRefs<T> = T extends Ref ? T : UnwrapRef<T>
 
+/** @public */
 export const enum LifecycleHooks {
   // BEFORE_CREATE = 'bc',
   // CREATED = 'c',
@@ -16,7 +18,7 @@ export const enum LifecycleHooks {
   // ACTIVATED = 'a',
   RENDER_TRIGGERED = 'rtg',
   RENDER_TRACKED = 'rtc',
-  // ERROR_CAPTURED = 'ec'
+  ERROR_CAPTURED = 'ec'
 }
 
 type LifecycleHook<T extends (...args: any[]) => any> = T[] | null
@@ -65,6 +67,10 @@ export interface ComponentInternalInstance<P = any, S = any> {
    * @internal
    */
   [LifecycleHooks.RENDER_TRIGGERED]: LifecycleHook<(e: DebuggerEvent) => void>
+  /**
+   * @internal
+   */
+  [LifecycleHooks.ERROR_CAPTURED]: LifecycleHook<(err: unknown, type: ErrorTypes) => boolean | undefined>
 }
 
 export let currentInstance: ComponentInternalInstance | null = null
