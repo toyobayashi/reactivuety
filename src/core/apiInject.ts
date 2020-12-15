@@ -1,7 +1,7 @@
 import { isFunction } from '@vue/shared'
 import { ComponentInternalInstance, getCurrentInstance } from './component'
 
-export const globalProvides: Record<string | symbol, any> = {}
+export const globalProvides: Record<string | symbol, any> = Object.create(null)
 
 export let currentRenderingInstance: ComponentInternalInstance | null = null
 
