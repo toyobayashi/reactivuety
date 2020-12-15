@@ -6,5 +6,6 @@ module.exports = {
     react: 'React',
     '@vue/reactivity': 'VueReactivity'
   },
-  resolveOnly: [/^(?!(react)|(@vue\/reactivity)).*?$/]
+  resolveOnly: [/^(?!(react)|(@vue\/reactivity)).*?$/],
+  bundleOnly: ['umd', 'cjs', 'esm']
 }

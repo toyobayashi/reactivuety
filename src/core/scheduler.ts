@@ -1,4 +1,4 @@
-import { callWithErrorHandling, ErrorCodes } from './errorHandling'
+import { ErrorCodes, callWithErrorHandling } from './errorHandling'
 import { isArray } from '@vue/shared'
 
 export interface SchedulerJob {
@@ -44,6 +44,9 @@ const resolvedPromise: Promise<any> = Promise.resolve()
 let currentFlushPromise: Promise<void> | null = null
 
 let currentPreFlushParentJob: SchedulerJob | null = null
+
+const RECURSION_LIMIT = 100
+type CountMap = Map<SchedulerJob | SchedulerCb, number>
 
 /** @public */
 export function nextTick (
@@ -121,29 +124,35 @@ export function queuePostFlushCb (cb: SchedulerCbs): void {
 }
 
 export function flushPreFlushCbs (
+  seen?: CountMap,
   parentJob: SchedulerJob | null = null
 ): void {
   if (pendingPreFlushCbs.length) {
     currentPreFlushParentJob = parentJob
     activePreFlushCbs = [...new Set(pendingPreFlushCbs)]
     pendingPreFlushCbs.length = 0
-
+    if (__DEV__) {
+      seen = seen ?? new Map()
+    }
     for (
       preFlushIndex = 0;
       preFlushIndex < activePreFlushCbs.length;
       preFlushIndex++
     ) {
+      if (__DEV__) {
+        checkRecursiveUpdates(seen!, activePreFlushCbs[preFlushIndex])
+      }
       activePreFlushCbs[preFlushIndex]()
     }
     activePreFlushCbs = null
     preFlushIndex = 0
     currentPreFlushParentJob = null
     // recursively flush until it drains
-    flushPreFlushCbs(parentJob)
+    flushPreFlushCbs(seen, parentJob)
   }
 }
 
-export function flushPostFlushCbs (): void {
+export function flushPostFlushCbs (seen?: CountMap): void {
   if (pendingPostFlushCbs.length) {
     const deduped = [...new Set(pendingPostFlushCbs)]
     pendingPostFlushCbs.length = 0
@@ -155,6 +164,9 @@ export function flushPostFlushCbs (): void {
     }
 
     activePostFlushCbs = deduped
+    if (__DEV__) {
+      seen = seen ?? new Map()
+    }
 
     activePostFlushCbs.sort((a, b) => getId(a) - getId(b))
 
@@ -163,6 +175,9 @@ export function flushPostFlushCbs (): void {
       postFlushIndex < activePostFlushCbs.length;
       postFlushIndex++
     ) {
+      if (__DEV__) {
+        checkRecursiveUpdates(seen!, activePostFlushCbs[postFlushIndex])
+      }
       activePostFlushCbs[postFlushIndex]()
     }
     activePostFlushCbs = null
@@ -173,11 +188,14 @@ export function flushPostFlushCbs (): void {
 const getId = (job: SchedulerJob | SchedulerCb): number =>
   job.id == null ? Infinity : job.id
 
-function flushJobs (): void {
+function flushJobs (seen?: CountMap): void {
   isFlushPending = false
   isFlushing = true
+  if (__DEV__) {
+    seen = seen ?? new Map()
+  }
 
-  flushPreFlushCbs()
+  flushPreFlushCbs(seen)
 
   // Sort queue before flush.
   // This ensures that:
@@ -192,6 +210,9 @@ function flushJobs (): void {
     for (flushIndex = 0; flushIndex < queue.length; flushIndex++) {
       const job = queue[flushIndex]
       if (job) {
+        if (__DEV__) {
+          checkRecursiveUpdates(seen!, job)
+        }
         callWithErrorHandling(job, null, ErrorCodes.SCHEDULER)
       }
     }
@@ -199,14 +220,33 @@ function flushJobs (): void {
     flushIndex = 0
     queue.length = 0
 
-    flushPostFlushCbs()
+    flushPostFlushCbs(seen)
 
     isFlushing = false
     currentFlushPromise = null
     // some postFlushCb queued jobs!
     // keep flushing until it drains.
     if (queue.length || pendingPostFlushCbs.length) {
-      flushJobs()
+      flushJobs(seen)
+    }
+  }
+}
+
+function checkRecursiveUpdates (seen: CountMap, fn: SchedulerJob | SchedulerCb): void {
+  if (!seen.has(fn)) {
+    seen.set(fn, 1)
+  } else {
+    const count = seen.get(fn)!
+    if (count > RECURSION_LIMIT) {
+      throw new Error(
+        'Maximum recursive updates exceeded. ' +
+          'This means you have a reactive effect that is mutating its own ' +
+          'dependencies and thus recursively triggering itself. Possible sources ' +
+          'include component template, render function, updated hook or ' +
+          'watcher source function.'
+      )
+    } else {
+      seen.set(fn, count + 1)
     }
   }
 }

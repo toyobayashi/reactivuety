@@ -106,7 +106,18 @@ export function handleError (
 }
 
 function logError (
-  err: unknown
+  err: unknown,
+  throwInDev = true
 ): void {
-  console.error(err)
+  if (__DEV__) {
+    // crash in dev by default so it's more noticeable
+    if (throwInDev) {
+      throw err
+    } else {
+      console.error(err)
+    }
+  } else {
+    // recover in prod to reduce the impact on end-user
+    console.error(err)
+  }
 }

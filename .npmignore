@@ -15,3 +15,6 @@ gulpfile.*
 tsgo.config*
 /example
 /src
+
+/lib
+.github

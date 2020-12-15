@@ -41,6 +41,12 @@ export function injectHook<
       hooks.push(wrappedHook)
     }
     return wrappedHook
+  } else if (__DEV__) {
+    console.warn(
+      `Lifecycle hook "${type}" is called when there is no active component instance to be ` +
+        'associated with. ' +
+        'Lifecycle injection APIs can only be used during execution of setup().'
+    )
   }
   return null
 }

@@ -1,10 +1,12 @@
 {
   "name": "@tybys/reactivuety",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "Use vue composition API with react",
-  "typings": "./lib/cjs-modern/index.d.ts",
-  "module": "./lib/esm/index.js",
-  "main": "./lib/cjs-modern/index.js",
+  "jsdelivr": "./dist/reactivuety.js",
+  "unpkg": "./dist/reactivuety.js",
+  "typings": "./dist/reactivuety.d.ts",
+  "module": "./dist/reactivuety.esm.js",
+  "main": "./index.js",
   "scripts": {
     "prepare": "npm run build",
     "cjs": "tsgo cjs",
@@ -32,26 +34,25 @@
     "access": "public"
   },
   "devDependencies": {
-    "@tybys/tsgo": "^0.5.0",
+    "@tybys/tsgo": "^0.7.4",
     "@types/lodash": "^4.14.165",
     "@types/marked": "^1.2.1",
     "@types/node": "^12.12.36",
     "@types/react": "^17.0.0",
-    "@typescript-eslint/eslint-plugin": "^4.9.0",
-    "@typescript-eslint/parser": "^4.9.0",
+    "@typescript-eslint/eslint-plugin": "^4.10.0",
+    "@typescript-eslint/parser": "^4.10.0",
     "eslint": "^7.15.0",
     "eslint-config-standard-with-typescript": "^19.0.1",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^5.0.0",
-    "rollup": "^2.34.2",
+    "rollup": "^2.35.1",
+    "tslib": "2.0.3",
     "typescript": "4.0.5"
   },
   "dependencies": {
-    "@vue/shared": "^3.0.0",
-    "@vue/reactivity": "^3.0.0",
-    "tslib": "2.0.3"
+    "@vue/reactivity": "3.0.4"
   },
   "peerDependencies": {
     "react": ">= 16.8.0"
