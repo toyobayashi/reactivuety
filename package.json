@@ -1,11 +1,11 @@
 {
   "name": "@tybys/reactivuety",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "description": "Use vue composition API with react",
   "jsdelivr": "./dist/reactivuety.js",
   "unpkg": "./dist/reactivuety.js",
   "typings": "./dist/reactivuety.d.ts",
-  "module": "./dist/reactivuety.esm.js",
+  "module": "./dist/reactivuety.esm-bundler.js",
   "main": "./index.js",
   "scripts": {
     "prepare": "npm run build",
@@ -19,7 +19,14 @@
     "lint": "tsgo lint",
     "fix": "tsgo fix"
   },
-  "keywords": [],
+  "keywords": [
+    "react",
+    "vue",
+    "react-in-vue",
+    "vue-composition-api",
+    "reactivity",
+    "use-setup"
+  ],
   "author": "toyobayashi",
   "repository": {
     "type": "git",
@@ -34,7 +41,7 @@
     "access": "public"
   },
   "devDependencies": {
-    "@tybys/tsgo": "^0.7.5",
+    "@tybys/tsgo": "^0.8.0",
     "@types/lodash": "^4.14.165",
     "@types/marked": "^1.2.1",
     "@types/node": "^12.12.36",

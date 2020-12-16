@@ -125,7 +125,7 @@ export function watch<T = any, Immediate extends Readonly<boolean> = false> (
   cb: any,
   options?: WatchOptions<Immediate>
 ): WatchStopHandle {
-  if (__DEV__ && !isFunction(cb)) {
+  if (__TSGO_DEV__ && !isFunction(cb)) {
     console.warn(
       '`watch(fn, options?)` signature has been moved to a separate API. ' +
         'Use `watchEffect(fn, options?)` instead. `watch` now only ' +
@@ -141,7 +141,7 @@ function doWatch (
   { immediate, deep, flush, onTrack, onTrigger }: WatchOptions = EMPTY_OBJ,
   instance = currentInstance
 ): WatchStopHandle {
-  if (__DEV__ && !cb) {
+  if (__TSGO_DEV__ && !cb) {
     if (immediate !== undefined) {
       console.warn(
         'watch() "immediate" option is only respected when using the ' +
@@ -183,7 +183,7 @@ function doWatch (
         } else if (isFunction(s)) {
           return callWithErrorHandling(s, instance, ErrorCodes.WATCH_GETTER)
         } else {
-          __DEV__ && warnInvalidSource(s)
+          __TSGO_DEV__ && warnInvalidSource(s)
         }
       })
   } else if (isFunction(source)) {
@@ -211,7 +211,7 @@ function doWatch (
     }
   } else {
     getter = NOOP
-    __DEV__ && warnInvalidSource(source)
+    __TSGO_DEV__ && warnInvalidSource(source)
   }
 
   if (cb && deep) {

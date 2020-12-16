@@ -74,7 +74,7 @@ export function defineAsyncComponent<P = any> (source: AsyncComponentLoader<P> |
         if (thisRequest !== pendingRequest && pendingRequest) {
           return pendingRequest
         }
-        if (__DEV__ && !comp) {
+        if (__TSGO_DEV__ && !comp) {
           console.warn(
             'Async component loader resolved to undefined. ' +
               'If you are using retry(), make sure to return its return value.'
@@ -87,7 +87,7 @@ export function defineAsyncComponent<P = any> (source: AsyncComponentLoader<P> |
         ) {
           comp = comp.default
         }
-        if (__DEV__ && comp && !isObject(comp) && !isFunction(comp)) {
+        if (__TSGO_DEV__ && comp && !isObject(comp) && !isFunction(comp)) {
           // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
           throw new Error(`Invalid async component load result: ${comp}`)
         }

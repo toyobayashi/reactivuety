@@ -109,7 +109,7 @@ function logError (
   err: unknown,
   throwInDev = true
 ): void {
-  if (__DEV__) {
+  if (__TSGO_DEV__) {
     // crash in dev by default so it's more noticeable
     if (throwInDev) {
       throw err

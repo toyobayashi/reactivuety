@@ -298,7 +298,7 @@ function useVModelSelect<
       const isMultiple = props.multiple
       const val = usingVModel?.value ?? value ?? defaultValue ?? ''
       if (isMultiple && !Array.isArray(val) && !isSet(val)) {
-        __DEV__ &&
+        __TSGO_DEV__ &&
           console.warn(
             '<select multiple v-model> expects an Array or Set value for its binding, ' +
               `but got ${Object.prototype.toString.call(value).slice(8, -1)}.`

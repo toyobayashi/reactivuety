@@ -78,10 +78,10 @@ export function inject (
       return treatDefaultAsFactory && isFunction(defaultValue)
         ? defaultValue()
         : defaultValue
-    } else if (__DEV__) {
+    } else if (__TSGO_DEV__) {
       console.warn(`injection "${String(key)}" not found.`)
     }
-  } else if (__DEV__) {
+  } else if (__TSGO_DEV__) {
     console.warn('inject() can only be used inside setup().')
   }
 }

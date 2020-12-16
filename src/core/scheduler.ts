@@ -131,7 +131,7 @@ export function flushPreFlushCbs (
     currentPreFlushParentJob = parentJob
     activePreFlushCbs = [...new Set(pendingPreFlushCbs)]
     pendingPreFlushCbs.length = 0
-    if (__DEV__) {
+    if (__TSGO_DEV__) {
       seen = seen ?? new Map()
     }
     for (
@@ -139,7 +139,7 @@ export function flushPreFlushCbs (
       preFlushIndex < activePreFlushCbs.length;
       preFlushIndex++
     ) {
-      if (__DEV__) {
+      if (__TSGO_DEV__) {
         checkRecursiveUpdates(seen!, activePreFlushCbs[preFlushIndex])
       }
       activePreFlushCbs[preFlushIndex]()
@@ -164,7 +164,7 @@ export function flushPostFlushCbs (seen?: CountMap): void {
     }
 
     activePostFlushCbs = deduped
-    if (__DEV__) {
+    if (__TSGO_DEV__) {
       seen = seen ?? new Map()
     }
 
@@ -175,7 +175,7 @@ export function flushPostFlushCbs (seen?: CountMap): void {
       postFlushIndex < activePostFlushCbs.length;
       postFlushIndex++
     ) {
-      if (__DEV__) {
+      if (__TSGO_DEV__) {
         checkRecursiveUpdates(seen!, activePostFlushCbs[postFlushIndex])
       }
       activePostFlushCbs[postFlushIndex]()
@@ -191,7 +191,7 @@ const getId = (job: SchedulerJob | SchedulerCb): number =>
 function flushJobs (seen?: CountMap): void {
   isFlushPending = false
   isFlushing = true
-  if (__DEV__) {
+  if (__TSGO_DEV__) {
     seen = seen ?? new Map()
   }
 
@@ -210,7 +210,7 @@ function flushJobs (seen?: CountMap): void {
     for (flushIndex = 0; flushIndex < queue.length; flushIndex++) {
       const job = queue[flushIndex]
       if (job) {
-        if (__DEV__) {
+        if (__TSGO_DEV__) {
           checkRecursiveUpdates(seen!, job)
         }
         callWithErrorHandling(job, null, ErrorCodes.SCHEDULER)
