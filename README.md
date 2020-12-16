@@ -105,7 +105,7 @@ No bundler:
         return { __html: marked(input.value) };
       });
 
-      var update = debounce((e) => {
+      var update = debounce(function (e) {
         input.value = e.target.value;
       }, 300);
 
@@ -206,7 +206,7 @@ export default (props) => {
 Similar to vue 3.
 
 ``` jsx
-import { nextTick, ref } from '@tybys/reactivuety'
+import { nextTick, ref, defineComponent } from '@tybys/reactivuety'
 export default defineComponent(() => {
   const a = ref('a')
   const onClick = () => {
@@ -235,7 +235,8 @@ import {
   onRenderTracked,
   onRenderTriggered,
   onUnmounted,
-  onUpdated
+  onUpdated,
+  defineComponent
 } from '@tybys/reactivuety'
 
 export default defineComponent(() => {
@@ -278,7 +279,7 @@ Similar to vue 3.
 In parent:
 
 ```jsx
-import { provide, ref } from '@tybys/reactivuety'
+import { provide, ref, defineComponent } from '@tybys/reactivuety'
 export default defineComponent(() => {
   const a = ref('')
   provide('a', a)
@@ -289,7 +290,7 @@ export default defineComponent(() => {
 In children (can be deep):
 
 ```jsx
-import { inject } from '@tybys/reactivuety'
+import { inject, defineComponent } from '@tybys/reactivuety'
 export default defineComponent(() => {
   const a = inject('a')
   // ...
@@ -340,7 +341,7 @@ export default defineComponent(() => {
 ### react compatible ref
 
 ```jsx
-import { ref, onMounted } from '@tybys/reactivuety'
+import { ref, onMounted, defineComponent } from '@tybys/reactivuety'
 export default defineComponent(() => {
   const a = ref(null)
   onMounted(() => {

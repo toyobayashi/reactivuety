@@ -73,7 +73,7 @@
           return { __html: marked(input.value) };
         });
 
-        var update = debounce((e) => {
+        var update = debounce(function (e) {
           input.value = e.target.value;
         }, 300);
 
@@ -81,8 +81,8 @@
           return h('div', { id: 'editor' },
             h(Textarea, { value: input.value, onInput: update }),
             h('div', { dangerouslySetInnerHTML: compiledMarkdown.value })
-          )
-        }
+          );
+        };
       });
       ReactDOM.render(h(MarkdownView), document.body);
     })();

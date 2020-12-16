@@ -102,7 +102,7 @@ export default defineComponent((props) => {
         return { __html: marked(input.value) };
       });
 
-      var update = debounce((e) => {
+      var update = debounce(function (e) {
         input.value = e.target.value;
       }, 300);
 
@@ -203,7 +203,7 @@ export default (props) => {
 与 vue 3 类似。
 
 ``` jsx
-import { nextTick, ref } from '@tybys/reactivuety'
+import { nextTick, ref, defineComponent } from '@tybys/reactivuety'
 export default defineComponent(() => {
   const a = ref('a')
   const onClick = () => {
@@ -232,7 +232,8 @@ import {
   onRenderTracked,
   onRenderTriggered,
   onUnmounted,
-  onUpdated
+  onUpdated,
+  defineComponent
 } from '@tybys/reactivuety'
 
 export default defineComponent(() => {
@@ -275,7 +276,7 @@ const MyComponent2 = defineAsyncComponent({
 父组件：
 
 ```jsx
-import { provide, ref } from '@tybys/reactivuety'
+import { provide, ref, defineComponent } from '@tybys/reactivuety'
 export default defineComponent(() => {
   const a = ref('')
   provide('a', a)
@@ -286,7 +287,7 @@ export default defineComponent(() => {
 子组件（可以是非父子）：
 
 ```jsx
-import { inject } from '@tybys/reactivuety'
+import { inject, defineComponent } from '@tybys/reactivuety'
 export default defineComponent(() => {
   const a = inject('a')
   // ...
@@ -337,7 +338,7 @@ export default defineComponent(() => {
 ### 兼容 react 的 ref
 
 ```jsx
-import { ref, onMounted } from '@tybys/reactivuety'
+import { ref, onMounted, defineComponent } from '@tybys/reactivuety'
 export default defineComponent(() => {
   const a = ref(null)
   onMounted(() => {
