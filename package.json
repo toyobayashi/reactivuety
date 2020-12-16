@@ -1,6 +1,6 @@
 {
   "name": "@tybys/reactivuety",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "Use vue composition API with react",
   "jsdelivr": "./dist/reactivuety.js",
   "unpkg": "./dist/reactivuety.js",
@@ -34,7 +34,7 @@
     "access": "public"
   },
   "devDependencies": {
-    "@tybys/tsgo": "^0.7.4",
+    "@tybys/tsgo": "^0.7.5",
     "@types/lodash": "^4.14.165",
     "@types/marked": "^1.2.1",
     "@types/node": "^12.12.36",

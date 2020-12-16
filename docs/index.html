@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Markdown Example</title>
+  <style>
+    html,
+    body {
+      margin: 0;
+      height: 100%;
+      font-family: "Helvetica Neue", Arial, sans-serif;
+    }
+
+    #editor {
+      height: 100%;
+      color: #333;
+    }
+
+    #editor textarea,
+    #editor div {
+      display: inline-block;
+      width: 49%;
+      height: 100%;
+      vertical-align: top;
+      box-sizing: border-box;
+      padding: 0 20px;
+    }
+
+    #editor textarea {
+      border: none;
+      border-right: 1px solid #ccc;
+      resize: none;
+      outline: none;
+      background-color: #f6f6f6;
+      font-size: 14px;
+      font-family: "Monaco", courier, monospace;
+      padding: 20px;
+    }
+
+    #editor code {
+      color: #f66;
+    }
+  </style>
+</head>
+<body>
+  <!-- react -->
+  <script src="https://cdn.jsdelivr.net/npm/react/umd/react.production.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/react-dom/umd/react-dom.production.min.js"></script>
+
+  <!-- lodash -->
+  <script src="https://cdn.jsdelivr.net/npm/lodash/lodash.min.js"></script>
+  <!-- marked -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/lib/marked.min.js"></script>
+
+  <!-- @vue/reactivity -->
+  <script src="https://cdn.jsdelivr.net/npm/@vue/reactivity@3.0.4/dist/reactivity.global.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tybys/reactivuety/dist/reactivuety.min.js"></script>
+  <!-- <script src="../dist/reactivuety.js"></script> -->
+  <script>
+    (function () {
+      var defineComponent = reactivuety.defineComponent;
+      var ref = reactivuety.ref;
+      var computed = reactivuety.computed;
+      var Textarea = reactivuety.Textarea;
+      var h = React.createElement;
+      var debounce = _.debounce;
+
+      var MarkdownView = defineComponent(function () {
+        var input = ref('# hello');
+
+        var compiledMarkdown = computed(function () {
+          return { __html: marked(input.value) };
+        });
+
+        var update = debounce((e) => {
+          input.value = e.target.value;
+        }, 300);
+
+        return function () {
+          return h('div', { id: 'editor' },
+            h(Textarea, { value: input.value, onInput: update }),
+            h('div', { dangerouslySetInnerHTML: compiledMarkdown.value })
+          )
+        }
+      });
+      ReactDOM.render(h(MarkdownView), document.body);
+    })();
+  </script>
+</body>
+</html>
