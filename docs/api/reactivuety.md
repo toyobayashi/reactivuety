@@ -73,6 +73,7 @@ Use vue composition API with react.
 |  [Option\_2](./reactivuety.option_2.md) |  |
 |  [Select](./reactivuety.select.md) |  |
 |  [Textarea](./reactivuety.textarea.md) |  |
+|  [version](./reactivuety.version.md) |  |
 
 ## Type Aliases
 

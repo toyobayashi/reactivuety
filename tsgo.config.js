@@ -7,5 +7,8 @@ module.exports = {
     '@vue/reactivity': 'VueReactivity'
   },
   resolveOnly: [/^(?!(react)|(@vue\/reactivity)).*?$/],
-  bundleOnly: ['umd', 'cjs', 'esm']
+  bundleOnly: ['umd', 'cjs', 'esm'],
+  bundleDefine: {
+    __VERSION__: JSON.stringify(require('./package.json').version)
+  }
 }

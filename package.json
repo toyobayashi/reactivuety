@@ -1,6 +1,6 @@
 {
   "name": "@tybys/reactivuety",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "Use vue composition API with react",
   "jsdelivr": "./dist/reactivuety.js",
   "unpkg": "./dist/reactivuety.js",

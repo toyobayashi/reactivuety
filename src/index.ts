@@ -100,3 +100,6 @@ export {
   VModelPropsWithLazy,
   CheckboxProps
 } from './dom/useVModel'
+
+/** @public */
+export const version: string = __VERSION__
