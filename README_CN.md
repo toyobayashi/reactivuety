@@ -4,6 +4,19 @@
 
 [API 文档](https://github.com/toyobayashi/reactivuety/blob/main/docs/api/index.md)
 
+## 安装
+
+```
+npm install @tybys/reactivuety
+```
+
+或
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/react/umd/react.production.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@vue/reactivity@3.0.4/dist/reactivity.global.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tybys/reactivuety/dist/reactivuety.min.js"></script>
+```
 ## 与 Vue 的写法对比
 
 Markdown 例子：
@@ -60,6 +73,49 @@ export default defineComponent((props) => {
     </div>
   )
 })
+```
+
+无打包构建：
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/react/umd/react.production.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/react-dom/umd/react-dom.production.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/lodash/lodash.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked/lib/marked.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/@vue/reactivity@3.0.4/dist/reactivity.global.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tybys/reactivuety/dist/reactivuety.min.js"></script>
+<script>
+  (function () {
+    var defineComponent = reactivuety.defineComponent;
+    var ref = reactivuety.ref;
+    var computed = reactivuety.computed;
+    var Textarea = reactivuety.Textarea;
+    var h = React.createElement;
+    var debounce = _.debounce;
+
+    var MarkdownView = defineComponent(function () {
+      var input = ref('# hello');
+
+      var compiledMarkdown = computed(function () {
+        return { __html: marked(input.value) };
+      });
+
+      var update = debounce((e) => {
+        input.value = e.target.value;
+      }, 300);
+
+      return function () {
+        return h('div', { id: 'editor' },
+          h(Textarea, { value: input.value, onInput: update }),
+          h('div', { dangerouslySetInnerHTML: compiledMarkdown.value })
+        );
+      };
+    });
+    ReactDOM.render(h(MarkdownView), document.body);
+  })();
+</script>
 ```
 
 写法二：React 中用 `defineComponent`，第一个参数是 `setup` 函数，返回包含响应式对象的 Object，第二个参数是带响应式对象的 react render 函数

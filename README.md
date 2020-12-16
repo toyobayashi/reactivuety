@@ -4,6 +4,22 @@ Write react in vue way.
 
 [API Documentation](https://github.com/toyobayashi/reactivuety/blob/main/docs/api/index.md)
 
+[中文](https://github.com/toyobayashi/reactivuety/blob/main/README_CN.md)
+
+## Install
+
+```
+npm install @tybys/reactivuety
+```
+
+or
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/react/umd/react.production.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@vue/reactivity@3.0.4/dist/reactivity.global.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tybys/reactivuety/dist/reactivuety.min.js"></script>
+```
+
 ## Compare with Vue
 
 Markdown example:
@@ -60,6 +76,49 @@ export default defineComponent((props) => {
     </div>
   )
 })
+```
+
+No bundler:
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/react/umd/react.production.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/react-dom/umd/react-dom.production.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/lodash/lodash.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked/lib/marked.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/@vue/reactivity@3.0.4/dist/reactivity.global.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tybys/reactivuety/dist/reactivuety.min.js"></script>
+<script>
+  (function () {
+    var defineComponent = reactivuety.defineComponent;
+    var ref = reactivuety.ref;
+    var computed = reactivuety.computed;
+    var Textarea = reactivuety.Textarea;
+    var h = React.createElement;
+    var debounce = _.debounce;
+
+    var MarkdownView = defineComponent(function () {
+      var input = ref('# hello');
+
+      var compiledMarkdown = computed(function () {
+        return { __html: marked(input.value) };
+      });
+
+      var update = debounce((e) => {
+        input.value = e.target.value;
+      }, 300);
+
+      return function () {
+        return h('div', { id: 'editor' },
+          h(Textarea, { value: input.value, onInput: update }),
+          h('div', { dangerouslySetInnerHTML: compiledMarkdown.value })
+        );
+      };
+    });
+    ReactDOM.render(h(MarkdownView), document.body);
+  })();
+</script>
 ```
 
 Use `defineComponent`, the first argument is setup function, which returns an object contains vue reactive objects, the second argument is a react function component render function whose with first argument is the object returned by the setup function.
