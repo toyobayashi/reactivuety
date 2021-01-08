@@ -42,6 +42,7 @@ Use vue composition API with react.
 |  [watch(sources, cb, options)](./reactivuety.watch.md) |  |
 |  [watch(source, cb, options)](./reactivuety.watch_1.md) |  |
 |  [watch(source, cb, options)](./reactivuety.watch_2.md) |  |
+|  [watch(source, cb, options)](./reactivuety.watch_3.md) |  |
 |  [watchEffect(effect, options)](./reactivuety.watcheffect.md) |  |
 
 ## Interfaces
@@ -86,6 +87,7 @@ Use vue composition API with react.
 |  [ErrorTypes](./reactivuety.errortypes.md) |  |
 |  [InvalidateCbRegistrator](./reactivuety.invalidatecbregistrator.md) |  |
 |  [MapSources](./reactivuety.mapsources.md) |  |
+|  [MultiWatchSources](./reactivuety.multiwatchsources.md) |  |
 |  [SetupFunction](./reactivuety.setupfunction.md) |  |
 |  [WatchCallback](./reactivuety.watchcallback.md) |  |
 |  [WatchEffect](./reactivuety.watcheffect.md) |  |

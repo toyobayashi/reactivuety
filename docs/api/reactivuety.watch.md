@@ -8,14 +8,14 @@
 <b>Signature:</b>
 
 ```typescript
-export declare function watch<T extends Readonly<Array<WatchSource<unknown> | object>>, Immediate extends Readonly<boolean> = false>(sources: T, cb: WatchCallback<MapSources<T, false>, MapSources<T, Immediate>>, options?: WatchOptions<Immediate>): WatchStopHandle;
+export declare function watch<T extends MultiWatchSources, Immediate extends Readonly<boolean> = false>(sources: [...T], cb: WatchCallback<MapSources<T, false>, MapSources<T, Immediate>>, options?: WatchOptions<Immediate>): WatchStopHandle;
 ```
 
 ## Parameters
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  sources | T |  |
+|  sources | \[...T\] |  |
 |  cb | [WatchCallback](./reactivuety.watchcallback.md)<!-- -->&lt;[MapSources](./reactivuety.mapsources.md)<!-- -->&lt;T, false&gt;, [MapSources](./reactivuety.mapsources.md)<!-- -->&lt;T, Immediate&gt;&gt; |  |
 |  options | [WatchOptions](./reactivuety.watchoptions.md)<!-- -->&lt;Immediate&gt; |  |
 

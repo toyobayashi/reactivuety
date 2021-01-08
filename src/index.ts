@@ -74,6 +74,7 @@ export {
   watchEffect,
   InvalidateCbRegistrator,
   MapSources,
+  MultiWatchSources,
   WatchCallback,
   WatchEffect,
   WatchOptionsBase,
