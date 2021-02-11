@@ -30,6 +30,7 @@ export function useSetup<P> (setup: (props: Readonly<PropsWithChildren<P>>) => a
   if (typeof setup !== 'function') {
     throw new TypeError('setup is not a function')
   }
+  const parent: ComponentInternalInstance | null = getCurrentRenderingInstance()
   const forceUpdate = useForceUpdate()
 
   const instanceRef = useRef<ComponentInternalInstance<P, any>>()
@@ -55,7 +56,6 @@ export function useSetup<P> (setup: (props: Readonly<PropsWithChildren<P>>) => a
     invokeLifecycle(instanceRef.current!, LifecycleHooks.UPDATED)
   }, [])
 
-  let parent: ComponentInternalInstance | null = null
   if (!instanceRef.current) {
     const reactiveProps = reactive({ ...props })
     const readonlyProps = readonly(reactiveProps)
@@ -78,8 +78,6 @@ export function useSetup<P> (setup: (props: Readonly<PropsWithChildren<P>>) => a
       [LifecycleHooks.RENDER_TRIGGERED]: null,
       [LifecycleHooks.ERROR_CAPTURED]: null
     }
-    parent = getCurrentRenderingInstance()
-    setCurrentRenderingInstance(instanceRef.current)
     instanceRef.current.parent = parent
     instanceRef.current.provides = parent ? parent.provides : null
     let runner: ReactiveEffect | null = null
@@ -133,6 +131,8 @@ export function useSetup<P> (setup: (props: Readonly<PropsWithChildren<P>>) => a
     if (runner) {
       instanceRef.current.effects.push(runner)
     }
+  } else {
+    setCurrentRenderingInstance(instanceRef.current)
   }
 
   useEffect(() => {
