@@ -74,6 +74,8 @@ export function inject (
     if (provides && (key as string | symbol) in provides) {
       // TS doesn't allow symbol as index type
       return provides[key as string]
+    } else if ((key as string | symbol) in globalProvides) {
+      return globalProvides[key as string]
     } else if (arguments.length > 1) {
       return treatDefaultAsFactory && isFunction(defaultValue)
         ? defaultValue()
