@@ -102,7 +102,7 @@ export function scrollToPosition(position: ScrollPosition): void {
      *   https://mathiasbynens.be/notes/html5-id-class.
      * - Practical example: https://mathiasbynens.be/demo/html5-id
      */
-    if (__DEV__ && typeof position.el === 'string') {
+    if (__TSGO_DEV__ && typeof position.el === 'string') {
       if (!isIdSelector || !document.getElementById(position.el.slice(1))) {
         try {
           let foundEl = document.querySelector(position.el)
@@ -131,7 +131,7 @@ export function scrollToPosition(position: ScrollPosition): void {
         : positionEl
 
     if (!el) {
-      __DEV__ &&
+      __TSGO_DEV__ &&
         warn(
           `Couldn't find element using selector "${position.el}" returned by scrollBehavior.`
         )

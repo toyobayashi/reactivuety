@@ -128,7 +128,7 @@ export function useLink(props: UseLinkOptions): {
   }
 }
 
-export const RouterLink = React.forwardRef<HTMLAnchorElement, RouterLinkProps>((props) => {
+export const RouterLink = React.forwardRef<HTMLAnchorElement, React.PropsWithChildren<RouterLinkProps>>((props, ref) => {
   const { link, elClassName } = useSetup((props) => {
     const link = reactive(useLink(props))
     const { options } = inject<any>(routerKey)!
@@ -173,6 +173,7 @@ export const RouterLink = React.forwardRef<HTMLAnchorElement, RouterLinkProps>((
           props,
           {
             className: elClassName,
+            ref
           }
         ),
         props.children

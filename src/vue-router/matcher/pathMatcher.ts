@@ -24,7 +24,7 @@ export function createRouteRecordMatcher(
   const parser = tokensToParser(tokenizePath(record.path), options)
 
   // warn against params with the same name
-  if (__DEV__) {
+  if (__TSGO_DEV__) {
     const existingKeys = new Set<string>()
     for (const key of parser.keys) {
       if (existingKeys.has(key.name))

@@ -196,7 +196,7 @@ function isEquivalentArray<T>(a: T[], b: T[] | T): boolean {
  */
 export function resolveRelativePath(to: string, from: string): string {
   if (to.startsWith('/')) return to
-  if (__DEV__ && !from.startsWith('/')) {
+  if (__TSGO_DEV__ && !from.startsWith('/')) {
     warn(
       `Cannot resolve a relative location without an absolute path. Trying to resolve "${to}" from "${from}". It should look like "/${from}".`
     )

@@ -36,7 +36,7 @@ export function createWebHashHistory(base?: string): RouterHistory {
   // allow the user to provide a `#` in the middle: `/base/#/app`
   if (base.indexOf('#') < 0) base += '#'
 
-  if (__DEV__ && !base.endsWith('#/') && !base.endsWith('#')) {
+  if (__TSGO_DEV__ && !base.endsWith('#/') && !base.endsWith('#')) {
     warn(
       `A hash base must end with a "#":\n"${base}" should be "${base.replace(
         /#.*$/,

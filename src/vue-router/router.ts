@@ -18,8 +18,8 @@ import {
   ScrollPosition,
   getSavedScrollPosition,
   getScrollKey,
-  // saveScrollPosition,
-  // computeScrollPosition,
+  saveScrollPosition,
+  computeScrollPosition,
   scrollToPosition,
   _ScrollPositionNormalized
 } from './scrollBehavior'
@@ -31,7 +31,7 @@ import {
   NavigationRedirectError,
   isNavigationFailure
 } from './errors'
-import { applyToParams, isBrowser, assign/* , noop */ } from './utils/index'
+import { applyToParams, isBrowser, assign, noop } from './utils/index'
 import { useCallbacks } from './utils/callbacks'
 import { encodeParam, decode, encodeHash } from './encoding'
 import {
@@ -40,7 +40,7 @@ import {
   stringifyQuery as originalStringifyQuery,
   LocationQuery
 } from './query'
-import { Ref/* , ComputedRef, reactive, unref */ } from '@vue/reactivity'
+import { ComputedRef, reactive, Ref/* , ComputedRef, reactive, unref */ } from '@vue/reactivity'
 import {
   shallowRef
   // computed
@@ -48,17 +48,21 @@ import {
 import {
   nextTick
 } from '../core/scheduler'
+import {
+  computed
+} from '../core/apiComputed'
 import { RouteRecord, RouteRecordNormalized } from './matcher/types'
 import { parseURL, stringifyURL, isSameRouteLocation } from './location'
 import { extractComponentsGuards, guardToPromiseFn } from './navigationGuards'
 import { warn } from './warning'
 // import { RouterLink } from './RouterLink'
 // import { RouterView } from './RouterView'
-// import {
-//   routeLocationKey,
-//   routerKey,
-//   routerViewLocationKey
-// } from './injectionSymbols'
+import {
+  routeLocationKey,
+  routerKey,
+  routerViewLocationKey
+} from './injectionSymbols'
+import { provide } from '../core/apiInject'
 
 /**
  * Internal type to define an ErrorHandler
@@ -307,9 +311,8 @@ export interface Router {
    * the user.
    *
    * @internal
-   * @param app - Application that uses the router
    */
-  // install: (app: App) => void
+  install: () => void
 }
 
 /**
@@ -363,7 +366,7 @@ export function createRouter (options: RouterOptions): Router {
     const recordMatcher = matcher.getRecordMatcher(name)
     if (recordMatcher) {
       matcher.removeRoute(recordMatcher)
-    } else if (__DEV__) {
+    } else if (__TSGO_DEV__) {
       warn(`Cannot remove non-existent route "${String(name)}"`)
     }
   }
@@ -395,7 +398,7 @@ export function createRouter (options: RouterOptions): Router {
       )
 
       const href = routerHistory.createHref(locationNormalized.fullPath)
-      if (__DEV__) {
+      if (__TSGO_DEV__) {
         if (href.startsWith('//')) {
           warn(
             `Location "${rawLocation}" resolved to "${href}". A resolved location cannot start with multiple slashes.`
@@ -419,7 +422,7 @@ export function createRouter (options: RouterOptions): Router {
     // path could be relative in object as well
     if ('path' in rawLocation) {
       if (
-        __DEV__ &&
+        __TSGO_DEV__ &&
         'params' in rawLocation &&
         !('name' in rawLocation) &&
         Object.keys((rawLocation as any).params).length
@@ -446,7 +449,7 @@ export function createRouter (options: RouterOptions): Router {
     const matchedRoute = matcher.resolve(matcherLocation, currentLocation)
     const hash = rawLocation.hash || ''
 
-    if (__DEV__ && hash && !hash.startsWith('#')) {
+    if (__TSGO_DEV__ && hash && !hash.startsWith('#')) {
       warn(
         `A \`hash\` should always start with the character "#". Replace "${hash}" with "#${hash}".`
       )
@@ -465,7 +468,7 @@ export function createRouter (options: RouterOptions): Router {
     )
 
     const href = routerHistory.createHref(fullPath)
-    if (__DEV__) {
+    if (__TSGO_DEV__) {
       if (href.startsWith('//')) {
         warn(
           `Location "${rawLocation}" resolved to "${href}". A resolved location cannot start with multiple slashes.`
@@ -550,7 +553,7 @@ export function createRouter (options: RouterOptions): Router {
       }
 
       if (
-        __DEV__ &&
+        __TSGO_DEV__ &&
         !('path' in newTargetLocation) &&
         !('name' in newTargetLocation)
       ) {
@@ -639,7 +642,7 @@ export function createRouter (options: RouterOptions): Router {
             isNavigationFailure(failure, ErrorTypes.NAVIGATION_GUARD_REDIRECT)
           ) {
             if (
-              __DEV__ &&
+              __TSGO_DEV__ &&
               // we are redirecting to the same location we were already at
               isSameRouteLocation(
                 stringifyQuery,
@@ -887,90 +890,90 @@ export function createRouter (options: RouterOptions): Router {
   // let removeHistoryListener: () => void
   // attach listener to history to trigger navigations
   function setupListeners () {
-    // removeHistoryListener = routerHistory.listen((to, _from, info) => {
-    //   // cannot be a redirect route because it was in history
-    //   const toLocation = resolve(to) as RouteLocationNormalized
+    /* removeHistoryListener =  */routerHistory.listen((to, _from, info) => {
+      // cannot be a redirect route because it was in history
+      const toLocation = resolve(to) as RouteLocationNormalized
 
-    //   // due to dynamic routing, and to hash history with manual navigation
-    //   // (manually changing the url or calling history.hash = '#/somewhere'),
-    //   // there could be a redirect record in history
-    //   const shouldRedirect = handleRedirectRecord(toLocation)
-    //   if (shouldRedirect) {
-    //     pushWithRedirect(
-    //       assign(shouldRedirect, { replace: true }),
-    //       toLocation
-    //     ).catch(noop)
-    //     return
-    //   }
+      // due to dynamic routing, and to hash history with manual navigation
+      // (manually changing the url or calling history.hash = '#/somewhere'),
+      // there could be a redirect record in history
+      const shouldRedirect = handleRedirectRecord(toLocation)
+      if (shouldRedirect) {
+        pushWithRedirect(
+          assign(shouldRedirect, { replace: true }),
+          toLocation
+        ).catch(noop)
+        return
+      }
 
-    //   pendingLocation = toLocation
-    //   const from = currentRoute.value
+      pendingLocation = toLocation
+      const from = currentRoute.value
 
-    //   // TODO: should be moved to web history?
-    //   if (isBrowser) {
-    //     saveScrollPosition(
-    //       getScrollKey(from.fullPath, info.delta),
-    //       computeScrollPosition()
-    //     )
-    //   }
+      // TODO: should be moved to web history?
+      if (isBrowser) {
+        saveScrollPosition(
+          getScrollKey(from.fullPath, info.delta),
+          computeScrollPosition()
+        )
+      }
 
-    //   navigate(toLocation, from)
-    //     .catch((error: NavigationFailure | NavigationRedirectError) => {
-    //       if (
-    //         isNavigationFailure(
-    //           error,
-    //           ErrorTypes.NAVIGATION_ABORTED | ErrorTypes.NAVIGATION_CANCELLED
-    //         )
-    //       ) {
-    //         return error
-    //       }
-    //       if (
-    //         isNavigationFailure(error, ErrorTypes.NAVIGATION_GUARD_REDIRECT)
-    //       ) {
-    //         // Here we could call if (info.delta) routerHistory.go(-info.delta,
-    //         // false) but this is bug prone as we have no way to wait the
-    //         // navigation to be finished before calling pushWithRedirect. Using
-    //         // a setTimeout of 16ms seems to work but there is not guarantee for
-    //         // it to work on every browser. So Instead we do not restore the
-    //         // history entry and trigger a new navigation as requested by the
-    //         // navigation guard.
+      navigate(toLocation, from)
+        .catch((error: NavigationFailure | NavigationRedirectError) => {
+          if (
+            isNavigationFailure(
+              error,
+              ErrorTypes.NAVIGATION_ABORTED | ErrorTypes.NAVIGATION_CANCELLED
+            )
+          ) {
+            return error
+          }
+          if (
+            isNavigationFailure(error, ErrorTypes.NAVIGATION_GUARD_REDIRECT)
+          ) {
+            // Here we could call if (info.delta) routerHistory.go(-info.delta,
+            // false) but this is bug prone as we have no way to wait the
+            // navigation to be finished before calling pushWithRedirect. Using
+            // a setTimeout of 16ms seems to work but there is not guarantee for
+            // it to work on every browser. So Instead we do not restore the
+            // history entry and trigger a new navigation as requested by the
+            // navigation guard.
 
-    //         // the error is already handled by router.push we just want to avoid
-    //         // logging the error
-    //         pushWithRedirect(
-    //           (error as NavigationRedirectError).to,
-    //           toLocation
-    //           // avoid an uncaught rejection, let push call triggerError
-    //         ).catch(noop)
-    //         // avoid the then branch
-    //         return Promise.reject()
-    //       }
-    //       // do not restore history on unknown direction
-    //       if (info.delta) routerHistory.go(-info.delta, false)
-    //       // unrecognized error, transfer to the global handler
-    //       return triggerError(error)
-    //     })
-    //     .then((failure: NavigationFailure | void) => {
-    //       failure =
-    //         failure ||
-    //         finalizeNavigation(
-    //           // after navigation, all matched components are resolved
-    //           toLocation as RouteLocationNormalizedLoaded,
-    //           from,
-    //           false
-    //         )
+            // the error is already handled by router.push we just want to avoid
+            // logging the error
+            pushWithRedirect(
+              (error as NavigationRedirectError).to,
+              toLocation
+              // avoid an uncaught rejection, let push call triggerError
+            ).catch(noop)
+            // avoid the then branch
+            return Promise.reject()
+          }
+          // do not restore history on unknown direction
+          if (info.delta) routerHistory.go(-info.delta, false)
+          // unrecognized error, transfer to the global handler
+          return triggerError(error)
+        })
+        .then((failure: NavigationFailure | void) => {
+          failure =
+            failure ||
+            finalizeNavigation(
+              // after navigation, all matched components are resolved
+              toLocation as RouteLocationNormalizedLoaded,
+              from,
+              false
+            )
 
-    //       // revert the navigation
-    //       if (failure && info.delta) routerHistory.go(-info.delta, false)
+          // revert the navigation
+          if (failure && info.delta) routerHistory.go(-info.delta, false)
 
-    //       triggerAfterEach(
-    //         toLocation as RouteLocationNormalizedLoaded,
-    //         from,
-    //         failure
-    //       )
-    //     })
-    //     .catch(noop)
-    // })
+          triggerAfterEach(
+            toLocation as RouteLocationNormalizedLoaded,
+            from,
+            failure
+          )
+        })
+        .catch(noop)
+    })
   }
 
   // Initialization and Errors
@@ -1037,7 +1040,7 @@ export function createRouter (options: RouterOptions): Router {
 
   const go = (delta: number) => routerHistory.go(delta)
 
-  // let started: boolean | undefined
+  let started: boolean | undefined
   // const installedApps = new Set<App>()
 
   const router: Router = {
@@ -1063,60 +1066,53 @@ export function createRouter (options: RouterOptions): Router {
     onError: errorHandlers.add,
     isReady,
 
-    // install (app: App) {
-    //   const router = this
-    //   app.component('RouterLink', RouterLink)
-    //   app.component('RouterView', RouterView)
+    install () {
+      const router = this
 
-    //   app.config.globalProperties.$router = router
-    //   Object.defineProperty(app.config.globalProperties, '$route', {
-    //     get: () => unref(currentRoute)
-    //   })
+      // this initial navigation is only necessary on client, on server it doesn't
+      // make sense because it will create an extra unnecessary navigation and could
+      // lead to problems
+      if (
+        isBrowser &&
+        // used for the initial navigation client side to avoid pushing
+        // multiple times when the router is used in multiple apps
+        !started &&
+        currentRoute.value === START_LOCATION_NORMALIZED
+      ) {
+        // see above
+        started = true
+        push(routerHistory.location).catch(err => {
+          if (__TSGO_DEV__) warn('Unexpected error when starting the router:', err)
+        })
+      }
 
-    //   // this initial navigation is only necessary on client, on server it doesn't
-    //   // make sense because it will create an extra unnecessary navigation and could
-    //   // lead to problems
-    //   if (
-    //     isBrowser &&
-    //     // used for the initial navigation client side to avoid pushing
-    //     // multiple times when the router is used in multiple apps
-    //     !started &&
-    //     currentRoute.value === START_LOCATION_NORMALIZED
-    //   ) {
-    //     // see above
-    //     started = true
-    //     push(routerHistory.location).catch(err => {
-    //       if (__DEV__) warn('Unexpected error when starting the router:', err)
-    //     })
-    //   }
+      const reactiveRoute = {} as {
+        [k in keyof RouteLocationNormalizedLoaded]: ComputedRef<
+        RouteLocationNormalizedLoaded[k]
+        >
+      }
+      for (const key in START_LOCATION_NORMALIZED) {
+        // @ts-expect-error: the key matches
+        reactiveRoute[key] = computed(() => currentRoute.value[key])
+      }
 
-    //   const reactiveRoute = {} as {
-    //     [k in keyof RouteLocationNormalizedLoaded]: ComputedRef<
-    //     RouteLocationNormalizedLoaded[k]
-    //     >
-    //   }
-    //   for (const key in START_LOCATION_NORMALIZED) {
-    //     // @ts-expect-error: the key matches
-    //     reactiveRoute[key] = computed(() => currentRoute.value[key])
-    //   }
+      provide(routerKey, router)
+      provide(routeLocationKey, reactive(reactiveRoute))
+      provide(routerViewLocationKey, currentRoute)
 
-    //   app.provide(routerKey, router)
-    //   app.provide(routeLocationKey, reactive(reactiveRoute))
-    //   app.provide(routerViewLocationKey, currentRoute)
-
-    //   const unmountApp = app.unmount
-    //   installedApps.add(app)
-    //   app.unmount = function () {
-    //     installedApps.delete(app)
-    //     if (installedApps.size < 1) {
-    //       removeHistoryListener()
-    //       currentRoute.value = START_LOCATION_NORMALIZED
-    //       started = false
-    //       ready = false
-    //     }
-    //     unmountApp.call(this, arguments)
-    //   }
-    // }
+      // const unmountApp = app.unmount
+      // installedApps.add(app)
+      // app.unmount = function () {
+      //   installedApps.delete(app)
+      //   if (installedApps.size < 1) {
+      //     removeHistoryListener()
+      //     currentRoute.value = START_LOCATION_NORMALIZED
+      //     started = false
+      //     ready = false
+      //   }
+      //   unmountApp.call(this, arguments)
+      // }
+    }
   }
 
   return router

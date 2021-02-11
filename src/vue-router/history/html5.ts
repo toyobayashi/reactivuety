@@ -224,7 +224,7 @@ function useHistoryStateNavigation(base: string) {
       history[replace ? 'replaceState' : 'pushState'](state, '', url)
       historyState.value = state
     } catch (err) {
-      if (__DEV__) {
+      if (__TSGO_DEV__) {
         warn('Error with push/replace State', err)
       } else {
         console.error(err)
@@ -269,7 +269,7 @@ function useHistoryStateNavigation(base: string) {
       }
     )
 
-    if (__DEV__ && !history.state) {
+    if (__TSGO_DEV__ && !history.state) {
       warn(
         `history.state seems to have been manually replaced without preserving the necessary values. Make sure to preserve existing history state if you are manually calling history.replaceState:\n\n` +
           `history.replaceState(history.state, '', url)\n\n` +

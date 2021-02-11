@@ -26,7 +26,7 @@ export interface RouterViewProps {
 }
 
 export const RouterView: React.FunctionComponent<RouterViewProps> = (props) => {
-  const { routeToDisplay, matchedRouteRef, viewRef } = useSetup((props) => {
+  const { routeToDisplay, matchedRouteRef/* , viewRef */ } = useSetup((props) => {
     const injectedRoute = inject<any>(routerViewLocationKey)!
     const routeToDisplay = computed(() => props.route || injectedRoute.value)
     const depth = inject(viewDepthKey, 0)
@@ -110,7 +110,7 @@ export const RouterView: React.FunctionComponent<RouterViewProps> = (props) => {
     ViewComponent,
     assign({}, routeProps, props, {
       // onVnodeUnmounted,
-      ref: viewRef,
+      // ref: viewRef,
     })
   )
 }

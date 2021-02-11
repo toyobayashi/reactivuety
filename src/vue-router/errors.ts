@@ -21,7 +21,7 @@ export const enum ErrorTypes {
 }
 
 const NavigationFailureSymbol = /*#__PURE__*/ PolySymbol(
-  __DEV__ ? 'navigation failure' : 'nf'
+  __TSGO_DEV__ ? 'navigation failure' : 'nf'
 )
 
 export interface MatcherError extends Error {
@@ -114,7 +114,7 @@ export function createRouterError<E extends RouterError>(
   type: E['type'],
   params: Omit<E, 'type' | keyof Error>
 ): E {
-  if (__DEV__) {
+  if (__TSGO_DEV__) {
     return assign(
       new Error(ErrorTypeMessages[type](params as any)),
       {

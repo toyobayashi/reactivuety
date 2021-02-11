@@ -6,8 +6,8 @@ export const hasSymbol =
 export const PolySymbol = (name: string) =>
   // vr = vue router
   hasSymbol
-    ? Symbol(__DEV__ ? '[vue-router]: ' + name : name)
-    : (__DEV__ ? '[vue-router]: ' : '_vr_') + name
+    ? Symbol(__TSGO_DEV__ ? '[vue-router]: ' + name : name)
+    : (__TSGO_DEV__ ? '[vue-router]: ' : '_vr_') + name
 
 // rvlm = Router View Location Matched
 /**
@@ -18,7 +18,7 @@ export const PolySymbol = (name: string) =>
  * @internal
  */
 export const matchedRouteKey = /*#__PURE__*/ PolySymbol(
-  __DEV__ ? 'router view location matched' : 'rvlm'
+  __TSGO_DEV__ ? 'router view location matched' : 'rvlm'
 ) as InjectionKey
 
 /**
@@ -28,7 +28,7 @@ export const matchedRouteKey = /*#__PURE__*/ PolySymbol(
  * @internal
  */
 export const viewDepthKey = /*#__PURE__*/ PolySymbol(
-  __DEV__ ? 'router view depth' : 'rvd'
+  __TSGO_DEV__ ? 'router view depth' : 'rvd'
 ) as InjectionKey
 
 /**
@@ -38,7 +38,7 @@ export const viewDepthKey = /*#__PURE__*/ PolySymbol(
  * @internal
  */
 export const routerKey = /*#__PURE__*/ PolySymbol(
-  __DEV__ ? 'router' : 'r'
+  __TSGO_DEV__ ? 'router' : 'r'
 ) as InjectionKey
 
 /**
@@ -48,7 +48,7 @@ export const routerKey = /*#__PURE__*/ PolySymbol(
  * @internal
  */
 export const routeLocationKey = /*#__PURE__*/ PolySymbol(
-  __DEV__ ? 'route location' : 'rl'
+  __TSGO_DEV__ ? 'route location' : 'rl'
 ) as InjectionKey
 
 /**
@@ -58,5 +58,5 @@ export const routeLocationKey = /*#__PURE__*/ PolySymbol(
  * @internal
  */
 export const routerViewLocationKey = /*#__PURE__*/ PolySymbol(
-  __DEV__ ? 'router view location' : 'rvl'
+  __TSGO_DEV__ ? 'router view location' : 'rvl'
 ) as InjectionKey

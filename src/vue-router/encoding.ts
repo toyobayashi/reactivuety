@@ -140,7 +140,7 @@ export function decode(text: string | number): string {
   try {
     return decodeURIComponent('' + text)
   } catch (err) {
-    __DEV__ && warn(`Error decoding "${text}". Using original value`)
+    __TSGO_DEV__ && warn(`Error decoding "${text}". Using original value`)
   }
   return '' + text
 }

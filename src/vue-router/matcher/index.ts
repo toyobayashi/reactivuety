@@ -121,7 +121,7 @@ export function createRouterMatcher(
           parent.record.path + (path && connectingSlash + path)
       }
 
-      if (__DEV__ && normalizedRecord.path === '*') {
+      if (__TSGO_DEV__ && normalizedRecord.path === '*') {
         throw new Error(
           'Catch all routes ("*") must now be defined using a param with a custom regexp.\n' +
             'See more at https://next.router.vuejs.org/guide/migration/#removed-star-or-catch-all-routes.'
@@ -131,14 +131,14 @@ export function createRouterMatcher(
       // create the object before hand so it can be passed to children
       matcher = createRouteRecordMatcher(normalizedRecord, parent, options)
 
-      if (__DEV__ && parent && path[0] === '/')
+      if (__TSGO_DEV__ && parent && path[0] === '/')
         checkMissingParamsInAbsolutePath(matcher, parent)
 
       // if we are an alias we must tell the original record that we exist
       // so we can be removed
       if (originalRecord) {
         originalRecord.alias.push(matcher)
-        if (__DEV__) {
+        if (__TSGO_DEV__) {
           checkSameParams(originalRecord, matcher)
         }
       } else {
@@ -258,7 +258,7 @@ export function createRouterMatcher(
       // this also allows the user to control the encoding
       path = location.path
 
-      if (__DEV__ && !path.startsWith('/')) {
+      if (__TSGO_DEV__ && !path.startsWith('/')) {
         warn(
           `The Matcher cannot resolve relative paths but received "${path}". Unless you directly called \`matcher.resolve("${path}")\`, this is probably a bug in vue-router. Please open an issue at https://new-issue.vuejs.org/?repo=vuejs/vue-router-next.`
         )

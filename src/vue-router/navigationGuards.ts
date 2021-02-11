@@ -52,7 +52,7 @@ function registerGuard(
  * @param leaveGuard - {@link NavigationGuard}
  */
 export function onBeforeRouteLeave(leaveGuard: NavigationGuard) {
-  if (__DEV__ && !getCurrentInstance()) {
+  if (__TSGO_DEV__ && !getCurrentInstance()) {
     warn(
       'getCurrentInstance() returned null. onBeforeRouteLeave() must be called at the top of a setup function'
     )
@@ -65,7 +65,7 @@ export function onBeforeRouteLeave(leaveGuard: NavigationGuard) {
   ).value
 
   if (!activeRecord) {
-    __DEV__ &&
+    __TSGO_DEV__ &&
       warn(
         'No active route record was found. Are you missing a <router-view> component?'
       )
@@ -83,7 +83,7 @@ export function onBeforeRouteLeave(leaveGuard: NavigationGuard) {
  * @param updateGuard - {@link NavigationGuard}
  */
 export function onBeforeRouteUpdate(updateGuard: NavigationGuard) {
-  if (__DEV__ && !getCurrentInstance()) {
+  if (__TSGO_DEV__ && !getCurrentInstance()) {
     warn(
       'getCurrentInstance() returned null. onBeforeRouteUpdate() must be called at the top of a setup function'
     )
@@ -96,7 +96,7 @@ export function onBeforeRouteUpdate(updateGuard: NavigationGuard) {
   ).value
 
   if (!activeRecord) {
-    __DEV__ &&
+    __TSGO_DEV__ &&
       warn(
         'No active route record was found. Are you missing a <router-view> component?'
       )
@@ -175,12 +175,12 @@ export function guardToPromiseFn(
         record && record.instances[name!],
         to,
         from,
-        __DEV__ ? canOnlyBeCalledOnce(next, to, from) : next
+        __TSGO_DEV__ ? canOnlyBeCalledOnce(next, to, from) : next
       )
       let guardCall = Promise.resolve(guardReturn)
 
       if (guard.length < 3) guardCall = guardCall.then(next)
-      if (__DEV__ && guard.length > 2) {
+      if (__TSGO_DEV__ && guard.length > 2) {
         const message = `The "next" callback was never called inside of ${
           guard.name ? '"' + guard.name + '"' : ''
         }:\n${guard.toString()}\n. If you are returning a value instead of calling "next", make sure to remove the "next" parameter from your function.`
@@ -237,7 +237,7 @@ export function extractComponentsGuards(
   for (const record of matched) {
     for (const name in record.components) {
       let rawComponent = record.components[name]
-      if (__DEV__) {
+      if (__TSGO_DEV__) {
         if (
           !rawComponent ||
           (typeof rawComponent !== 'object' &&
@@ -292,7 +292,7 @@ export function extractComponentsGuards(
           RouteComponent | null | undefined | void
         > = (rawComponent as Lazy<RouteComponent>)()
 
-        if (__DEV__ && !('catch' in componentPromise)) {
+        if (__TSGO_DEV__ && !('catch' in componentPromise)) {
           warn(
             `Component "${name}" in record with path "${record.path}" is a function that does not return a Promise. If you were passing a functional component, make sure to add a "displayName" to the component. This will break in production if not fixed.`
           )
@@ -300,7 +300,7 @@ export function extractComponentsGuards(
         } else {
           // display the error if any
           componentPromise = componentPromise.catch(
-            __DEV__ ? err => err && warn(err) : console.error
+            __TSGO_DEV__ ? err => err && warn(err) : console.error
           )
         }
 

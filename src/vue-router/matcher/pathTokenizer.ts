@@ -48,7 +48,7 @@ export function tokenizePath(path: string): Array<Token[]> {
   if (path === '/') return [[ROOT_TOKEN]]
   if (!path.startsWith('/')) {
     throw new Error(
-      __DEV__
+      __TSGO_DEV__
         ? `Route paths should start with a "/": "${path}" should be "/${path}".`
         : `Invalid path "${path}"`
     )
