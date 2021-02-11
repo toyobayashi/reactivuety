@@ -9,7 +9,10 @@ import { reactive, shallowReactive } from '@vue/reactivity'
 
 import DemoGrid from './DemoGrid'
 
-const GridComponent = defineComponent<RouteComponentProps>(() => {
+const GridComponent = defineComponent<RouteComponentProps & {
+  style?: React.CSSProperties
+  className?: string
+}>((props) => {
   const searchQuery = ref('')
   const gridColumns = reactive(['name', 'power'])
   const gridData = shallowReactive([
@@ -21,7 +24,7 @@ const GridComponent = defineComponent<RouteComponentProps>(() => {
   return () => {
     console.log('[GridComponent] render')
     return (
-      <div id="demo">
+      <div id="demo" style={props.style} className={props.className}>
         <form id="search">
           Search <Input name="query" vModel={searchQuery} />
         </form>

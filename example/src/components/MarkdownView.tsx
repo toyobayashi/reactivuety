@@ -7,7 +7,10 @@ import { ref, computed, Textarea, defineComponent } from '../../..'
 
 const debounce: typeof import('lodash/debounce') = require('lodash/debounce')
 
-export default defineComponent<RouteComponentProps>(() => {
+export default defineComponent<RouteComponentProps & {
+  style?: React.CSSProperties
+  className?: string
+}>((props) => {
   const input = ref<string>('# hello')
 
   const compiledMarkdown = computed(() => ({ __html: marked(input.value) }))
@@ -19,7 +22,7 @@ export default defineComponent<RouteComponentProps>(() => {
   return () => {
     console.log('[MarkdownView] render')
     return (
-      <div id="editor">
+      <div id="editor" style={props.style} className={props.className}>
         <Textarea value={input.value} onInput={update} />
         <div dangerouslySetInnerHTML={compiledMarkdown.value}></div>
       </div>

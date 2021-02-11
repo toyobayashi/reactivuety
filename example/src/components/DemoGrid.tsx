@@ -10,6 +10,8 @@ const DemoGrid = defineComponent<{
   columns: string[]
   heroes: Array<{ name: string; power: number }>
   filterKey: string
+  style?: React.CSSProperties
+  className?: string
 }>((props) => {
   onBeforeMount(() => console.log('onBeforeMount'))
   onMounted(() => console.log('onMounted'))
@@ -68,7 +70,7 @@ const DemoGrid = defineComponent<{
   return () => {
     console.log('[DemoGrid] render')
     return (
-      <table>
+      <table style={props.style} className={props.className}>
         <thead>
           <tr>
             {props.columns.map(key => {

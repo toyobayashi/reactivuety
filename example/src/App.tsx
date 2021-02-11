@@ -6,16 +6,22 @@ const MarkdownView = defineAsyncComponent(() => import('./components/MarkdownVie
 const GithubCommitView = defineAsyncComponent(() => import('./components/GithubCommitView'))
 const GridComponent = defineAsyncComponent(() => import('./components/GridComponent'))
 
-const Home: React.FunctionComponent = () => {
+const Home = React.forwardRef(() => {
   return (
-    <div>
-      <div><RouterLink to={{ name: 'markdown' }}>markdown</RouterLink></div>
-      <div><RouterLink to={{ name: 'github' }}>github</RouterLink></div>
-      <div><RouterLink to={{ name: 'grid' }}>grid</RouterLink></div>
-      <RouterView />
+    <div style={{
+      display: 'flex',
+      alignItems: 'stretch',
+      height: '100%'
+    }}>
+      <div style={{ width: '150px', backgroundColor: '#ddd' }}>
+        <div><RouterLink to={{ name: 'markdown' }}>markdown</RouterLink></div>
+        <div><RouterLink to={{ name: 'github' }}>github</RouterLink></div>
+        <div><RouterLink to={{ name: 'grid' }}>grid</RouterLink></div>
+      </div>
+      <RouterView style={{ flex: '1' }} />
     </div>
   )
-}
+})
 Home.displayName = 'Home'
 
 const router = createRouter({
@@ -49,10 +55,7 @@ router.install()
 
 const App: React.FunctionComponent = () => {
   return (
-    <>
-      <RouterView />
-      
-    </>
+    <RouterView />
     // <>
     //   <HashRouter>
     //     <Switch>

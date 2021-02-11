@@ -7,7 +7,10 @@ import { ref, watch, Input, defineComponent } from '../../..'
 
 const apiURL = 'https://api.github.com/repos/vuejs/vue/commits?per_page=3&sha='
 
-export default defineComponent<RouteComponentProps>(() => {
+export default defineComponent<RouteComponentProps & {
+  style?: React.CSSProperties
+  className?: string
+}>((props) => {
   const branches = ref(['master', 'dev'])
   const currentBranch = ref('master')
   const commits = ref<any[] | null>(null)
@@ -37,7 +40,7 @@ export default defineComponent<RouteComponentProps>(() => {
   return () => {
     console.log('[GithubCommitView] render')
     return (
-      <div id="demo">
+      <div id="demo" style={props.style} className={props.className}>
         <h1>Latest Vue.js Commits</h1>
         {branches.value.map((branch) => {
           return (
