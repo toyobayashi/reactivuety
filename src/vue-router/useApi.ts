@@ -1,4 +1,4 @@
-import { inject } from 'vue'
+import { inject } from '../index'
 import { routerKey, routeLocationKey } from './injectionSymbols'
 import { Router } from './router'
 import { RouteLocationNormalizedLoaded } from './types'
@@ -8,7 +8,7 @@ import { RouteLocationNormalizedLoaded } from './types'
  * templates.
  */
 export function useRouter(): Router {
-  return inject(routerKey)!
+  return inject<Router>(routerKey)!
 }
 
 /**
@@ -16,5 +16,5 @@ export function useRouter(): Router {
  * templates.
  */
 export function useRoute(): RouteLocationNormalizedLoaded {
-  return inject(routeLocationKey)!
+  return inject<RouteLocationNormalizedLoaded>(routeLocationKey)!
 }

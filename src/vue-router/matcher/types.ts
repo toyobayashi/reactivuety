@@ -5,7 +5,7 @@ import {
   _RouteRecordProps,
   NavigationGuardNextCallback,
 } from '../types'
-import { ComponentPublicInstance } from 'vue'
+import { ComponentInternalInstance } from '../../core/component'
 
 // normalize component/components into components and make every property always present
 /**
@@ -71,7 +71,7 @@ export interface RouteRecordNormalized {
    * in practice. It will work if multiple apps are rendering different named
    * views.
    */
-  instances: Record<string, ComponentPublicInstance | undefined | null>
+  instances: Record<string, ComponentInternalInstance | undefined | null>
   // can only be of of the same type as this record
   /**
    * Defines if this record is the alias of another one. This property is

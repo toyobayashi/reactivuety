@@ -102,7 +102,7 @@ const ErrorTypeMessages = {
   [ErrorTypes.NAVIGATION_CANCELLED]({ from, to }: NavigationFailure) {
     return `Navigation cancelled from "${from.fullPath}" to "${to.fullPath}" with a new navigation.`
   },
-  [ErrorTypes.NAVIGATION_DUPLICATED]({ from, to }: NavigationFailure) {
+  [ErrorTypes.NAVIGATION_DUPLICATED]({ from }: NavigationFailure) {
     return `Avoided redundant navigation to current location: "${from.fullPath}".`
   },
 }
@@ -114,7 +114,7 @@ export function createRouterError<E extends RouterError>(
   type: E['type'],
   params: Omit<E, 'type' | keyof Error>
 ): E {
-  if (__DEV__ || !__BROWSER__) {
+  if (__DEV__) {
     return assign(
       new Error(ErrorTypeMessages[type](params as any)),
       {

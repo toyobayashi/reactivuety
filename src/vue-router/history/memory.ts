@@ -62,7 +62,7 @@ export function createMemoryHistory(base: string = ''): RouterHistory {
       setLocation(to)
     },
 
-    push(to, data?: HistoryState) {
+    push(to, _data?: HistoryState) {
       setLocation(to)
     },
 

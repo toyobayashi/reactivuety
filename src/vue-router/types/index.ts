@@ -1,6 +1,8 @@
+import { ForwardRefExoticComponent, PropsWithChildren, PropsWithoutRef, RefAttributes } from 'react'
 import { LocationQuery, LocationQueryRaw } from '../query'
 import { PathParserOptions } from '../matcher'
-import { Ref, ComputedRef, ComponentPublicInstance, Component } from 'vue'
+import { Ref, ComputedRef } from '@vue/reactivity'
+import { ComponentInternalInstance } from '../../core/component'
 import { RouteRecord, RouteRecordNormalized } from '../matcher/types'
 import { HistoryState } from '../history/common'
 import { NavigationFailure } from '../errors'
@@ -182,7 +184,7 @@ export interface RouteLocationNormalized extends _RouteLocationBase {
 /**
  * Allowed Component in {@link RouteLocationMatched}
  */
-export type RouteComponent = Component
+export type RouteComponent = ForwardRefExoticComponent<PropsWithChildren<PropsWithoutRef<any> & RefAttributes<any>>>
 /**
  * Allowed Component definitions in route records provided by the user
  */
@@ -368,7 +370,7 @@ export interface NavigationGuardNext {
   // _called: boolean
 }
 
-export type NavigationGuardNextCallback = (vm: ComponentPublicInstance) => any
+export type NavigationGuardNextCallback = (vm: ComponentInternalInstance) => any
 
 export type NavigationGuardReturn =
   | void

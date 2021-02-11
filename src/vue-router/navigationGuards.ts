@@ -17,8 +17,9 @@ import {
   NavigationFailure,
   NavigationRedirectError,
 } from './errors'
-import { ComponentOptions, onUnmounted, onActivated, onDeactivated } from 'vue'
-import { inject, getCurrentInstance } from 'vue'
+import { onUnmounted } from '../index'
+import { inject } from '../core/apiInject'
+import { getCurrentInstance } from '../core/component'
 import { matchedRouteKey } from './injectionSymbols'
 import { RouteRecordNormalized } from './matcher/types'
 import { isESModule } from './utils'
@@ -34,11 +35,11 @@ function registerGuard(
   }
 
   onUnmounted(removeFromList)
-  onDeactivated(removeFromList)
+  // onDeactivated(removeFromList)
 
-  onActivated(() => {
-    record[name].add(guard)
-  })
+  // onActivated(() => {
+  //   record[name].add(guard)
+  // })
 
   record[name].add(guard)
 }
@@ -281,7 +282,7 @@ export function extractComponentsGuards(
 
       if (isRouteComponent(rawComponent)) {
         // __vccOpts is added by vue-class-component and contain the regular options
-        let options: ComponentOptions =
+        let options: any =
           (rawComponent as any).__vccOpts || rawComponent
         const guard = options[guardType]
         guard && guards.push(guardToPromiseFn(guard, to, from, record, name))

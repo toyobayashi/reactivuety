@@ -1,21 +1,17 @@
 import {
-  defineComponent,
-  h,
-  PropType,
-  inject,
   computed,
   reactive,
   unref,
-  VNodeProps,
-  AllowedComponentProps,
-  ComponentCustomProps,
-} from 'vue'
+} from '@vue/reactivity'
+import * as React from 'react'
+import { inject } from '../core/apiInject'
 import { RouteLocationRaw, VueUseOptions, RouteLocation } from './types'
 import { isSameRouteLocationParams, isSameRouteRecord } from './location'
 import { routerKey, routeLocationKey } from './injectionSymbols'
 import { RouteRecord } from './matcher/types'
 import { assign } from './utils'
 import { NavigationFailure } from './errors'
+import { useSetup } from '../useSetup'
 
 export interface RouterLinkOptions {
   /**
@@ -61,8 +57,8 @@ export type UseLinkOptions = VueUseOptions<RouterLinkOptions>
 // TODO: we could allow currentRoute as a prop to expose `isActive` and
 // `isExactActive` behavior should go through an RFC
 export function useLink(props: UseLinkOptions) {
-  const router = inject(routerKey)!
-  const currentRoute = inject(routeLocationKey)!
+  const router = inject<any>(routerKey)!
+  const currentRoute = inject<any>(routeLocationKey)!
 
   const route = computed(() => router.resolve(unref(props.to)))
 
@@ -125,27 +121,10 @@ export function useLink(props: UseLinkOptions) {
   }
 }
 
-export const RouterLinkImpl = /*#__PURE__*/ defineComponent({
-  name: 'RouterLink',
-  props: {
-    to: {
-      type: [String, Object] as PropType<RouteLocationRaw>,
-      required: true,
-    },
-    replace: Boolean,
-    activeClass: String,
-    // inactiveClass: String,
-    exactActiveClass: String,
-    custom: Boolean,
-    ariaCurrentValue: {
-      type: String as PropType<RouterLinkProps['ariaCurrentValue']>,
-      default: 'page',
-    },
-  },
-
-  setup(props, { slots, attrs }) {
+export const RouterLink = React.forwardRef<HTMLAnchorElement, RouterLinkProps>((props) => {
+  const { link, elClassName } = useSetup((props) => {
     const link = reactive(useLink(props))
-    const { options } = inject(routerKey)!
+    const { options } = inject<any>(routerKey)!
 
     const elClass = computed(() => ({
       [getLinkClass(
@@ -165,44 +144,34 @@ export const RouterLinkImpl = /*#__PURE__*/ defineComponent({
       )]: link.isExactActive,
     }))
 
-    return () => {
-      const children = slots.default && slots.default(link)
-      return props.custom
-        ? children
-        : h(
-            'a',
-            assign(
-              {
-                'aria-current': link.isExactActive
-                  ? props.ariaCurrentValue
-                  : null,
-                onClick: link.navigate,
-                href: link.href,
-              },
-              attrs,
-              {
-                class: elClass.value,
-              }
-            ),
-            children
-          )
-    }
-  },
-})
+    const elClassName = Object.keys(elClass).filter(k => {
+      return !!(elClass.value[k])
+    }).join(' ')
 
-// export the public type for h/tsx inference
-// also to avoid inline import() in generated d.ts files
-/**
- * Component to render a link that triggers a navigation on click.
- */
-export const RouterLink = (RouterLinkImpl as any) as {
-  new (): {
-    $props: AllowedComponentProps &
-      ComponentCustomProps &
-      VNodeProps &
-      RouterLinkProps
-  }
-}
+    return { link, elClass, elClassName }
+  }, props)
+
+  return props.custom
+    ? React.createElement(React.Fragment, null, props.children)
+    : React.createElement(
+        'a',
+        assign(
+          {
+            'aria-current': link.isExactActive
+              ? props.ariaCurrentValue
+              : null,
+            onClick: link.navigate,
+            href: link.href,
+          },
+          props,
+          {
+            className: elClassName,
+          }
+        ),
+        props.children
+      )
+})
+RouterLink.displayName = 'RouterLink'
 
 function guardEvent(e: MouseEvent) {
   // don't redirect with control keys

@@ -4,6 +4,8 @@
  * @packageDocumentation
  */
 
+import * as _VueRouter from './vue-router/index'
+
 export {
   computed
 } from './core/apiComputed'
@@ -101,6 +103,8 @@ export {
   VModelPropsWithLazy,
   CheckboxProps
 } from './dom/useVModel'
+
+export const VueRouter = _VueRouter
 
 /** @public */
 export const version: string = __VERSION__

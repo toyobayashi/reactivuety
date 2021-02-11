@@ -1,7 +1,4 @@
-import { InjectionKey, ComputedRef, Ref } from 'vue'
-import { RouteLocationNormalizedLoaded } from './types'
-import { Router } from './router'
-import { RouteRecordNormalized } from './matcher/types'
+import { InjectionKey } from '../index'
 
 export const hasSymbol =
   typeof Symbol === 'function' && typeof Symbol.toStringTag === 'symbol'
@@ -22,7 +19,7 @@ export const PolySymbol = (name: string) =>
  */
 export const matchedRouteKey = /*#__PURE__*/ PolySymbol(
   __DEV__ ? 'router view location matched' : 'rvlm'
-) as InjectionKey<ComputedRef<RouteRecordNormalized | undefined>>
+) as InjectionKey
 
 /**
  * Allows overriding the router view depth to control which component in
@@ -32,7 +29,7 @@ export const matchedRouteKey = /*#__PURE__*/ PolySymbol(
  */
 export const viewDepthKey = /*#__PURE__*/ PolySymbol(
   __DEV__ ? 'router view depth' : 'rvd'
-) as InjectionKey<number>
+) as InjectionKey
 
 /**
  * Allows overriding the router instance returned by `useRouter` in tests. r
@@ -42,7 +39,7 @@ export const viewDepthKey = /*#__PURE__*/ PolySymbol(
  */
 export const routerKey = /*#__PURE__*/ PolySymbol(
   __DEV__ ? 'router' : 'r'
-) as InjectionKey<Router>
+) as InjectionKey
 
 /**
  * Allows overriding the current route returned by `useRoute` in tests. rl
@@ -52,7 +49,7 @@ export const routerKey = /*#__PURE__*/ PolySymbol(
  */
 export const routeLocationKey = /*#__PURE__*/ PolySymbol(
   __DEV__ ? 'route location' : 'rl'
-) as InjectionKey<RouteLocationNormalizedLoaded>
+) as InjectionKey
 
 /**
  * Allows overriding the current route used by router-view. Internally this is
@@ -62,4 +59,4 @@ export const routeLocationKey = /*#__PURE__*/ PolySymbol(
  */
 export const routerViewLocationKey = /*#__PURE__*/ PolySymbol(
   __DEV__ ? 'router view location' : 'rvl'
-) as InjectionKey<Ref<RouteLocationNormalizedLoaded>>
+) as InjectionKey

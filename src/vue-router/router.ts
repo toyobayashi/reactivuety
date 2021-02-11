@@ -11,17 +11,17 @@ import {
   isRouteName,
   NavigationGuardWithThis,
   RouteLocationOptions,
-  MatcherLocationRaw,
+  MatcherLocationRaw
 } from './types'
 import { RouterHistory, HistoryState } from './history/common'
 import {
   ScrollPosition,
   getSavedScrollPosition,
   getScrollKey,
-  saveScrollPosition,
-  computeScrollPosition,
+  // saveScrollPosition,
+  // computeScrollPosition,
   scrollToPosition,
-  _ScrollPositionNormalized,
+  _ScrollPositionNormalized
 } from './scrollBehavior'
 import { createRouterMatcher, PathParserOptions } from './matcher'
 import {
@@ -29,39 +29,34 @@ import {
   ErrorTypes,
   NavigationFailure,
   NavigationRedirectError,
-  isNavigationFailure,
+  isNavigationFailure
 } from './errors'
-import { applyToParams, isBrowser, assign, noop } from './utils'
+import { applyToParams, isBrowser, assign/* , noop */ } from './utils'
 import { useCallbacks } from './utils/callbacks'
 import { encodeParam, decode, encodeHash } from './encoding'
 import {
   normalizeQuery,
   parseQuery as originalParseQuery,
   stringifyQuery as originalStringifyQuery,
-  LocationQuery,
+  LocationQuery
 } from './query'
+import { Ref/* , ComputedRef, reactive, unref */ } from '@vue/reactivity'
 import {
   shallowRef,
-  Ref,
   nextTick,
-  App,
-  ComputedRef,
-  reactive,
-  unref,
-  computed,
-} from 'vue'
+  // computed
+} from '../index'
 import { RouteRecord, RouteRecordNormalized } from './matcher/types'
 import { parseURL, stringifyURL, isSameRouteLocation } from './location'
 import { extractComponentsGuards, guardToPromiseFn } from './navigationGuards'
 import { warn } from './warning'
-import { RouterLink } from './RouterLink'
-import { RouterView } from './RouterView'
-import {
-  routeLocationKey,
-  routerKey,
-  routerViewLocationKey,
-} from './injectionSymbols'
-import { addDevtools } from './devtools'
+// import { RouterLink } from './RouterLink'
+// import { RouterView } from './RouterView'
+// import {
+//   routeLocationKey,
+//   routerKey,
+//   routerViewLocationKey
+// } from './injectionSymbols'
 
 /**
  * Internal type to define an ErrorHandler
@@ -69,25 +64,18 @@ import { addDevtools } from './devtools'
  */
 export type _ErrorHandler = (error: any) => any
 // resolve, reject arguments of Promise constructor
-type OnReadyCallback = [() => void, (reason?: any) => void]
+type OnReadyCallback = [(value: void | PromiseLike<void>) => void, (reason?: any) => void]
 
 type Awaitable<T> = T | Promise<T>
 
 /**
  * Type of the `scrollBehavior` option that can be passed to `createRouter`.
  */
-export interface RouterScrollBehavior {
-  /**
-   * @param to - Route location where we are navigating to
-   * @param from - Route location where we are navigating from
-   * @param savedPosition - saved position if it exists, `null` otherwise
-   */
-  (
-    to: RouteLocationNormalized,
-    from: RouteLocationNormalizedLoaded,
-    savedPosition: _ScrollPositionNormalized | null
-  ): Awaitable<ScrollPosition | false | void>
-}
+export type RouterScrollBehavior = (
+  to: RouteLocationNormalized,
+  from: RouteLocationNormalizedLoaded,
+  savedPosition: _ScrollPositionNormalized | null
+) => Awaitable<ScrollPosition | false | void>
 
 /**
  * Options to initialize a {@link Router} instance.
@@ -189,29 +177,23 @@ export interface Router {
    * @param parentName - Parent Route Record where `route` should be appended at
    * @param route - Route Record to add
    */
-  addRoute(parentName: RouteRecordName, route: RouteRecordRaw): () => void
-  /**
-   * Add a new {@link RouteRecordRaw | route record} to the router.
-   *
-   * @param route - Route Record to add
-   */
-  addRoute(route: RouteRecordRaw): () => void
+  addRoute: ((parentName: RouteRecordName, route: RouteRecordRaw) => () => void) & ((route: RouteRecordRaw) => () => void)
   /**
    * Remove an existing route by its name.
    *
    * @param name - Name of the route to remove
    */
-  removeRoute(name: RouteRecordName): void
+  removeRoute: (name: RouteRecordName) => void
   /**
    * Checks if a route with a given name exists
    *
    * @param name - Name of the route to check
    */
-  hasRoute(name: RouteRecordName): boolean
+  hasRoute: (name: RouteRecordName) => boolean
   /**
    * Get a full list of all the {@link RouteRecord | route records}.
    */
-  getRoutes(): RouteRecord[]
+  getRoutes: () => RouteRecord[]
 
   /**
    * Returns the {@link RouteLocation | normalized version} of a
@@ -220,7 +202,7 @@ export interface Router {
    *
    * @param to - Raw route location to resolve
    */
-  resolve(to: RouteLocationRaw): RouteLocation & { href: string }
+  resolve: (to: RouteLocationRaw) => RouteLocation & { href: string }
 
   /**
    * Programmatically navigate to a new URL by pushing an entry in the history
@@ -228,24 +210,24 @@ export interface Router {
    *
    * @param to - Route location to navigate to
    */
-  push(to: RouteLocationRaw): Promise<NavigationFailure | void | undefined>
+  push: (to: RouteLocationRaw) => Promise<NavigationFailure | void | undefined>
   /**
    * Programmatically navigate to a new URL by replacing the current entry in
    * the history stack.
    *
    * @param to - Route location to navigate to
    */
-  replace(to: RouteLocationRaw): Promise<NavigationFailure | void | undefined>
+  replace: (to: RouteLocationRaw) => Promise<NavigationFailure | void | undefined>
   /**
    * Go back in history if possible by calling `history.back()`. Equivalent to
    * `router.go(-1)`.
    */
-  back(): ReturnType<Router['go']>
+  back: () => ReturnType<Router['go']>
   /**
    * Go forward in history if possible by calling `history.forward()`.
    * Equivalent to `router.go(1)`.
    */
-  forward(): ReturnType<Router['go']>
+  forward: () => ReturnType<Router['go']>
   /**
    * Allows you to move forward or backward through the history. Calls
    * `history.go()`.
@@ -253,7 +235,7 @@ export interface Router {
    * @param delta - The position in the history to which you want to move,
    * relative to the current page
    */
-  go(delta: number): void
+  go: (delta: number) => void
 
   /**
    * Add a navigation guard that executes before any navigation. Returns a
@@ -261,7 +243,7 @@ export interface Router {
    *
    * @param guard - navigation guard to add
    */
-  beforeEach(guard: NavigationGuardWithThis<undefined>): () => void
+  beforeEach: (guard: NavigationGuardWithThis<undefined>) => () => void
   /**
    * Add a navigation guard that executes before navigation is about to be
    * resolved. At this state all component have been fetched and other
@@ -277,7 +259,7 @@ export interface Router {
    *
    * @param guard - navigation guard to add
    */
-  beforeResolve(guard: NavigationGuardWithThis<undefined>): () => void
+  beforeResolve: (guard: NavigationGuardWithThis<undefined>) => () => void
   /**
    * Add a navigation hook that is executed after every navigation. Returns a
    * function that removes the registered hook.
@@ -293,7 +275,7 @@ export interface Router {
    *
    * @param guard - navigation hook to add
    */
-  afterEach(guard: NavigationHookAfter): () => void
+  afterEach: (guard: NavigationHookAfter) => () => void
 
   /**
    * Adds an error handler that is called every time a non caught error happens
@@ -304,7 +286,7 @@ export interface Router {
    *
    * @param handler - error handler to register
    */
-  onError(handler: _ErrorHandler): () => void
+  onError: (handler: _ErrorHandler) => () => void
   /**
    * Returns a Promise that resolves when the router has completed the initial
    * navigation, which means it has resolved all async enter hooks and async
@@ -316,7 +298,7 @@ export interface Router {
    * push the initial location while on client side, the router automatically
    * picks it up from the URL.
    */
-  isReady(): Promise<void>
+  isReady: () => Promise<void>
 
   /**
    * Called automatically by `app.use(router)`. Should not be called manually by
@@ -325,7 +307,7 @@ export interface Router {
    * @internal
    * @param app - Application that uses the router
    */
-  install(app: App): void
+  // install: (app: App) => void
 }
 
 /**
@@ -333,11 +315,11 @@ export interface Router {
  *
  * @param options - {@link RouterOptions}
  */
-export function createRouter(options: RouterOptions): Router {
+export function createRouter (options: RouterOptions): Router {
   const matcher = createRouterMatcher(options.routes, options)
-  let parseQuery = options.parseQuery || originalParseQuery
-  let stringifyQuery = options.stringifyQuery || originalStringifyQuery
-  let routerHistory = options.history
+  const parseQuery = options.parseQuery || originalParseQuery
+  const stringifyQuery = options.stringifyQuery || originalStringifyQuery
+  const routerHistory = options.history
 
   const beforeGuards = useCallbacks<NavigationGuardWithThis<undefined>>()
   const beforeResolveGuards = useCallbacks<NavigationGuardWithThis<undefined>>()
@@ -359,7 +341,7 @@ export function createRouter(options: RouterOptions): Router {
   const encodeParams = applyToParams.bind(null, encodeParam)
   const decodeParams = applyToParams.bind(null, decode)
 
-  function addRoute(
+  function addRoute (
     parentOrRoute: RouteRecordName | RouteRecordRaw,
     route?: RouteRecordRaw
   ) {
@@ -375,8 +357,8 @@ export function createRouter(options: RouterOptions): Router {
     return matcher.addRoute(record, parent)
   }
 
-  function removeRoute(name: RouteRecordName) {
-    let recordMatcher = matcher.getRecordMatcher(name)
+  function removeRoute (name: RouteRecordName) {
+    const recordMatcher = matcher.getRecordMatcher(name)
     if (recordMatcher) {
       matcher.removeRoute(recordMatcher)
     } else if (__DEV__) {
@@ -384,15 +366,15 @@ export function createRouter(options: RouterOptions): Router {
     }
   }
 
-  function getRoutes() {
+  function getRoutes () {
     return matcher.getRoutes().map(routeMatcher => routeMatcher.record)
   }
 
-  function hasRoute(name: RouteRecordName): boolean {
+  function hasRoute (name: RouteRecordName): boolean {
     return !!matcher.getRecordMatcher(name)
   }
 
-  function resolve(
+  function resolve (
     rawLocation: Readonly<RouteLocationRaw>,
     currentLocation?: RouteLocationNormalizedLoaded
   ): RouteLocation & { href: string } {
@@ -400,23 +382,23 @@ export function createRouter(options: RouterOptions): Router {
     // we create a copy to modify it later
     currentLocation = assign({}, currentLocation || currentRoute.value)
     if (typeof rawLocation === 'string') {
-      let locationNormalized = parseURL(
+      const locationNormalized = parseURL(
         parseQuery,
         rawLocation,
         currentLocation.path
       )
-      let matchedRoute = matcher.resolve(
+      const matchedRoute = matcher.resolve(
         { path: locationNormalized.path },
         currentLocation
       )
 
-      let href = routerHistory.createHref(locationNormalized.fullPath)
+      const href = routerHistory.createHref(locationNormalized.fullPath)
       if (__DEV__) {
-        if (href.startsWith('//'))
+        if (href.startsWith('//')) {
           warn(
             `Location "${rawLocation}" resolved to "${href}". A resolved location cannot start with multiple slashes.`
           )
-        else if (!matchedRoute.matched.length) {
+        } else if (!matchedRoute.matched.length) {
           warn(`No match found for location with path "${rawLocation}"`)
         }
       }
@@ -426,7 +408,7 @@ export function createRouter(options: RouterOptions): Router {
         params: decodeParams(matchedRoute.params),
         hash: decode(locationNormalized.hash),
         redirectedFrom: undefined,
-        href,
+        href
       })
     }
 
@@ -447,19 +429,19 @@ export function createRouter(options: RouterOptions): Router {
         )
       }
       matcherLocation = assign({}, rawLocation, {
-        path: parseURL(parseQuery, rawLocation.path, currentLocation.path).path,
+        path: parseURL(parseQuery, rawLocation.path, currentLocation.path).path
       })
     } else {
       // pass encoded values to the matcher so it can produce encoded path and fullPath
       matcherLocation = assign({}, rawLocation, {
-        params: encodeParams(rawLocation.params),
+        params: encodeParams(rawLocation.params)
       })
       // current location params are decoded, we need to encode them in case the
       // matcher merges the params
       currentLocation.params = encodeParams(currentLocation.params)
     }
 
-    let matchedRoute = matcher.resolve(matcherLocation, currentLocation)
+    const matchedRoute = matcher.resolve(matcherLocation, currentLocation)
     const hash = rawLocation.hash || ''
 
     if (__DEV__ && hash && !hash.startsWith('#')) {
@@ -476,11 +458,11 @@ export function createRouter(options: RouterOptions): Router {
       stringifyQuery,
       assign({}, rawLocation, {
         hash: encodeHash(hash),
-        path: matchedRoute.path,
+        path: matchedRoute.path
       })
     )
 
-    let href = routerHistory.createHref(fullPath)
+    const href = routerHistory.createHref(fullPath)
     if (__DEV__) {
       if (href.startsWith('//')) {
         warn(
@@ -509,17 +491,17 @@ export function createRouter(options: RouterOptions): Router {
           // https://github.com/vuejs/vue-router-next/issues/328#issuecomment-649481567
           stringifyQuery === originalStringifyQuery
             ? normalizeQuery(rawLocation.query)
-            : (rawLocation.query as LocationQuery),
+            : (rawLocation.query as LocationQuery)
       },
       matchedRoute,
       {
         redirectedFrom: undefined,
-        href,
+        href
       }
     )
   }
 
-  function locationAsObject(
+  function locationAsObject (
     to: RouteLocationRaw | RouteLocationNormalized
   ): Exclude<RouteLocationRaw, string> | RouteLocationNormalized {
     return typeof to === 'string'
@@ -527,7 +509,7 @@ export function createRouter(options: RouterOptions): Router {
       : assign({}, to)
   }
 
-  function checkCanceledNavigation(
+  function checkCanceledNavigation (
     to: RouteLocationNormalized,
     from: RouteLocationNormalized
   ): NavigationFailure | void {
@@ -536,21 +518,21 @@ export function createRouter(options: RouterOptions): Router {
         ErrorTypes.NAVIGATION_CANCELLED,
         {
           from,
-          to,
+          to
         }
       )
     }
   }
 
-  function push(to: RouteLocationRaw | RouteLocation) {
+  function push (to: RouteLocationRaw | RouteLocation) {
     return pushWithRedirect(to)
   }
 
-  function replace(to: RouteLocationRaw | RouteLocationNormalized) {
+  function replace (to: RouteLocationRaw | RouteLocationNormalized) {
     return push(assign(locationAsObject(to), { replace: true }))
   }
 
-  function handleRedirectRecord(to: RouteLocation): RouteLocationRaw | void {
+  function handleRedirectRecord (to: RouteLocation): RouteLocationRaw | void {
     const lastMatched = to.matched[to.matched.length - 1]
     if (lastMatched && lastMatched.redirect) {
       const { redirect } = lastMatched
@@ -559,8 +541,8 @@ export function createRouter(options: RouterOptions): Router {
 
       if (typeof newTargetLocation === 'string') {
         newTargetLocation =
-          newTargetLocation.indexOf('?') > -1 ||
-          newTargetLocation.indexOf('#') > -1
+          newTargetLocation.includes('?') ||
+          newTargetLocation.includes('#')
             ? (newTargetLocation = locationAsObject(newTargetLocation))
             : { path: newTargetLocation }
       }
@@ -586,14 +568,14 @@ export function createRouter(options: RouterOptions): Router {
         {
           query: to.query,
           hash: to.hash,
-          params: to.params,
+          params: to.params
         },
         newTargetLocation
       )
     }
   }
 
-  function pushWithRedirect(
+  function pushWithRedirect (
     to: RouteLocationRaw | RouteLocation,
     redirectedFrom?: RouteLocation
   ): Promise<NavigationFailure | void | undefined> {
@@ -606,16 +588,17 @@ export function createRouter(options: RouterOptions): Router {
 
     const shouldRedirect = handleRedirectRecord(targetLocation)
 
-    if (shouldRedirect)
+    if (shouldRedirect) {
       return pushWithRedirect(
         assign(locationAsObject(shouldRedirect), {
           state: data,
           force,
-          replace,
+          replace
         }),
         // keep original redirectedFrom if it exists
         redirectedFrom || targetLocation
       )
+    }
 
     // if it was a redirect we already called `pushWithRedirect` above
     const toLocation = targetLocation as RouteLocationNormalized
@@ -646,7 +629,7 @@ export function createRouter(options: RouterOptions): Router {
         isNavigationFailure(error)
           ? error
           : // reject any unknown error
-            triggerError(error)
+          triggerError(error)
       )
       .then((failure: NavigationFailure | NavigationRedirectError | void) => {
         if (failure) {
@@ -663,10 +646,10 @@ export function createRouter(options: RouterOptions): Router {
               ) &&
               // and we have done it a couple of times
               redirectedFrom &&
-              // @ts-ignore
+              // @ts-expect-error
               (redirectedFrom._count = redirectedFrom._count
-                ? // @ts-ignore
-                  redirectedFrom._count + 1
+                ? // @ts-expect-error
+                redirectedFrom._count + 1
                 : 1) > 10
             ) {
               warn(
@@ -682,7 +665,7 @@ export function createRouter(options: RouterOptions): Router {
               assign(locationAsObject(failure.to), {
                 state: data,
                 force,
-                replace,
+                replace
               }),
               // preserve the original redirectedFrom if any
               redirectedFrom || toLocation
@@ -712,7 +695,7 @@ export function createRouter(options: RouterOptions): Router {
    * @param to
    * @param from
    */
-  function checkCanceledNavigationAndReject(
+  function checkCanceledNavigationAndReject (
     to: RouteLocationNormalized,
     from: RouteLocationNormalized
   ): Promise<void> {
@@ -722,16 +705,16 @@ export function createRouter(options: RouterOptions): Router {
 
   // TODO: refactor the whole before guards by internally using router.beforeEach
 
-  function navigate(
+  function navigate (
     to: RouteLocationNormalized,
     from: RouteLocationNormalizedLoaded
   ): Promise<any> {
-    let guards: Lazy<any>[]
+    let guards: Array<Lazy<any>>
 
     const [
       leavingRecords,
       updatingRecords,
-      enteringRecords,
+      enteringRecords
     ] = extractChangingRecords(to, from)
 
     // all components here have been resolved once because we are leaving
@@ -794,10 +777,9 @@ export function createRouter(options: RouterOptions): Router {
           guards = []
           for (const record of to.matched) {
             // do not trigger beforeEnter on reused views
-            if (record.beforeEnter && from.matched.indexOf(record as any) < 0) {
+            if (record.beforeEnter && !from.matched.includes(record as any)) {
               if (Array.isArray(record.beforeEnter)) {
-                for (const beforeEnter of record.beforeEnter)
-                  guards.push(guardToPromiseFn(beforeEnter, to, from))
+                for (const beforeEnter of record.beforeEnter) { guards.push(guardToPromiseFn(beforeEnter, to, from)) }
               } else {
                 guards.push(guardToPromiseFn(record.beforeEnter, to, from))
               }
@@ -845,7 +827,7 @@ export function createRouter(options: RouterOptions): Router {
     )
   }
 
-  function triggerAfterEach(
+  function triggerAfterEach (
     to: RouteLocationNormalizedLoaded,
     from: RouteLocationNormalizedLoaded,
     failure?: NavigationFailure | void
@@ -860,7 +842,7 @@ export function createRouter(options: RouterOptions): Router {
    * - Changes the url if necessary
    * - Calls the scrollBehavior
    */
-  function finalizeNavigation(
+  function finalizeNavigation (
     toLocation: RouteLocationNormalizedLoaded,
     from: RouteLocationNormalizedLoaded,
     isPush: boolean,
@@ -880,17 +862,17 @@ export function createRouter(options: RouterOptions): Router {
     if (isPush) {
       // on the initial navigation, we want to reuse the scroll position from
       // history state if it exists
-      if (replace || isFirstNavigation)
+      if (replace || isFirstNavigation) {
         routerHistory.replace(
           toLocation.fullPath,
           assign(
             {
-              scroll: isFirstNavigation && state && state.scroll,
+              scroll: isFirstNavigation && state && state.scroll
             },
             data
           )
         )
-      else routerHistory.push(toLocation.fullPath, data)
+      } else routerHistory.push(toLocation.fullPath, data)
     }
 
     // accept current navigation
@@ -900,99 +882,99 @@ export function createRouter(options: RouterOptions): Router {
     markAsReady()
   }
 
-  let removeHistoryListener: () => void
+  // let removeHistoryListener: () => void
   // attach listener to history to trigger navigations
-  function setupListeners() {
-    removeHistoryListener = routerHistory.listen((to, _from, info) => {
-      // cannot be a redirect route because it was in history
-      let toLocation = resolve(to) as RouteLocationNormalized
+  function setupListeners () {
+    // removeHistoryListener = routerHistory.listen((to, _from, info) => {
+    //   // cannot be a redirect route because it was in history
+    //   const toLocation = resolve(to) as RouteLocationNormalized
 
-      // due to dynamic routing, and to hash history with manual navigation
-      // (manually changing the url or calling history.hash = '#/somewhere'),
-      // there could be a redirect record in history
-      const shouldRedirect = handleRedirectRecord(toLocation)
-      if (shouldRedirect) {
-        pushWithRedirect(
-          assign(shouldRedirect, { replace: true }),
-          toLocation
-        ).catch(noop)
-        return
-      }
+    //   // due to dynamic routing, and to hash history with manual navigation
+    //   // (manually changing the url or calling history.hash = '#/somewhere'),
+    //   // there could be a redirect record in history
+    //   const shouldRedirect = handleRedirectRecord(toLocation)
+    //   if (shouldRedirect) {
+    //     pushWithRedirect(
+    //       assign(shouldRedirect, { replace: true }),
+    //       toLocation
+    //     ).catch(noop)
+    //     return
+    //   }
 
-      pendingLocation = toLocation
-      const from = currentRoute.value
+    //   pendingLocation = toLocation
+    //   const from = currentRoute.value
 
-      // TODO: should be moved to web history?
-      if (isBrowser) {
-        saveScrollPosition(
-          getScrollKey(from.fullPath, info.delta),
-          computeScrollPosition()
-        )
-      }
+    //   // TODO: should be moved to web history?
+    //   if (isBrowser) {
+    //     saveScrollPosition(
+    //       getScrollKey(from.fullPath, info.delta),
+    //       computeScrollPosition()
+    //     )
+    //   }
 
-      navigate(toLocation, from)
-        .catch((error: NavigationFailure | NavigationRedirectError) => {
-          if (
-            isNavigationFailure(
-              error,
-              ErrorTypes.NAVIGATION_ABORTED | ErrorTypes.NAVIGATION_CANCELLED
-            )
-          ) {
-            return error
-          }
-          if (
-            isNavigationFailure(error, ErrorTypes.NAVIGATION_GUARD_REDIRECT)
-          ) {
-            // Here we could call if (info.delta) routerHistory.go(-info.delta,
-            // false) but this is bug prone as we have no way to wait the
-            // navigation to be finished before calling pushWithRedirect. Using
-            // a setTimeout of 16ms seems to work but there is not guarantee for
-            // it to work on every browser. So Instead we do not restore the
-            // history entry and trigger a new navigation as requested by the
-            // navigation guard.
+    //   navigate(toLocation, from)
+    //     .catch((error: NavigationFailure | NavigationRedirectError) => {
+    //       if (
+    //         isNavigationFailure(
+    //           error,
+    //           ErrorTypes.NAVIGATION_ABORTED | ErrorTypes.NAVIGATION_CANCELLED
+    //         )
+    //       ) {
+    //         return error
+    //       }
+    //       if (
+    //         isNavigationFailure(error, ErrorTypes.NAVIGATION_GUARD_REDIRECT)
+    //       ) {
+    //         // Here we could call if (info.delta) routerHistory.go(-info.delta,
+    //         // false) but this is bug prone as we have no way to wait the
+    //         // navigation to be finished before calling pushWithRedirect. Using
+    //         // a setTimeout of 16ms seems to work but there is not guarantee for
+    //         // it to work on every browser. So Instead we do not restore the
+    //         // history entry and trigger a new navigation as requested by the
+    //         // navigation guard.
 
-            // the error is already handled by router.push we just want to avoid
-            // logging the error
-            pushWithRedirect(
-              (error as NavigationRedirectError).to,
-              toLocation
-              // avoid an uncaught rejection, let push call triggerError
-            ).catch(noop)
-            // avoid the then branch
-            return Promise.reject()
-          }
-          // do not restore history on unknown direction
-          if (info.delta) routerHistory.go(-info.delta, false)
-          // unrecognized error, transfer to the global handler
-          return triggerError(error)
-        })
-        .then((failure: NavigationFailure | void) => {
-          failure =
-            failure ||
-            finalizeNavigation(
-              // after navigation, all matched components are resolved
-              toLocation as RouteLocationNormalizedLoaded,
-              from,
-              false
-            )
+    //         // the error is already handled by router.push we just want to avoid
+    //         // logging the error
+    //         pushWithRedirect(
+    //           (error as NavigationRedirectError).to,
+    //           toLocation
+    //           // avoid an uncaught rejection, let push call triggerError
+    //         ).catch(noop)
+    //         // avoid the then branch
+    //         return Promise.reject()
+    //       }
+    //       // do not restore history on unknown direction
+    //       if (info.delta) routerHistory.go(-info.delta, false)
+    //       // unrecognized error, transfer to the global handler
+    //       return triggerError(error)
+    //     })
+    //     .then((failure: NavigationFailure | void) => {
+    //       failure =
+    //         failure ||
+    //         finalizeNavigation(
+    //           // after navigation, all matched components are resolved
+    //           toLocation as RouteLocationNormalizedLoaded,
+    //           from,
+    //           false
+    //         )
 
-          // revert the navigation
-          if (failure && info.delta) routerHistory.go(-info.delta, false)
+    //       // revert the navigation
+    //       if (failure && info.delta) routerHistory.go(-info.delta, false)
 
-          triggerAfterEach(
-            toLocation as RouteLocationNormalizedLoaded,
-            from,
-            failure
-          )
-        })
-        .catch(noop)
-    })
+    //       triggerAfterEach(
+    //         toLocation as RouteLocationNormalizedLoaded,
+    //         from,
+    //         failure
+    //       )
+    //     })
+    //     .catch(noop)
+    // })
   }
 
   // Initialization and Errors
 
-  let readyHandlers = useCallbacks<OnReadyCallback>()
-  let errorHandlers = useCallbacks<_ErrorHandler>()
+  const readyHandlers = useCallbacks<OnReadyCallback>()
+  const errorHandlers = useCallbacks<_ErrorHandler>()
   let ready: boolean
 
   /**
@@ -1000,15 +982,14 @@ export function createRouter(options: RouterOptions): Router {
    * @param error - error to throw
    * @returns the error as a rejected promise
    */
-  function triggerError(error: any) {
+  function triggerError (error: any) {
     markAsReady(error)
     errorHandlers.list().forEach(handler => handler(error))
     return Promise.reject(error)
   }
 
-  function isReady(): Promise<void> {
-    if (ready && currentRoute.value !== START_LOCATION_NORMALIZED)
-      return Promise.resolve()
+  function isReady (): Promise<void> {
+    if (ready && currentRoute.value !== START_LOCATION_NORMALIZED) { return Promise.resolve() }
     return new Promise((resolve, reject) => {
       readyHandlers.add([resolve, reject])
     })
@@ -1019,7 +1000,7 @@ export function createRouter(options: RouterOptions): Router {
    * only be called once, otherwise does nothing.
    * @param err - optional error
    */
-  function markAsReady(err?: any): void {
+  function markAsReady (err?: any): void {
     if (ready) return
     ready = true
     setupListeners()
@@ -1030,7 +1011,7 @@ export function createRouter(options: RouterOptions): Router {
   }
 
   // Scroll behavior
-  function handleScroll(
+  function handleScroll (
     to: RouteLocationNormalizedLoaded,
     from: RouteLocationNormalizedLoaded,
     isPush: boolean,
@@ -1039,7 +1020,7 @@ export function createRouter(options: RouterOptions): Router {
     const { scrollBehavior } = options
     if (!isBrowser || !scrollBehavior) return Promise.resolve()
 
-    let scrollPosition: _ScrollPositionNormalized | null =
+    const scrollPosition: _ScrollPositionNormalized | null =
       (!isPush && getSavedScrollPosition(getScrollKey(to.fullPath, 0))) ||
       ((isFirstNavigation || !isPush) &&
         (history.state as HistoryState) &&
@@ -1047,15 +1028,15 @@ export function createRouter(options: RouterOptions): Router {
       null
 
     return nextTick()
-      .then(() => scrollBehavior!(to, from, scrollPosition))
+      .then(() => scrollBehavior(to, from, scrollPosition))
       .then(position => position && scrollToPosition(position))
       .catch(triggerError)
   }
 
   const go = (delta: number) => routerHistory.go(delta)
 
-  let started: boolean | undefined
-  const installedApps = new Set<App>()
+  // let started: boolean | undefined
+  // const installedApps = new Set<App>()
 
   const router: Router = {
     currentRoute,
@@ -1080,77 +1061,73 @@ export function createRouter(options: RouterOptions): Router {
     onError: errorHandlers.add,
     isReady,
 
-    install(app: App) {
-      const router = this
-      app.component('RouterLink', RouterLink)
-      app.component('RouterView', RouterView)
+    // install (app: App) {
+    //   const router = this
+    //   app.component('RouterLink', RouterLink)
+    //   app.component('RouterView', RouterView)
 
-      app.config.globalProperties.$router = router
-      Object.defineProperty(app.config.globalProperties, '$route', {
-        get: () => unref(currentRoute),
-      })
+    //   app.config.globalProperties.$router = router
+    //   Object.defineProperty(app.config.globalProperties, '$route', {
+    //     get: () => unref(currentRoute)
+    //   })
 
-      // this initial navigation is only necessary on client, on server it doesn't
-      // make sense because it will create an extra unnecessary navigation and could
-      // lead to problems
-      if (
-        isBrowser &&
-        // used for the initial navigation client side to avoid pushing
-        // multiple times when the router is used in multiple apps
-        !started &&
-        currentRoute.value === START_LOCATION_NORMALIZED
-      ) {
-        // see above
-        started = true
-        push(routerHistory.location).catch(err => {
-          if (__DEV__) warn('Unexpected error when starting the router:', err)
-        })
-      }
+    //   // this initial navigation is only necessary on client, on server it doesn't
+    //   // make sense because it will create an extra unnecessary navigation and could
+    //   // lead to problems
+    //   if (
+    //     isBrowser &&
+    //     // used for the initial navigation client side to avoid pushing
+    //     // multiple times when the router is used in multiple apps
+    //     !started &&
+    //     currentRoute.value === START_LOCATION_NORMALIZED
+    //   ) {
+    //     // see above
+    //     started = true
+    //     push(routerHistory.location).catch(err => {
+    //       if (__DEV__) warn('Unexpected error when starting the router:', err)
+    //     })
+    //   }
 
-      const reactiveRoute = {} as {
-        [k in keyof RouteLocationNormalizedLoaded]: ComputedRef<
-          RouteLocationNormalizedLoaded[k]
-        >
-      }
-      for (let key in START_LOCATION_NORMALIZED) {
-        // @ts-ignore: the key matches
-        reactiveRoute[key] = computed(() => currentRoute.value[key])
-      }
+    //   const reactiveRoute = {} as {
+    //     [k in keyof RouteLocationNormalizedLoaded]: ComputedRef<
+    //     RouteLocationNormalizedLoaded[k]
+    //     >
+    //   }
+    //   for (const key in START_LOCATION_NORMALIZED) {
+    //     // @ts-expect-error: the key matches
+    //     reactiveRoute[key] = computed(() => currentRoute.value[key])
+    //   }
 
-      app.provide(routerKey, router)
-      app.provide(routeLocationKey, reactive(reactiveRoute))
-      app.provide(routerViewLocationKey, currentRoute)
+    //   app.provide(routerKey, router)
+    //   app.provide(routeLocationKey, reactive(reactiveRoute))
+    //   app.provide(routerViewLocationKey, currentRoute)
 
-      let unmountApp = app.unmount
-      installedApps.add(app)
-      app.unmount = function () {
-        installedApps.delete(app)
-        if (installedApps.size < 1) {
-          removeHistoryListener()
-          currentRoute.value = START_LOCATION_NORMALIZED
-          started = false
-          ready = false
-        }
-        unmountApp.call(this, arguments)
-      }
-
-      if ((__DEV__ || __FEATURE_PROD_DEVTOOLS__) && __BROWSER__) {
-        addDevtools(app, router, matcher)
-      }
-    },
+    //   const unmountApp = app.unmount
+    //   installedApps.add(app)
+    //   app.unmount = function () {
+    //     installedApps.delete(app)
+    //     if (installedApps.size < 1) {
+    //       removeHistoryListener()
+    //       currentRoute.value = START_LOCATION_NORMALIZED
+    //       started = false
+    //       ready = false
+    //     }
+    //     unmountApp.call(this, arguments)
+    //   }
+    // }
   }
 
   return router
 }
 
-function runGuardQueue(guards: Lazy<any>[]): Promise<void> {
+function runGuardQueue (guards: Array<Lazy<any>>): Promise<void> {
   return guards.reduce(
     (promise, guard) => promise.then(() => guard()),
     Promise.resolve()
   )
 }
 
-function extractChangingRecords(
+function extractChangingRecords (
   to: RouteLocationNormalized,
   from: RouteLocationNormalizedLoaded
 ) {
@@ -1162,14 +1139,13 @@ function extractChangingRecords(
   for (let i = 0; i < len; i++) {
     const recordFrom = from.matched[i]
     if (recordFrom) {
-      if (to.matched.indexOf(recordFrom) < 0) leavingRecords.push(recordFrom)
+      if (!to.matched.includes(recordFrom)) leavingRecords.push(recordFrom)
       else updatingRecords.push(recordFrom)
     }
     const recordTo = to.matched[i]
     if (recordTo) {
       // the type doesn't matter because we are comparing per reference
-      if (from.matched.indexOf(recordTo as any) < 0)
-        enteringRecords.push(recordTo)
+      if (!from.matched.includes(recordTo as any)) { enteringRecords.push(recordTo) }
     }
   }
 

@@ -1,12 +1,10 @@
 import {
   NavigationGuardWithThis,
-  NavigationGuard,
-  RouteLocationNormalizedLoaded,
+  NavigationGuard
 } from './types'
-import { Router } from './router'
 
-declare module '@vue/runtime-core' {
-  export interface ComponentCustomOptions {
+declare module 'react' {
+  export interface FunctionComponent {
     /**
      * Guard called when the router is navigating to the route that is rendering
      * this component from a different route. Differently from `beforeRouteUpdate`
@@ -45,14 +43,42 @@ declare module '@vue/runtime-core' {
     beforeRouteLeave?: NavigationGuard
   }
 
-  export interface ComponentCustomProperties {
+  export interface ComponentClass {
     /**
-     * Normalized current location. See {@link RouteLocationNormalizedLoaded}.
+     * Guard called when the router is navigating to the route that is rendering
+     * this component from a different route. Differently from `beforeRouteUpdate`
+     * and `beforeRouteLeave`, `beforeRouteEnter` does not have access to the
+     * component instance through `this` because it triggers before the component
+     * is even mounted.
+     *
+     * @param to - RouteLocationRaw we are navigating to
+     * @param from - RouteLocationRaw we are navigating from
+     * @param next - function to validate, cancel or modify (by redirecting) the
+     * navigation
      */
-    $route: RouteLocationNormalizedLoaded
+    beforeRouteEnter?: NavigationGuardWithThis<undefined>
+
     /**
-     * {@link Router} instance used by the application.
+     * Guard called whenever the route that renders this component has changed but
+     * it is reused for the new route. This allows you to guard for changes in
+     * params, the query or the hash.
+     *
+     * @param to - RouteLocationRaw we are navigating to
+     * @param from - RouteLocationRaw we are navigating from
+     * @param next - function to validate, cancel or modify (by redirecting) the
+     * navigation
      */
-    $router: Router
+    beforeRouteUpdate?: NavigationGuard
+
+    /**
+     * Guard called when the router is navigating away from the current route that
+     * is rendering this component.
+     *
+     * @param to - RouteLocationRaw we are navigating to
+     * @param from - RouteLocationRaw we are navigating from
+     * @param next - function to validate, cancel or modify (by redirecting) the
+     * navigation
+     */
+    beforeRouteLeave?: NavigationGuard
   }
 }

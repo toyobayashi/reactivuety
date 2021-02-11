@@ -1,7 +1,7 @@
 export { createWebHistory } from './history/html5'
 export { createMemoryHistory } from './history/memory'
 export { createWebHashHistory } from './history/hash'
-export { createRouterMatcher, RouterMatcher } from './matcher'
+export { createRouterMatcher, RouterMatcher } from './matcher/index'
 
 export {
   LocationQuery,
@@ -58,7 +58,7 @@ export {
   NavigationGuardNext,
   NavigationGuardWithThis,
   NavigationHookAfter
-} from './types'
+} from './types/index'
 
 export {
   createRouter,
