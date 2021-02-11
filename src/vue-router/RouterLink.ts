@@ -129,6 +129,9 @@ export function useLink(props: UseLinkOptions): {
 }
 
 export const RouterLink = React.forwardRef<HTMLAnchorElement, React.PropsWithChildren<RouterLinkProps>>((props, ref) => {
+  if (props.to == null) {
+    throw new Error('<RouterLink> missing required prop: "to"')
+  }
   const { link, elClassName } = useSetup((props) => {
     const link = reactive(useLink(props))
     const { options } = inject<any>(routerKey)!
