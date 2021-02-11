@@ -5,7 +5,7 @@ import { setCurrentInstance, ComponentInternalInstance, LifecycleHooks, getCurre
 import { clearAllLifecycles, invokeLifecycle } from './core/apiLifecycle'
 import { queueJob } from './core/scheduler'
 import { traverse } from './core/apiWatch'
-import { getCurrentRenderingInstance, setCurrentRenderingInstance } from './core/apiInject'
+import { getCurrentRenderingInstance, globalProvides, setCurrentRenderingInstance } from './core/apiInject'
 
 function clearInstanceBoundEffect (instance?: ComponentInternalInstance): void {
   if (instance) {
@@ -79,7 +79,7 @@ export function useSetup<P> (setup: (props: Readonly<PropsWithChildren<P>>) => a
       [LifecycleHooks.ERROR_CAPTURED]: null
     }
     instanceRef.current.parent = parent
-    instanceRef.current.provides = parent ? parent.provides : null
+    instanceRef.current.provides = parent ? parent.provides : globalProvides
     let runner: ReactiveEffect | null = null
     const reset = getCurrentInstance()
     setCurrentInstance(instanceRef.current)
