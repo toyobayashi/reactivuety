@@ -12,6 +12,7 @@ Use vue composition API with react.
 |  --- | --- |
 |  [ErrorCodes](./reactivuety.errorcodes.md) |  |
 |  [LifecycleHooks](./reactivuety.lifecyclehooks.md) |  |
+|  [NavigationFailureType](./reactivuety.navigationfailuretype.md) | Enumeration with all possible types for navigation failures. Can be passed to  to check for specific failures. |
 
 ## Functions
 
@@ -19,15 +20,23 @@ Use vue composition API with react.
 |  --- | --- |
 |  [computed(getter)](./reactivuety.computed.md) |  |
 |  [computed(options)](./reactivuety.computed_1.md) |  |
+|  [createMemoryHistory(base)](./reactivuety.creatememoryhistory.md) | Creates a in-memory based history. The main purpose of this history is to handle SSR. It starts in a special location that is nowhere. It's up to the user to replace that location with the starter location by either calling <code>router.push</code> or <code>router.replace</code>. |
+|  [createRouter(options)](./reactivuety.createrouter.md) | Creates a Router instance that can be used by a Vue app. |
 |  [createSetupHook(setup)](./reactivuety.createsetuphook.md) |  |
 |  [createSetupHook(setup)](./reactivuety.createsetuphook_1.md) |  |
+|  [createWebHashHistory(base)](./reactivuety.createwebhashhistory.md) | Creates a hash history. Useful for web applications with no host (e.g. <code>file://</code>) or when configuring a server to handle any URL is not possible. |
+|  [createWebHistory(base)](./reactivuety.createwebhistory.md) | Creates an HTML5 history. Most common history for single page applications. |
 |  [defineAsyncComponent(source)](./reactivuety.defineasynccomponent.md) |  |
 |  [defineComponent(setup, name)](./reactivuety.definecomponent.md) |  |
 |  [defineComponent(setup, render, name)](./reactivuety.definecomponent_1.md) |  |
 |  [inject(key)](./reactivuety.inject.md) |  |
 |  [inject(key, defaultValue, treatDefaultAsFactory)](./reactivuety.inject_1.md) |  |
 |  [inject(key, defaultValue, treatDefaultAsFactory)](./reactivuety.inject_2.md) |  |
+|  [isNavigationFailure(error, type)](./reactivuety.isnavigationfailure.md) | Check if an object is a [NavigationFailure](./reactivuety.navigationfailure.md)<!-- -->. |
+|  [isNavigationFailure(error, type)](./reactivuety.isnavigationfailure_1.md) |  |
 |  [nextTick(fn)](./reactivuety.nexttick.md) |  |
+|  [onBeforeRouteLeave(leaveGuard)](./reactivuety.onbeforerouteleave.md) | Add a navigation guard that triggers whenever the component for the current location is about to be left. Similar to  but can be used in any component. The guard is removed when the component is unmounted. |
+|  [onBeforeRouteUpdate(updateGuard)](./reactivuety.onbeforerouteupdate.md) | Add a navigation guard that triggers whenever the current location is about to be updated. Similar to  but can be used in any component. The guard is removed when the component is unmounted. |
 |  [provide(key, value)](./reactivuety.provide.md) |  |
 |  [ref(value)](./reactivuety.ref.md) |  |
 |  [ref(value)](./reactivuety.ref_1.md) |  |
@@ -37,6 +46,9 @@ Use vue composition API with react.
 |  [shallowRef(value)](./reactivuety.shallowref_1.md) |  |
 |  [shallowRef()](./reactivuety.shallowref_2.md) |  |
 |  [useForceUpdate()](./reactivuety.useforceupdate.md) |  |
+|  [useLink(props)](./reactivuety.uselink.md) |  |
+|  [useRoute()](./reactivuety.useroute.md) | Returns the current route location. Equivalent to using <code>$route</code> inside templates. |
+|  [useRouter()](./reactivuety.userouter.md) | Returns the router instance. Equivalent to using <code>$router</code> inside templates. |
 |  [useSetup(setup, props)](./reactivuety.usesetup.md) |  |
 |  [useSetup(setup, props)](./reactivuety.usesetup_1.md) |  |
 |  [watch(sources, cb, options)](./reactivuety.watch.md) |  |
@@ -51,7 +63,24 @@ Use vue composition API with react.
 |  --- | --- |
 |  [AsyncComponentOptions](./reactivuety.asynccomponentoptions.md) |  |
 |  [CheckboxProps](./reactivuety.checkboxprops.md) |  |
+|  [HistoryState](./reactivuety.historystate.md) | Allowed HTML history.state |
 |  [InjectionKey](./reactivuety.injectionkey.md) |  |
+|  [NavigationFailure](./reactivuety.navigationfailure.md) | Extended Error that contains extra information regarding a failed navigation. |
+|  [NavigationGuard](./reactivuety.navigationguard.md) | Navigation guard. See \[Navigation Guards\](/guide/advanced/navigation-guards.md). |
+|  [NavigationGuardNext](./reactivuety.navigationguardnext.md) |  |
+|  [NavigationGuardWithThis](./reactivuety.navigationguardwiththis.md) | Navigation guard. See \[Navigation Guards\](/guide/advanced/navigation-guards.md). |
+|  [NavigationHookAfter](./reactivuety.navigationhookafter.md) |  |
+|  [RouteLocation](./reactivuety.routelocation.md) | [RouteLocationRaw](./reactivuety.routelocationraw.md) resolved using the matcher |
+|  [RouteLocationMatched](./reactivuety.routelocationmatched.md) |  |
+|  [RouteLocationNormalized](./reactivuety.routelocationnormalized.md) | Similar to [RouteLocation](./reactivuety.routelocation.md) but its [RouteLocationNormalized.matched](./reactivuety.routelocationnormalized.matched.md) cannot contain redirect records |
+|  [RouteLocationNormalizedLoaded](./reactivuety.routelocationnormalizedloaded.md) | [RouteLocationRaw](./reactivuety.routelocationraw.md) with |
+|  [RouteLocationOptions](./reactivuety.routelocationoptions.md) |  |
+|  [RouteMeta](./reactivuety.routemeta.md) | Interface to type <code>meta</code> fields in route records. |
+|  [Router](./reactivuety.router.md) | Router instance |
+|  [RouteRecordNormalized](./reactivuety.routerecordnormalized.md) | Normalized version of a [Route Record](./reactivuety.routerecord.md) |
+|  [RouterLinkProps](./reactivuety.routerlinkprops.md) |  |
+|  [RouterOptions](./reactivuety.routeroptions.md) | Options to initialize a [Router](./reactivuety.router.md) instance. |
+|  [RouterViewProps](./reactivuety.routerviewprops.md) |  |
 |  [VModelProps](./reactivuety.vmodelprops.md) |  |
 |  [VModelPropsWithLazy](./reactivuety.vmodelpropswithlazy.md) |  |
 |  [WatchOptions](./reactivuety.watchoptions.md) |  |
@@ -72,7 +101,10 @@ Use vue composition API with react.
 |  [onUnmounted](./reactivuety.onunmounted.md) |  |
 |  [onUpdated](./reactivuety.onupdated.md) |  |
 |  [Option\_2](./reactivuety.option_2.md) |  |
+|  [RouterLink](./reactivuety.routerlink.md) |  |
+|  [RouterView](./reactivuety.routerview.md) |  |
 |  [Select](./reactivuety.select.md) |  |
+|  [START\_LOCATION](./reactivuety.start_location.md) | Initial route location where the router is. Can be used in navigation guards to differentiate the initial navigation. |
 |  [Textarea](./reactivuety.textarea.md) |  |
 |  [version](./reactivuety.version.md) |  |
 
@@ -86,9 +118,21 @@ Use vue composition API with react.
 |  [ErrorCapturedHook](./reactivuety.errorcapturedhook.md) |  |
 |  [ErrorTypes](./reactivuety.errortypes.md) |  |
 |  [InvalidateCbRegistrator](./reactivuety.invalidatecbregistrator.md) |  |
+|  [LocationQuery](./reactivuety.locationquery.md) | Normalized query object that appears in [RouteLocationNormalized](./reactivuety.routelocationnormalized.md) |
+|  [LocationQueryRaw](./reactivuety.locationqueryraw.md) | Loose [LocationQuery](./reactivuety.locationquery.md) object that can be passed to functions like [Router.push](./reactivuety.router.push.md) and [Router.replace](./reactivuety.router.replace.md) or anywhere when creating a [RouteLocationRaw](./reactivuety.routelocationraw.md) |
 |  [MapSources](./reactivuety.mapsources.md) |  |
 |  [MultiWatchSources](./reactivuety.multiwatchsources.md) |  |
+|  [PathParserOptions](./reactivuety.pathparseroptions.md) |  |
+|  [RouteComponent](./reactivuety.routecomponent.md) | Allowed Component in [RouteLocationMatched](./reactivuety.routelocationmatched.md) |
+|  [RouteLocationRaw](./reactivuety.routelocationraw.md) | User-level route location |
+|  [RouteParams](./reactivuety.routeparams.md) |  |
+|  [RouteParamsRaw](./reactivuety.routeparamsraw.md) |  |
+|  [RouteRecord](./reactivuety.routerecord.md) | Normalized version of a [Route Record](./reactivuety.routerecord.md) |
+|  [RouteRecordName](./reactivuety.routerecordname.md) | Possible values for a user-defined route record's name |
+|  [RouteRecordRaw](./reactivuety.routerecordraw.md) |  |
+|  [RouterScrollBehavior](./reactivuety.routerscrollbehavior.md) | Type of the <code>scrollBehavior</code> option that can be passed to <code>createRouter</code>. |
 |  [SetupFunction](./reactivuety.setupfunction.md) |  |
+|  [UseLinkOptions](./reactivuety.uselinkoptions.md) |  |
 |  [WatchCallback](./reactivuety.watchcallback.md) |  |
 |  [WatchEffect](./reactivuety.watcheffect.md) |  |
 |  [WatchSource](./reactivuety.watchsource.md) |  |
