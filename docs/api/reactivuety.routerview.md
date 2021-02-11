@@ -7,5 +7,5 @@
 <b>Signature:</b>
 
 ```typescript
-RouterView: React.ForwardRefExoticComponent<React.PropsWithChildren<RouterViewProps & React.RefAttributes<any>>>
+RouterView: React.ForwardRefExoticComponent<RouterViewProps & React.RefAttributes<any>>
 ```

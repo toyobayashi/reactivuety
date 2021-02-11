@@ -51,6 +51,9 @@ export interface RouterLinkProps extends RouterLinkOptions {
     | 'time'
     | 'true'
     | 'false'
+
+  style?: React.CSSProperties
+  className?: string
 }
 
 export type UseLinkOptions = VueUseOptions<RouterLinkOptions>
@@ -154,9 +157,12 @@ export const RouterLink = React.forwardRef<HTMLAnchorElement, React.PropsWithChi
       )]: link.isExactActive,
     }))
 
-    const elClassName = Object.keys(elClass).filter(k => {
-      return !!(elClass.value[k])
-    }).join(' ')
+    const elClassName = computed(() => {
+      const name = Object.keys(elClass.value).filter(k => {
+        return !!(elClass.value[k])
+      }).join(' ')
+      return ([(props.className ?? ''), name]).filter(c => !!c).join(' ')
+    })
 
     return { link, elClass, elClassName }
   }, props)
@@ -175,7 +181,7 @@ export const RouterLink = React.forwardRef<HTMLAnchorElement, React.PropsWithChi
           },
           props,
           {
-            className: elClassName,
+            className: elClassName.value,
             ref
           }
         ),

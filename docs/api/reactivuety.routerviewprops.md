@@ -14,6 +14,8 @@ export interface RouterViewProps
 
 |  Property | Type | Description |
 |  --- | --- | --- |
+|  [className?](./reactivuety.routerviewprops.classname.md) | string | <i>(Optional)</i> |
 |  [name?](./reactivuety.routerviewprops.name.md) | string | <i>(Optional)</i> |
 |  [route?](./reactivuety.routerviewprops.route.md) | [RouteLocationNormalized](./reactivuety.routelocationnormalized.md) | <i>(Optional)</i> |
+|  [style?](./reactivuety.routerviewprops.style.md) | React.CSSProperties | <i>(Optional)</i> |
 
