@@ -35,17 +35,17 @@ const router = createRouter({
         {
           path: 'markdown',
           name: 'markdown',
-          component: () => Promise.resolve(MarkdownView)
+          component: MarkdownView
         },
         {
           path: 'github',
           name: 'github',
-          component: () => Promise.resolve(GithubCommitView)
+          component: GithubCommitView
         },
         {
           path: 'grid',
           name: 'grid',
-          component: () => Promise.resolve(GridComponent)
+          component: GridComponent
         }
       ]
     }
