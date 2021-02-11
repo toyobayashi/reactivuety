@@ -1,10 +1,8 @@
-import {
-  computed,
-  ref
-} from '@vue/reactivity'
 import * as React from 'react'
 import { inject, provide } from '../core/apiInject'
 import { watch } from '../core/apiWatch'
+import { computed } from '../core/apiComputed'
+import { ref } from '../ref'
 
 import {
   RouteLocationNormalized,

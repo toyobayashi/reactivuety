@@ -1,11 +1,11 @@
 import {
-  computed,
   reactive,
   unref,
   ComputedRef
 } from '@vue/reactivity'
 import * as React from 'react'
 import { inject } from '../core/apiInject'
+import { computed } from '../core/apiComputed'
 import { RouteLocationRaw, VueUseOptions, RouteLocation } from './types/index'
 import { isSameRouteLocationParams, isSameRouteRecord } from './location'
 import { routerKey, routeLocationKey } from './injectionSymbols'
