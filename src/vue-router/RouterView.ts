@@ -9,13 +9,13 @@ import { watch } from '../core/apiWatch'
 import {
   RouteLocationNormalized,
   RouteLocationMatched,
-} from './types'
+} from './types/index'
 import {
   matchedRouteKey,
   viewDepthKey,
   routerViewLocationKey,
 } from './injectionSymbols'
-import { assign } from './utils'
+import { assign } from './utils/index'
 import { isSameRouteRecord } from './location'
 import { useSetup } from '../useSetup'
 

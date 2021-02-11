@@ -4,7 +4,7 @@ import {
   _RouteRecordBase,
   _RouteRecordProps,
   NavigationGuardNextCallback,
-} from '../types'
+} from '../types/index'
 import { ComponentInternalInstance } from '../../core/component'
 
 // normalize component/components into components and make every property always present

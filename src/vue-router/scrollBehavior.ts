@@ -1,4 +1,4 @@
-import { RouteLocationNormalized, RouteLocationNormalizedLoaded } from './types'
+import { RouteLocationNormalized, RouteLocationNormalizedLoaded } from './types/index'
 import { warn } from './warning'
 
 // we use types instead of interfaces to make it work with HistoryStateValue type

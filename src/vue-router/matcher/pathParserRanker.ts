@@ -1,5 +1,5 @@
 import { Token, TokenType } from './pathTokenizer'
-import { assign } from '../utils'
+import { assign } from '../utils/index'
 
 export type PathParams = Record<string, string | string[]>
 

@@ -12,7 +12,7 @@ import {
   NavigationGuardWithThis,
   RouteLocationOptions,
   MatcherLocationRaw
-} from './types'
+} from './types/index'
 import { RouterHistory, HistoryState } from './history/common'
 import {
   ScrollPosition,
@@ -23,7 +23,7 @@ import {
   scrollToPosition,
   _ScrollPositionNormalized
 } from './scrollBehavior'
-import { createRouterMatcher, PathParserOptions } from './matcher'
+import { createRouterMatcher, PathParserOptions } from './matcher/index'
 import {
   createRouterError,
   ErrorTypes,
@@ -31,7 +31,7 @@ import {
   NavigationRedirectError,
   isNavigationFailure
 } from './errors'
-import { applyToParams, isBrowser, assign/* , noop */ } from './utils'
+import { applyToParams, isBrowser, assign/* , noop */ } from './utils/index'
 import { useCallbacks } from './utils/callbacks'
 import { encodeParam, decode, encodeHash } from './encoding'
 import {
@@ -42,10 +42,12 @@ import {
 } from './query'
 import { Ref/* , ComputedRef, reactive, unref */ } from '@vue/reactivity'
 import {
-  shallowRef,
-  nextTick,
+  shallowRef
   // computed
-} from '../index'
+} from '../ref'
+import {
+  nextTick
+} from '../core/scheduler'
 import { RouteRecord, RouteRecordNormalized } from './matcher/types'
 import { parseURL, stringifyURL, isSameRouteLocation } from './location'
 import { extractComponentsGuards, guardToPromiseFn } from './navigationGuards'

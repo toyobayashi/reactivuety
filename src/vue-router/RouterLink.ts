@@ -2,14 +2,15 @@ import {
   computed,
   reactive,
   unref,
+  ComputedRef
 } from '@vue/reactivity'
 import * as React from 'react'
 import { inject } from '../core/apiInject'
-import { RouteLocationRaw, VueUseOptions, RouteLocation } from './types'
+import { RouteLocationRaw, VueUseOptions, RouteLocation } from './types/index'
 import { isSameRouteLocationParams, isSameRouteRecord } from './location'
 import { routerKey, routeLocationKey } from './injectionSymbols'
 import { RouteRecord } from './matcher/types'
-import { assign } from './utils'
+import { assign } from './utils/index'
 import { NavigationFailure } from './errors'
 import { useSetup } from '../useSetup'
 
@@ -56,7 +57,13 @@ export type UseLinkOptions = VueUseOptions<RouterLinkOptions>
 
 // TODO: we could allow currentRoute as a prop to expose `isActive` and
 // `isExactActive` behavior should go through an RFC
-export function useLink(props: UseLinkOptions) {
+export function useLink(props: UseLinkOptions): {
+  route: ComputedRef<any>
+  href: ComputedRef<any>
+  isActive: ComputedRef<boolean>
+  isExactActive: ComputedRef<boolean>
+  navigate: (e?: MouseEvent) => Promise<void | NavigationFailure>
+} {
   const router = inject<any>(routerKey)!
   const currentRoute = inject<any>(routeLocationKey)!
 

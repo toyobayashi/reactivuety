@@ -15,7 +15,7 @@ import {
 } from '../scrollBehavior'
 import { warn } from '../warning'
 import { stripBase } from '../location'
-import { assign } from '../utils'
+import { assign } from '../utils/index'
 
 type PopStateListener = (this: Window, ev: PopStateEvent) => any
 

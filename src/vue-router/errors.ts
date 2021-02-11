@@ -3,8 +3,8 @@ import {
   MatcherLocation,
   RouteLocationRaw,
   RouteLocationNormalized,
-} from './types'
-import { assign } from './utils'
+} from './types/index'
+import { assign } from './utils/index'
 import { PolySymbol } from './injectionSymbols'
 
 /**

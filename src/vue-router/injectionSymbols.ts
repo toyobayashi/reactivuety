@@ -1,4 +1,4 @@
-import { InjectionKey } from '../index'
+import { InjectionKey } from '../core/apiInject'
 
 export const hasSymbol =
   typeof Symbol === 'function' && typeof Symbol.toStringTag === 'symbol'

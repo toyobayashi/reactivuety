@@ -6,7 +6,7 @@ import {
 } from './pathParserRanker'
 import { tokenizePath } from './pathTokenizer'
 import { warn } from '../warning'
-import { assign } from '../utils'
+import { assign } from '../utils/index'
 
 export interface RouteRecordMatcher extends PathParser {
   record: RouteRecord

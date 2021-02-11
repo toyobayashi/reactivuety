@@ -1,7 +1,7 @@
-import { inject } from '../index'
+import { inject } from '../core/apiInject'
 import { routerKey, routeLocationKey } from './injectionSymbols'
 import { Router } from './router'
-import { RouteLocationNormalizedLoaded } from './types'
+import { RouteLocationNormalizedLoaded } from './types/index'
 
 /**
  * Returns the router instance. Equivalent to using `$router` inside

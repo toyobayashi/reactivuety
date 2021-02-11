@@ -1,4 +1,4 @@
-import { isBrowser } from '../utils'
+import { isBrowser } from '../utils/index'
 import { removeTrailingSlash } from '../location'
 
 export type HistoryLocation = string

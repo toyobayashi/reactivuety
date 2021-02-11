@@ -4,8 +4,6 @@
  * @packageDocumentation
  */
 
-import * as _VueRouter from './vue-router/index'
-
 export {
   computed
 } from './core/apiComputed'
@@ -104,7 +102,7 @@ export {
   CheckboxProps
 } from './dom/useVModel'
 
-export const VueRouter = _VueRouter
+export * from './vue-router/index'
 
 /** @public */
 export const version: string = __VERSION__

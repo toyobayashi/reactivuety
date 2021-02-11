@@ -9,7 +9,7 @@ import {
   Lazy,
   RouteComponent,
   RawRouteComponent,
-} from './types'
+} from './types/index'
 
 import {
   createRouterError,
@@ -17,12 +17,12 @@ import {
   NavigationFailure,
   NavigationRedirectError,
 } from './errors'
-import { onUnmounted } from '../index'
+import { onUnmounted } from '../core/apiLifecycle'
 import { inject } from '../core/apiInject'
 import { getCurrentInstance } from '../core/component'
 import { matchedRouteKey } from './injectionSymbols'
 import { RouteRecordNormalized } from './matcher/types'
-import { isESModule } from './utils'
+import { isESModule } from './utils/index'
 import { warn } from './warning'
 
 function registerGuard(
