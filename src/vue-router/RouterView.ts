@@ -117,8 +117,7 @@ export const RouterView = React.forwardRef<any, RouterViewProps>((props, reactRe
   //     matchedRoute!.instances[currentName] = null
   //   }
   // }
-  console.log(props.className)
-  console.log(props.style)
+
   return React.createElement(
     ViewComponent,
     assign({}, routeProps, props, {
