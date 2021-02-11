@@ -1,4 +1,4 @@
-import { ComponentType } from 'react'
+import { ComponentType, ForwardRefExoticComponent } from 'react'
 import { LocationQuery, LocationQueryRaw } from '../query'
 import { PathParserOptions } from '../matcher'
 import { Ref, ComputedRef } from '@vue/reactivity'
@@ -184,7 +184,7 @@ export interface RouteLocationNormalized extends _RouteLocationBase {
 /**
  * Allowed Component in {@link RouteLocationMatched}
  */
-export type RouteComponent = ComponentType<any>
+export type RouteComponent = ComponentType<any> | ForwardRefExoticComponent<any>
 /**
  * Allowed Component definitions in route records provided by the user
  */

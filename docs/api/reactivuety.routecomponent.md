@@ -9,5 +9,5 @@ Allowed Component in [RouteLocationMatched](./reactivuety.routelocationmatched.m
 <b>Signature:</b>
 
 ```typescript
-export declare type RouteComponent = ComponentType<any>;
+export declare type RouteComponent = ComponentType<any> | ForwardRefExoticComponent<any>;
 ```
