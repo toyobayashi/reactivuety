@@ -41,7 +41,7 @@
     "access": "public"
   },
   "devDependencies": {
-    "@tybys/tsgo": "^0.8.2",
+    "@tybys/tsgo": "^0.8.3",
     "@types/lodash": "^4.14.165",
     "@types/marked": "^1.2.1",
     "@types/node": "^12.12.36",
