@@ -26,7 +26,7 @@ export default class ModuleCollection {
   }
 
   register (path, rawModule, runtime = true) {
-    if (__DEV__) {
+    if (__TSGO_DEV__) {
       assertRawModule(path, rawModule)
     }
 
@@ -52,7 +52,7 @@ export default class ModuleCollection {
     const child = parent.getChild(key)
 
     if (!child) {
-      if (__DEV__) {
+      if (__TSGO_DEV__) {
         console.warn(
           `[vuex] trying to unregister module '${key}', which is ` +
           `not registered`
@@ -81,7 +81,7 @@ export default class ModuleCollection {
 }
 
 function update (path, targetModule, newModule) {
-  if (__DEV__) {
+  if (__TSGO_DEV__) {
     assertRawModule(path, newModule)
   }
 
@@ -92,7 +92,7 @@ function update (path, targetModule, newModule) {
   if (newModule.modules) {
     for (const key in newModule.modules) {
       if (!targetModule.getChild(key)) {
-        if (__DEV__) {
+        if (__TSGO_DEV__) {
           console.warn(
             `[vuex] trying to add a new module '${key}' on hot reloading, ` +
             'manual reload is needed'

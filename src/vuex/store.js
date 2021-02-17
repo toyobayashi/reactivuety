@@ -11,7 +11,7 @@ export function createStore (options) {
 
 export class Store {
   constructor (options = {}) {
-    if (__DEV__) {
+    if (__TSGO_DEV__) {
       assert(typeof Promise !== 'undefined', `vuex requires a Promise polyfill in this browser.`)
       assert(this instanceof Store, `store must be called with the new operator.`)
     }
@@ -69,7 +69,7 @@ export class Store {
   }
 
   set state (v) {
-    if (__DEV__) {
+    if (__TSGO_DEV__) {
       assert(false, `use store.replaceState() to explicit replace store state.`)
     }
   }
@@ -85,7 +85,7 @@ export class Store {
     const mutation = { type, payload }
     const entry = this._mutations[type]
     if (!entry) {
-      if (__DEV__) {
+      if (__TSGO_DEV__) {
         console.error(`[vuex] unknown mutation type: ${type}`)
       }
       return
@@ -101,7 +101,7 @@ export class Store {
       .forEach(sub => sub(mutation, this.state))
 
     if (
-      __DEV__ &&
+      __TSGO_DEV__ &&
       options && options.silent
     ) {
       console.warn(
@@ -121,7 +121,7 @@ export class Store {
     const action = { type, payload }
     const entry = this._actions[type]
     if (!entry) {
-      if (__DEV__) {
+      if (__TSGO_DEV__) {
         console.error(`[vuex] unknown action type: ${type}`)
       }
       return
@@ -133,7 +133,7 @@ export class Store {
         .filter(sub => sub.before)
         .forEach(sub => sub.before(action, this.state))
     } catch (e) {
-      if (__DEV__) {
+      if (__TSGO_DEV__) {
         console.warn(`[vuex] error in before action subscribers: `)
         console.error(e)
       }
@@ -150,7 +150,7 @@ export class Store {
             .filter(sub => sub.after)
             .forEach(sub => sub.after(action, this.state))
         } catch (e) {
-          if (__DEV__) {
+          if (__TSGO_DEV__) {
             console.warn(`[vuex] error in after action subscribers: `)
             console.error(e)
           }
@@ -162,7 +162,7 @@ export class Store {
             .filter(sub => sub.error)
             .forEach(sub => sub.error(action, this.state, error))
         } catch (e) {
-          if (__DEV__) {
+          if (__TSGO_DEV__) {
             console.warn(`[vuex] error in error action subscribers: `)
             console.error(e)
           }
@@ -182,7 +182,7 @@ export class Store {
   }
 
   watch (getter, cb, options) {
-    if (__DEV__) {
+    if (__TSGO_DEV__) {
       assert(typeof getter === 'function', `store.watch only accepts a function.`)
     }
     return watch(() => getter(this.state, this.getters), cb, Object.assign({}, options))
@@ -197,7 +197,7 @@ export class Store {
   registerModule (path, rawModule, options = {}) {
     if (typeof path === 'string') path = [path]
 
-    if (__DEV__) {
+    if (__TSGO_DEV__) {
       assert(Array.isArray(path), `module path must be a string or an Array.`)
       assert(path.length > 0, 'cannot register the root module by using registerModule.')
     }
@@ -211,7 +211,7 @@ export class Store {
   unregisterModule (path) {
     if (typeof path === 'string') path = [path]
 
-    if (__DEV__) {
+    if (__TSGO_DEV__) {
       assert(Array.isArray(path), `module path must be a string or an Array.`)
     }
 
@@ -226,7 +226,7 @@ export class Store {
   hasModule (path) {
     if (typeof path === 'string') path = [path]
 
-    if (__DEV__) {
+    if (__TSGO_DEV__) {
       assert(Array.isArray(path), `module path must be a string or an Array.`)
     }
 
@@ -320,7 +320,7 @@ function installModule (store, rootState, path, module, hot) {
 
   // register in namespace map
   if (module.namespaced) {
-    if (store._modulesNamespaceMap[namespace] && __DEV__) {
+    if (store._modulesNamespaceMap[namespace] && __TSGO_DEV__) {
       console.error(`[vuex] duplicate namespace ${namespace} for the namespaced module ${path.join('/')}`)
     }
     store._modulesNamespaceMap[namespace] = module
@@ -331,7 +331,7 @@ function installModule (store, rootState, path, module, hot) {
     const parentState = getNestedState(rootState, path.slice(0, -1))
     const moduleName = path[path.length - 1]
     store._withCommit(() => {
-      if (__DEV__) {
+      if (__TSGO_DEV__) {
         if (moduleName in parentState) {
           console.warn(
             `[vuex] state field "${moduleName}" was overridden by a module with the same name at "${path.join('.')}"`
@@ -380,7 +380,7 @@ function makeLocalContext (store, namespace, path) {
 
       if (!options || !options.root) {
         type = namespace + type
-        if (__DEV__ && !store._actions[type]) {
+        if (__TSGO_DEV__ && !store._actions[type]) {
           console.error(`[vuex] unknown local action type: ${args.type}, global type: ${type}`)
           return
         }
@@ -396,7 +396,7 @@ function makeLocalContext (store, namespace, path) {
 
       if (!options || !options.root) {
         type = namespace + type
-        if (__DEV__ && !store._mutations[type]) {
+        if (__TSGO_DEV__ && !store._mutations[type]) {
           console.error(`[vuex] unknown local mutation type: ${args.type}, global type: ${type}`)
           return
         }
@@ -481,7 +481,7 @@ function registerAction (store, type, handler, local) {
 
 function registerGetter (store, type, rawGetter, local) {
   if (store._wrappedGetters[type]) {
-    if (__DEV__) {
+    if (__TSGO_DEV__) {
       console.error(`[vuex] duplicate getter key: ${type}`)
     }
     return
@@ -498,7 +498,7 @@ function registerGetter (store, type, rawGetter, local) {
 
 function enableStrictMode (store) {
   watch(() => store._state.data, () => {
-    if (__DEV__) {
+    if (__TSGO_DEV__) {
       assert(store._committing, `do not mutate vuex store state outside mutation handlers.`)
     }
   }, { deep: true, flush: 'sync' })
@@ -515,7 +515,7 @@ function unifyObjectStyle (type, payload, options) {
     type = type.type
   }
 
-  if (__DEV__) {
+  if (__TSGO_DEV__) {
     assert(typeof type === 'string', `expects string as the type, but found ${typeof type}.`)
   }
 
