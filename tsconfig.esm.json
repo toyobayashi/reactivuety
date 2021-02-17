@@ -1,6 +1,7 @@
 {
   "extends": "./node_modules/@tybys/tsgo/tsconfig/tsconfig.esm.json",
   "compilerOptions": {
+    "allowJs": true,
     "outDir": "./lib/esm",
     "jsx": "react",
     "lib": [

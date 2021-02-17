@@ -102,5 +102,7 @@ export {
   CheckboxProps
 } from './dom/useVModel'
 
+export * from './vuex/index'
+
 /** @public */
 export const version: string = __VERSION__

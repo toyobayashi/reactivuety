@@ -9,6 +9,7 @@ module.exports = {
   resolveOnly: [/^(?!(react)|(@vue\/reactivity)).*?$/],
   bundleOnly: ['umd', 'cjs', { type: 'esm-bundler', minify: false }],
   bundleDefine: {
-    __VERSION__: JSON.stringify(require('./package.json').version)
+    __VERSION__: JSON.stringify(require('./package.json').version),
+    __VUEX_VERSION__: '4.0.0'
   }
 }
