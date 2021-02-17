@@ -1,9 +1,13 @@
 import { Store, createStore } from './store'
 import { storeKey, useStore } from './injectKey'
-import { createLogger } from './plugins/logger'
+import { createLogger, LoggerOption } from './plugins/logger'
+
+export * from './store'
+
+export const vuexVersion: string = '__VUEX_VERSION__'
 
 export default {
-  version: '__VUEX_VERSION__',
+  vuexVersion,
   Store,
   storeKey,
   createStore,
@@ -11,10 +15,10 @@ export default {
   createLogger
 }
 
+
 export {
-  Store,
   storeKey,
-  createStore,
   useStore,
-  createLogger
+  createLogger,
+  LoggerOption
 }

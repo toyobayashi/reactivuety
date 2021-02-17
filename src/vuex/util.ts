@@ -1,12 +1,8 @@
 /**
  * Get the first item that pass the test
  * by second argument function
- *
- * @param {Array} list
- * @param {Function} f
- * @return {*}
  */
-export function find (list, f) {
+export function find<T> (list: T[], f: (value: T, index: number, array: T[]) => boolean): T | undefined {
   return list.filter(f)[0]
 }
 
@@ -19,7 +15,7 @@ export function find (list, f) {
  * @param {Array<Object>} cache
  * @return {*}
  */
-export function deepCopy (obj, cache = []) {
+export function deepCopy<T> (obj: T, cache: { original: T; copy: any }[] = []): T {
   // just return if obj is immutable value
   if (obj === null || typeof obj !== 'object') {
     return obj
@@ -31,7 +27,7 @@ export function deepCopy (obj, cache = []) {
     return hit.copy
   }
 
-  const copy = Array.isArray(obj) ? [] : {}
+  const copy: any = Array.isArray(obj) ? [] : {}
   // put the copy into cache at first
   // because we want to refer it in recursive deepCopy
   cache.push({
@@ -40,7 +36,7 @@ export function deepCopy (obj, cache = []) {
   })
 
   Object.keys(obj).forEach(key => {
-    copy[key] = deepCopy(obj[key], cache)
+    copy[key] = deepCopy((obj as any)[key], cache)
   })
 
   return copy
@@ -49,23 +45,23 @@ export function deepCopy (obj, cache = []) {
 /**
  * forEach for object
  */
-export function forEachValue (obj, fn) {
+export function forEachValue (obj: Record<string, any>, fn: (value: any, index: string) => void): void {
   Object.keys(obj).forEach(key => fn(obj[key], key))
 }
 
-export function isObject (obj) {
+export function isObject (obj: any): obj is Record<string, any> {
   return obj !== null && typeof obj === 'object'
 }
 
-export function isPromise (val) {
+export function isPromise (val: any): val is Promise<any> {
   return val && typeof val.then === 'function'
 }
 
-export function assert (condition, msg) {
+export function assert (condition: any, msg: string): void | never {
   if (!condition) throw new Error(`[vuex] ${msg}`)
 }
 
-export function partial (fn, arg) {
+export function partial<T> (fn: (arg: T) => any, arg: T) {
   return function () {
     return fn(arg)
   }

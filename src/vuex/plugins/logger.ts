@@ -2,17 +2,36 @@
 
 import { deepCopy } from '../util'
 
-export function createLogger ({
+import { Payload, Plugin } from "../store";
+
+interface Logger extends Partial<Pick<Console, 'groupCollapsed' | 'group' | 'groupEnd'>> {
+  log(message: string, color: string, payload: any): void;
+  log(message: string): void;
+}
+
+export interface LoggerOption<S> {
+  collapsed?: boolean;
+  filter?: <P extends Payload>(mutation: P, stateBefore: S, stateAfter: S) => boolean;
+  transformer?: (state: S) => any;
+  mutationTransformer?: <P extends Payload>(mutation: P) => any;
+  actionFilter?: <P extends Payload>(action: P, state: S) => boolean;
+  actionTransformer?: <P extends Payload>(action: P) => any;
+  logMutations?: boolean;
+  logActions?: boolean;
+  logger?: Logger;
+}
+
+export function createLogger<S> ({
   collapsed = true,
-  filter = (mutation, stateBefore, stateAfter) => true,
+  filter = (_mutation, _stateBefore, _stateAfter) => true,
   transformer = state => state,
   mutationTransformer = mut => mut,
-  actionFilter = (action, state) => true,
+  actionFilter = (_action, _state) => true,
   actionTransformer = act => act,
   logMutations = true,
   logActions = true,
   logger = console
-} = {}) {
+}: LoggerOption<S> = {}): Plugin<S> {
   return store => {
     let prevState = deepCopy(store.state)
 
@@ -56,7 +75,7 @@ export function createLogger ({
   }
 }
 
-function startMessage (logger, message, collapsed) {
+function startMessage (logger: any, message: any, collapsed: any) {
   const startMessage = collapsed
     ? logger.groupCollapsed
     : logger.group
@@ -69,7 +88,7 @@ function startMessage (logger, message, collapsed) {
   }
 }
 
-function endMessage (logger) {
+function endMessage (logger: any) {
   try {
     logger.groupEnd()
   } catch (e) {
@@ -82,10 +101,10 @@ function getFormattedTime () {
   return ` @ ${pad(time.getHours(), 2)}:${pad(time.getMinutes(), 2)}:${pad(time.getSeconds(), 2)}.${pad(time.getMilliseconds(), 3)}`
 }
 
-function repeat (str, times) {
+function repeat (str: any, times: any) {
   return (new Array(times + 1)).join(str)
 }
 
-function pad (num, maxLength) {
+function pad (num: any, maxLength: any) {
   return repeat('0', maxLength - num.toString().length) + num
 }

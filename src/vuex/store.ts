@@ -1,16 +1,133 @@
 import { reactive } from '@vue/reactivity'
-import { watch } from '../core/apiWatch'
-import { provide } from '../core/apiInject'
+import { watch, WatchOptions } from '../core/apiWatch'
+import { InjectionKey, provide } from '../core/apiInject'
 import { storeKey } from './injectKey'
 import ModuleCollection from './module/module-collection'
 import { forEachValue, isObject, isPromise, assert, partial } from './util'
 
-export function createStore (options) {
+export interface DispatchOptions {
+  root?: boolean;
+}
+
+export interface CommitOptions {
+  silent?: boolean;
+  root?: boolean;
+}
+
+export interface Payload {
+  type: string;
+}
+
+export interface Dispatch {
+  (type: string, payload?: any, options?: DispatchOptions): Promise<any>;
+  <P extends Payload>(payloadWithType: P, options?: DispatchOptions): Promise<any>;
+}
+
+export interface Commit {
+  (type: string, payload?: any, options?: CommitOptions): void;
+  <P extends Payload>(payloadWithType: P, options?: CommitOptions): void;
+}
+
+export interface ActionContext<S, R> {
+  dispatch: Dispatch;
+  commit: Commit;
+  state: S;
+  getters: any;
+  rootState: R;
+  rootGetters: any;
+}
+
+export type ActionHandler<S, R> = (this: Store<R>, injectee: ActionContext<S, R>, payload?: any) => any;
+export interface ActionObject<S, R> {
+  root?: boolean;
+  handler: ActionHandler<S, R>;
+}
+
+export type Getter<S, R> = (state: S, getters: any, rootState: R, rootGetters: any) => any;
+export type Action<S, R> = ActionHandler<S, R> | ActionObject<S, R>;
+export type Mutation<S> = (state: S, payload?: any) => any;
+export type Plugin<S> = (store: Store<S>) => any;
+
+export interface GetterTree<S, R> {
+  [key: string]: Getter<S, R>;
+}
+
+export interface ActionTree<S, R> {
+  [key: string]: Action<S, R>;
+}
+
+export interface MutationTree<S> {
+  [key: string]: Mutation<S>;
+}
+
+export interface Module<S, R> {
+  namespaced?: boolean;
+  state?: S | (() => S);
+  getters?: GetterTree<S, R>;
+  actions?: ActionTree<S, R>;
+  mutations?: MutationTree<S>;
+  modules?: ModuleTree<R>;
+}
+
+export interface ModuleTree<R> {
+  [key: string]: Module<any, R>;
+}
+
+export interface StoreOptions<S> {
+  state?: S | (() => S);
+  getters?: GetterTree<S, S>;
+  actions?: ActionTree<S, S>;
+  mutations?: MutationTree<S>;
+  modules?: ModuleTree<S>;
+  plugins?: Plugin<S>[];
+  strict?: boolean;
+  devtools?: boolean;
+}
+
+export interface MutationPayload extends Payload {
+  payload: any;
+}
+
+export interface SubscribeOptions {
+  prepend?: boolean
+}
+
+export interface ActionPayload extends Payload {
+  payload: any;
+}
+
+export interface ActionSubscribersObject<P, S> {
+  before?: ActionSubscriber<P, S>;
+  after?: ActionSubscriber<P, S>;
+  error?: ActionErrorSubscriber<P, S>;
+}
+export type ActionSubscriber<P, S> = (action: P, state: S) => any;
+export type ActionErrorSubscriber<P, S> = (action: P, state: S, error: Error) => any;
+export type SubscribeActionOptions<P, S> = ActionSubscriber<P, S> | ActionSubscribersObject<P, S>;
+
+export interface ModuleOptions {
+  preserveState?: boolean;
+}
+
+export function createStore<S> (options: StoreOptions<S>): Store<S> {
   return new Store(options)
 }
 
-export class Store {
-  constructor (options = {}) {
+export class Store<S> {
+  private _committing: boolean
+  private _actions: any
+  private _actionSubscribers: any[]
+  protected _wrappedGetters: any
+  private _modules: ModuleCollection
+  protected _modulesNamespaceMap: any
+  private _subscribers: any[]
+  protected _makeLocalGettersCache: any
+  protected strict: boolean
+  private _state!: { data: S }
+  private _mutations: any
+  public readonly getters: any
+
+  public constructor (options: StoreOptions<S> = {}) {
     if (__TSGO_DEV__) {
       assert(typeof Promise !== 'undefined', `vuex requires a Promise polyfill in this browser.`)
       assert(this instanceof Store, `store must be called with the new operator.`)
@@ -25,7 +142,7 @@ export class Store {
     this._committing = false
     this._actions = Object.create(null)
     this._actionSubscribers = []
-    this._mutations = Object.create(null)
+    this._actions = Object.create(null)
     this._wrappedGetters = Object.create(null)
     this._modules = new ModuleCollection(options)
     this._modulesNamespaceMap = Object.create(null)
@@ -35,17 +152,17 @@ export class Store {
     // bind commit and dispatch to self
     const store = this
     const { dispatch, commit } = this
-    this.dispatch = function boundDispatch (type, payload) {
+    this.dispatch = function boundDispatch (type: any, payload?: any) {
       return dispatch.call(store, type, payload)
     }
-    this.commit = function boundCommit (type, payload, options) {
-      return commit.call(store, type, payload, options)
+    this.commit = function boundCommit (type: any, payload?: any, options?: any) {
+      return (commit as any).call(store, type, payload, options)
     }
 
     // strict mode
     this.strict = strict
 
-    const state = this._modules.root.state
+    const state = this._modules.root!.state
 
     // init root module.
     // this also recursively registers all sub-modules
@@ -60,21 +177,24 @@ export class Store {
     plugins.forEach(plugin => plugin(this))
   }
 
-  install (injectKey) {
+  public install (injectKey: InjectionKey) {
     provide(injectKey || storeKey, this)
   }
 
-  get state () {
+  public get state (): S {
     return this._state.data
   }
 
-  set state (v) {
+  public set state (_v: S) {
     if (__TSGO_DEV__) {
       assert(false, `use store.replaceState() to explicit replace store state.`)
     }
   }
 
-  commit (_type, _payload, _options) {
+  public commit (type: string, payload?: any, options?: CommitOptions): void
+  public commit<P extends Payload> (payloadWithType: P, options?: CommitOptions): void
+
+  public commit (_type: any, _payload?: any, _options?: any) {
     // check object-style commit
     const {
       type,
@@ -91,7 +211,7 @@ export class Store {
       return
     }
     this._withCommit(() => {
-      entry.forEach(function commitIterator (handler) {
+      entry.forEach(function commitIterator (handler: any) {
         handler(payload)
       })
     })
@@ -111,7 +231,9 @@ export class Store {
     }
   }
 
-  dispatch (_type, _payload) {
+  public dispatch (type: string, payload?: any, options?: DispatchOptions): Promise<any>
+  public dispatch<P extends Payload> (payloadWithType: P, options?: DispatchOptions): Promise<any>
+  public dispatch (_type: any, _payload?: any) {
     // check object-style dispatch
     const {
       type,
@@ -119,7 +241,7 @@ export class Store {
     } = unifyObjectStyle(_type, _payload)
 
     const action = { type, payload }
-    const entry = this._actions[type]
+    const entry: Function[] = this._actions[type]
     if (!entry) {
       if (__TSGO_DEV__) {
         console.error(`[vuex] unknown action type: ${type}`)
@@ -139,7 +261,7 @@ export class Store {
       }
     }
 
-    const result = entry.length > 1
+    const result: Promise<any> = entry.length > 1
       ? Promise.all(entry.map(handler => handler(payload)))
       : entry[0](payload)
 
@@ -172,11 +294,11 @@ export class Store {
     })
   }
 
-  subscribe (fn, options) {
+  public subscribe <P extends MutationPayload>(fn: (mutation: P, state: S) => any, options?: SubscribeOptions): () => void {
     return genericSubscribe(fn, this._subscribers, options)
   }
 
-  subscribeAction (fn, options) {
+  public subscribeAction <P extends ActionPayload>(fn: SubscribeActionOptions<P, S>, options?: SubscribeOptions): () => void {
     const subs = typeof fn === 'function' ? { before: fn } : fn
     return genericSubscribe(subs, this._actionSubscribers, options)
   }
@@ -187,20 +309,20 @@ export class Store {
    * @param {any} options
    * @returns {() => void} 
    */
-  watch (getter, cb, options) {
+  public watch<T> (getter: (state: S, getters: any) => T, cb: (value: T, oldValue: T | undefined) => void, options?: WatchOptions): () => void {
     if (__TSGO_DEV__) {
       assert(typeof getter === 'function', `store.watch only accepts a function.`)
     }
-    return watch(() => getter(this.state, this.getters), cb, Object.assign({}, options))
+    return watch<T, boolean>(() => getter(this.state, this.getters), cb, Object.assign({}, options))
   }
 
-  replaceState (state) {
+  public replaceState (state: S): void {
     this._withCommit(() => {
       this._state.data = state
     })
   }
 
-  registerModule (path, rawModule, options = {}) {
+  public registerModule<T> (path: string | string[], rawModule: Module<T, S>, options: ModuleOptions = {}) {
     if (typeof path === 'string') path = [path]
 
     if (__TSGO_DEV__) {
@@ -214,7 +336,7 @@ export class Store {
     resetStoreState(this, this.state)
   }
 
-  unregisterModule (path) {
+  public unregisterModule (path: string | string[]) {
     if (typeof path === 'string') path = [path]
 
     if (__TSGO_DEV__) {
@@ -229,7 +351,7 @@ export class Store {
     resetStore(this)
   }
 
-  hasModule (path) {
+  public hasModule (path: string | string[]): boolean {
     if (typeof path === 'string') path = [path]
 
     if (__TSGO_DEV__) {
@@ -239,12 +361,17 @@ export class Store {
     return this._modules.isRegistered(path)
   }
 
-  hotUpdate (newOptions) {
+  public hotUpdate (newOptions: {
+    actions?: ActionTree<S, S>;
+    mutations?: MutationTree<S>;
+    getters?: GetterTree<S, S>;
+    modules?: ModuleTree<S>;
+  }): void {
     this._modules.update(newOptions)
     resetStore(this, true)
   }
 
-  _withCommit (fn) {
+  private _withCommit (fn: Function) {
     const committing = this._committing
     this._committing = true
     fn()
@@ -252,7 +379,7 @@ export class Store {
   }
 }
 
-function genericSubscribe (fn, subs, options) {
+function genericSubscribe (fn: any, subs: any, options: any) {
   if (subs.indexOf(fn) < 0) {
     options && options.prepend
       ? subs.unshift(fn)
@@ -266,7 +393,7 @@ function genericSubscribe (fn, subs, options) {
   }
 }
 
-function resetStore (store, hot) {
+function resetStore (store: any, hot?: any) {
   store._actions = Object.create(null)
   store._mutations = Object.create(null)
   store._wrappedGetters = Object.create(null)
@@ -278,7 +405,7 @@ function resetStore (store, hot) {
   resetStoreState(store, state, hot)
 }
 
-function resetStoreState (store, state, hot) {
+function resetStoreState (store: any, state: any, hot?: any) {
   const oldState = store._state
 
   // bind store public getters
@@ -286,8 +413,8 @@ function resetStoreState (store, state, hot) {
   // reset local getters cache
   store._makeLocalGettersCache = Object.create(null)
   const wrappedGetters = store._wrappedGetters
-  const computedObj = {}
-  forEachValue(wrappedGetters, (fn, key) => {
+  const computedObj: any = {}
+  forEachValue(wrappedGetters, (fn: any, key: any) => {
     // use computed to leverage its lazy-caching mechanism
     // direct inline function use will lead to closure preserving oldState.
     // using partial to return function with only arguments preserved in closure environment.
@@ -320,7 +447,7 @@ function resetStoreState (store, state, hot) {
   }
 }
 
-function installModule (store, rootState, path, module, hot) {
+function installModule (store: any, rootState: any, path: any, module: any, hot?: any) {
   const isRoot = !path.length
   const namespace = store._modules.getNamespace(path)
 
@@ -350,23 +477,23 @@ function installModule (store, rootState, path, module, hot) {
 
   const local = module.context = makeLocalContext(store, namespace, path)
 
-  module.forEachMutation((mutation, key) => {
+  module.forEachMutation((mutation: any, key: any) => {
     const namespacedType = namespace + key
     registerMutation(store, namespacedType, mutation, local)
   })
 
-  module.forEachAction((action, key) => {
+  module.forEachAction((action: any, key: any) => {
     const type = action.root ? key : namespace + key
     const handler = action.handler || action
     registerAction(store, type, handler, local)
   })
 
-  module.forEachGetter((getter, key) => {
+  module.forEachGetter((getter: any, key: any) => {
     const namespacedType = namespace + key
     registerGetter(store, namespacedType, getter, local)
   })
 
-  module.forEachChild((child, key) => {
+  module.forEachChild((child: any, key: any) => {
     installModule(store, rootState, path.concat(key), child, hot)
   })
 }
@@ -375,11 +502,11 @@ function installModule (store, rootState, path, module, hot) {
  * make localized dispatch, commit, getters and state
  * if there is no namespace, just use root ones
  */
-function makeLocalContext (store, namespace, path) {
+function makeLocalContext (store: any, namespace: any, path: any) {
   const noNamespace = namespace === ''
 
   const local = {
-    dispatch: noNamespace ? store.dispatch : (_type, _payload, _options) => {
+    dispatch: noNamespace ? store.dispatch : (_type: any, _payload: any, _options?: any) => {
       const args = unifyObjectStyle(_type, _payload, _options)
       const { payload, options } = args
       let { type } = args
@@ -395,7 +522,7 @@ function makeLocalContext (store, namespace, path) {
       return store.dispatch(type, payload)
     },
 
-    commit: noNamespace ? store.commit : (_type, _payload, _options) => {
+    commit: noNamespace ? store.commit : (_type: any, _payload: any, _options?: any) => {
       const args = unifyObjectStyle(_type, _payload, _options)
       const { payload, options } = args
       let { type } = args
@@ -428,7 +555,7 @@ function makeLocalContext (store, namespace, path) {
   return local
 }
 
-function makeLocalGetters (store, namespace) {
+function makeLocalGetters (store: any, namespace: any) {
   if (!store._makeLocalGettersCache[namespace]) {
     const gettersProxy = {}
     const splitPos = namespace.length
@@ -453,16 +580,16 @@ function makeLocalGetters (store, namespace) {
   return store._makeLocalGettersCache[namespace]
 }
 
-function registerMutation (store, type, handler, local) {
+function registerMutation (store: any, type: any, handler: any, local: any) {
   const entry = store._mutations[type] || (store._mutations[type] = [])
-  entry.push(function wrappedMutationHandler (payload) {
+  entry.push(function wrappedMutationHandler (payload: any) {
     handler.call(store, local.state, payload)
   })
 }
 
-function registerAction (store, type, handler, local) {
+function registerAction (store: any, type: any, handler: any, local: any) {
   const entry = store._actions[type] || (store._actions[type] = [])
-  entry.push(function wrappedActionHandler (payload) {
+  entry.push(function wrappedActionHandler (payload: any) {
     let res = handler.call(store, {
       dispatch: local.dispatch,
       commit: local.commit,
@@ -475,7 +602,7 @@ function registerAction (store, type, handler, local) {
       res = Promise.resolve(res)
     }
     if (store._devtoolHook) {
-      return res.catch(err => {
+      return res.catch((err: Error) => {
         store._devtoolHook.emit('vuex:error', err)
         throw err
       })
@@ -485,14 +612,14 @@ function registerAction (store, type, handler, local) {
   })
 }
 
-function registerGetter (store, type, rawGetter, local) {
+function registerGetter (store: any, type: any, rawGetter: any, local: any) {
   if (store._wrappedGetters[type]) {
     if (__TSGO_DEV__) {
       console.error(`[vuex] duplicate getter key: ${type}`)
     }
     return
   }
-  store._wrappedGetters[type] = function wrappedGetter (store) {
+  store._wrappedGetters[type] = function wrappedGetter (store: any) {
     return rawGetter(
       local.state, // local state
       local.getters, // local getters
@@ -502,7 +629,7 @@ function registerGetter (store, type, rawGetter, local) {
   }
 }
 
-function enableStrictMode (store) {
+function enableStrictMode (store: any) {
   watch(() => store._state.data, () => {
     if (__TSGO_DEV__) {
       assert(store._committing, `do not mutate vuex store state outside mutation handlers.`)
@@ -510,11 +637,11 @@ function enableStrictMode (store) {
   }, { deep: true, flush: 'sync' })
 }
 
-function getNestedState (state, path) {
-  return path.reduce((state, key) => state[key], state)
+function getNestedState (state: any, path: any) {
+  return path.reduce((state: any, key: any) => state[key], state)
 }
 
-function unifyObjectStyle (type, payload, options) {
+function unifyObjectStyle (type: any, payload?: any, options?: any) {
   if (isObject(type) && type.type) {
     options = payload
     payload = type
