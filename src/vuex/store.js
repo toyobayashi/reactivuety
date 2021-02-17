@@ -181,6 +181,12 @@ export class Store {
     return genericSubscribe(subs, this._actionSubscribers, options)
   }
 
+  /**
+   * @param {Function} getter 
+   * @param {Function} cb 
+   * @param {any} options
+   * @returns {() => void} 
+   */
   watch (getter, cb, options) {
     if (__TSGO_DEV__) {
       assert(typeof getter === 'function', `store.watch only accepts a function.`)
