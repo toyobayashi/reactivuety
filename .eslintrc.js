@@ -10,6 +10,7 @@ module.exports = {
   ],
   rules: {
     'no-void': 'off',
+    'array-callback-return': 'off',
     '@typescript-eslint/no-unused-vars': 'error',
     '@typescript-eslint/no-namespace': 'off',
     '@typescript-eslint/no-var-requires': 'off',

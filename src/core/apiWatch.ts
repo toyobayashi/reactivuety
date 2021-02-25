@@ -89,7 +89,7 @@ const INITIAL_WATCHER_VALUE = {}
 /** @public */
 export type MultiWatchSources = Array<WatchSource<unknown> | object>
 
-// overload #1: array of multiple sources + cb
+// overload: array of multiple sources + cb
 /** @public */
 export function watch<
   T extends MultiWatchSources,
@@ -100,7 +100,7 @@ export function watch<
   options?: WatchOptions<Immediate>
 ): WatchStopHandle
 
-// overload #2 for multiple sources w/ `as const`
+// overload: multiple sources w/ `as const`
 // watch([foo, bar] as const, () => {})
 // somehow [...T] breaks when the type is readonly
 /** @public */
@@ -113,7 +113,7 @@ export function watch<
   options?: WatchOptions<Immediate>
 ): WatchStopHandle
 
-// overload #2: single source + cb
+// overload: single source + cb
 /** @public */
 export function watch<T, Immediate extends Readonly<boolean> = false> (
   source: WatchSource<T>,
@@ -121,7 +121,7 @@ export function watch<T, Immediate extends Readonly<boolean> = false> (
   options?: WatchOptions<Immediate>
 ): WatchStopHandle
 
-// overload #3: watching reactive object w/ cb
+// overload: watching reactive object w/ cb
 /** @public */
 export function watch<
   T extends object,
@@ -194,7 +194,9 @@ function doWatch (
         } else if (isReactive(s)) {
           return traverse(s)
         } else if (isFunction(s)) {
-          return callWithErrorHandling(s, instance, ErrorCodes.WATCH_GETTER)
+          return callWithErrorHandling(s, instance, ErrorCodes.WATCH_GETTER, [
+            instance
+          ])
         } else {
           __TSGO_DEV__ && warnInvalidSource(s)
         }
@@ -203,7 +205,9 @@ function doWatch (
     if (cb) {
       // getter with cb
       getter = () =>
-        callWithErrorHandling(source, instance, ErrorCodes.WATCH_GETTER)
+        callWithErrorHandling(source, instance, ErrorCodes.WATCH_GETTER, [
+          instance
+        ])
     } else {
       // no cb -> simple effect
       getter = () => {
