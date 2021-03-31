@@ -14,7 +14,7 @@ npm install @tybys/reactivuety
 
 ```html
 <script src="https://cdn.jsdelivr.net/npm/react/umd/react.production.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@vue/reactivity@3.0.7/dist/reactivity.global.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@vue/reactivity@3.0.10/dist/reactivity.global.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@tybys/reactivuety/dist/reactivuety.min.js"></script>
 ```
 ## 与 Vue 的写法对比
@@ -84,7 +84,7 @@ export default defineComponent((props) => {
 <script src="https://cdn.jsdelivr.net/npm/lodash/lodash.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/marked/lib/marked.min.js"></script>
 
-<script src="https://cdn.jsdelivr.net/npm/@vue/reactivity@3.0.7/dist/reactivity.global.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@vue/reactivity@3.0.10/dist/reactivity.global.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@tybys/reactivuety/dist/reactivuety.min.js"></script>
 <script>
   (function () {
