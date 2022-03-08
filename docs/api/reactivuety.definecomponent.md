@@ -8,15 +8,14 @@
 <b>Signature:</b>
 
 ```typescript
-export declare function defineComponent<P>(setup: SetupFunction<P, (context?: any) => ReactElement | null>, name?: string): ForwardRefExoticComponent<PropsWithChildren<PropsWithoutRef<P> & RefAttributes<any>>>;
+export declare function defineComponent<P, R extends RenderFunction | object = object>(options: DefineComponentOptions<P, R> | SetupFunction<P, R>): ForwardRefExoticComponent<PropsWithChildren<PropsWithoutRef<P> & RefAttributes<any>>>;
 ```
 
 ## Parameters
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  setup | [SetupFunction](./reactivuety.setupfunction.md)<!-- -->&lt;P, (context?: any) =&gt; ReactElement \| null&gt; |  |
-|  name | string |  |
+|  options | [DefineComponentOptions](./reactivuety.definecomponentoptions.md)<!-- -->&lt;P, R&gt; \| [SetupFunction](./reactivuety.setupfunction.md)<!-- -->&lt;P, R&gt; |  |
 
 <b>Returns:</b>
 

@@ -8,16 +8,16 @@
 <b>Signature:</b>
 
 ```typescript
-export declare function createSetupHook<P>(setup: SetupFunction<P, (context?: any) => ReactElement | null>): (props: PropsWithChildren<P>) => (context?: any) => ReactElement | null;
+export declare function createSetupHook<P, Setup extends SetupFunction<P, RenderFunction | object>>(setup: Setup): (props: PropsWithChildren<P>) => SetupReturnType<Setup>;
 ```
 
 ## Parameters
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  setup | [SetupFunction](./reactivuety.setupfunction.md)<!-- -->&lt;P, (context?: any) =&gt; ReactElement \| null&gt; |  |
+|  setup | Setup |  |
 
 <b>Returns:</b>
 
-(props: PropsWithChildren&lt;P&gt;) =&gt; (context?: any) =&gt; ReactElement \| null
+(props: PropsWithChildren&lt;P&gt;) =&gt; [SetupReturnType](./reactivuety.setupreturntype.md)<!-- -->&lt;Setup&gt;
 

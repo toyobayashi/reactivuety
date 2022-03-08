@@ -3,10 +3,9 @@ module.exports = {
   //   doc: false
   // },
   rollupGlobals: {
-    react: 'React',
-    '@vue/reactivity': 'VueReactivity'
+    react: 'React'
   },
-  resolveOnly: [/^(?!(react)|(@vue\/reactivity)).*?$/],
+  resolveOnly: [/^(?!(react)).*?$/],
   bundleOnly: ['umd', 'cjs', { type: 'esm-bundler', minify: false }],
   bundleDefine: {
     __VERSION__: JSON.stringify(require('./package.json').version)

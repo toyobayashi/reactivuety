@@ -6,18 +6,18 @@ import { defineComponent, ref, computed, onBeforeMount, onMounted, onBeforeUpdat
 
 // import { reactive } from '@vue/reactivity'
 
-const DemoGrid = defineComponent<{
+const DemoGrid = defineComponent((props: {
   columns: string[]
   heroes: Array<{ name: string; power: number }>
   filterKey: string
-}>((props) => {
+}) => {
   onBeforeMount(() => console.log('onBeforeMount'))
   onMounted(() => console.log('onMounted'))
   onBeforeUpdate(() => console.log('onBeforeUpdate'))
   onUpdated(() => console.log('onUpdated'))
   onBeforeUnmount(() => console.log('onBeforeUnmount'))
   onUnmounted(() => console.log('onUnmounted'))
-  onRenderTriggered((e) => console.log(e))
+  onRenderTriggered((e: any) => console.log(e))
   const sortKey = ref('')
   const sortOrders = computed(() => {
     const columnSortOrders: any = {}
@@ -65,7 +65,8 @@ const DemoGrid = defineComponent<{
     return str.charAt(0).toUpperCase() + str.slice(1)
   }
 
-  return () => {
+  return (ref) => {
+    console.log(ref)
     console.log('[DemoGrid] render')
     return (
       <table>

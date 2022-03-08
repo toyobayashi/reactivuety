@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import { Ref } from '@vue/reactivity'
+import type { Ref } from '@vue/runtime-core'
 import { looseIndexOf, looseEqual, toNumber, isSet } from '@vue/shared'
 import * as React from 'react'
 
@@ -52,11 +52,21 @@ export function useDomRef<E> (ref: React.ForwardedRef<E>): [React.MutableRefObje
   return [domRef, getRefCallback]
 }
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+export interface VModelTextHook<E, P> {
+  vModelName: keyof VModelPropsWithLazy<string | number>
+  getRefCallback: (el: E) => void
+  onInput: React.FormEventHandler<E> | undefined
+  onChangeCallback: (e: any) => void
+  onInputCallback: (e: any) => void
+  onCompositionStartCallback: (e: any) => void
+  onCompositionEndCallback: (e: any) => void
+  restProps: Omit<P, 'value' | 'defaultValue' | 'onCompositionEnd' | 'onCompositionStart' | 'onChange' | 'onInput' | 'vModel_lazy' | 'vModel' | 'vModel_trim' | 'vModel_number'>
+}
+
 function useVModelText<
   E extends HTMLInputElement | HTMLTextAreaElement,
   P extends React.DetailedHTMLProps<React.InputHTMLAttributes<E>, E> & VModelPropsWithLazy<string | number> & { value?: string | number }
-> (props: P, ref: React.ForwardedRef<E>) {
+> (props: P, ref: React.ForwardedRef<E>): VModelTextHook<E, P> {
   const vModelName = useVModelPropName(props, ['vModel', 'vModel_lazy', 'vModel_trim', 'vModel_number'])
   const { value, onInput, onChange, vModel, vModel_lazy, vModel_trim, vModel_number, defaultValue, onCompositionStart, onCompositionEnd, ...restProps } = props
   const usingVModel = props[vModelName]

@@ -7,7 +7,7 @@ import { ref, watch, Input, defineComponent } from '../../..'
 
 const apiURL = 'https://api.github.com/repos/vuejs/vue/commits?per_page=3&sha='
 
-export default defineComponent<RouteComponentProps>(() => {
+export default defineComponent((_props: RouteComponentProps) => {
   const branches = ref(['master', 'dev'])
   const currentBranch = ref('master')
   const commits = ref<any[] | null>(null)
@@ -21,7 +21,7 @@ export default defineComponent<RouteComponentProps>(() => {
   }
 
   const fetchData = (): void => {
-    var xhr = new XMLHttpRequest()
+    const xhr = new XMLHttpRequest()
     xhr.open('GET', apiURL + currentBranch.value)
     xhr.onload = function () {
       commits.value = JSON.parse(xhr.responseText)
@@ -64,7 +64,8 @@ export default defineComponent<RouteComponentProps>(() => {
                     >{record.sha.slice(0, 7)}</a> - <span className="message">{ truncate(record.commit.message) }</span><br /> by <span className="author"><a href={record.author.html_url} target="_blank">{ record.commit.author.name }</a></span> at <span className="date">{ formatDate(record.commit.author.date) }</span>
                   </li>
                 )
-              }) : null
+              })
+              : null
           }
         </ul>
       </div>

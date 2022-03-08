@@ -7,7 +7,7 @@ import { ref, computed, Textarea, defineComponent } from '../../..'
 
 const debounce: typeof import('lodash/debounce') = require('lodash/debounce')
 
-export default defineComponent<RouteComponentProps>(() => {
+export default defineComponent((_props: RouteComponentProps) => {
   const input = ref<string>('# hello')
 
   const compiledMarkdown = computed(() => ({ __html: marked(input.value) }))

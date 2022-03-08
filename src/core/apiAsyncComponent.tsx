@@ -1,9 +1,8 @@
 import { isFunction, isObject } from '@vue/shared'
 import { defineComponent } from './apiDefineComponent'
 import { ref } from '../ref'
-import { ErrorCodes, handleError } from './errorHandling'
 import * as React from 'react'
-import { getCurrentInstance } from './component'
+import { getCurrentInstance, handleError, ErrorCodes } from '@vue/runtime-core'
 
 /** @public */
 export type AsyncComponentResolveResult<P = any> = React.ComponentType<P> | { default: React.ComponentType<P> } // es modules
@@ -97,64 +96,67 @@ export function defineAsyncComponent<P = any> (source: AsyncComponentLoader<P> |
     return thisRequest
   }
 
-  const AsyncComponentWrapper = defineComponent<P>((props) => {
-    if (ResolvedComp) {
-      return (ref) => (
-        ref !== undefined ? <ResolvedComp {...props} ref={ref} /> : <ResolvedComp {...props} />
-      )
-    }
+  const AsyncComponentWrapper = defineComponent({
+    name: 'AsyncComponentWrapper',
+    setup: (props: Readonly<React.PropsWithChildren<P>>) => {
+      if (ResolvedComp) {
+        return (ref) => (
+          ref !== undefined ? <ResolvedComp {...props} ref={ref} /> : <ResolvedComp {...props} />
+        )
+      }
 
-    const onError = (err: Error): void => {
-      pendingRequest = null
-      handleError(
-        err,
-        getCurrentInstance(),
-        ErrorCodes.ASYNC_COMPONENT_LOADER
-      )
-    }
+      const onError = (err: Error): void => {
+        pendingRequest = null
+        handleError(
+          err,
+          getCurrentInstance(),
+          ErrorCodes.ASYNC_COMPONENT_LOADER
+        )
+      }
 
-    const loaded = ref(false)
-    const error = ref()
-    const delayed = ref(!!delay)
+      const loaded = ref(false)
+      const error = ref()
+      const delayed = ref(!!delay)
 
-    if (delay) {
-      setTimeout(() => {
-        delayed.value = false
-      }, delay)
-    }
+      if (delay) {
+        setTimeout(() => {
+          delayed.value = false
+        }, delay)
+      }
 
-    if (timeout != null) {
-      setTimeout(() => {
-        if (!loaded.value && !error.value) {
-          const err = new Error(
-            `Async component timed out after ${timeout}ms.`
-          )
+      if (timeout != null) {
+        setTimeout(() => {
+          if (!loaded.value && !error.value) {
+            const err = new Error(
+              `Async component timed out after ${timeout}ms.`
+            )
+            onError(err)
+            error.value = err
+          }
+        }, timeout)
+      }
+
+      load()
+        .then(() => {
+          loaded.value = true
+        })
+        .catch(err => {
           onError(err)
           error.value = err
+        })
+
+      return (ref) => {
+        if (loaded.value && ResolvedComp) {
+          return ref !== undefined ? (<ResolvedComp {...props} ref={ref} />) : (<ResolvedComp {...props} />)
+        } else if (error.value && ErrorComponent) {
+          return (<ErrorComponent error={error.value} />)
+        } else if (LoadingComponent && !delayed.value) {
+          return (<LoadingComponent />)
         }
-      }, timeout)
-    }
-
-    load()
-      .then(() => {
-        loaded.value = true
-      })
-      .catch(err => {
-        onError(err)
-        error.value = err
-      })
-
-    return (ref) => {
-      if (loaded.value && ResolvedComp) {
-        return ref !== undefined ? (<ResolvedComp {...props} ref={ref} />) : (<ResolvedComp {...props} />)
-      } else if (error.value && ErrorComponent) {
-        return (<ErrorComponent error={error.value} />)
-      } else if (LoadingComponent && !delayed.value) {
-        return (<LoadingComponent />)
+        return null
       }
-      return null
     }
-  }, 'AsyncComponentWrapper')
+  })
 
   return AsyncComponentWrapper
 }

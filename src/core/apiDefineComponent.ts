@@ -1,39 +1,53 @@
+import type { ShallowUnwrapRef } from '@vue/runtime-core'
 import { ReactElement, PropsWithChildren, forwardRef, ForwardRefExoticComponent, PropsWithoutRef, RefAttributes } from 'react'
-import { SetupFunction, useSetup } from '../useSetup'
+import { RenderFunction, SetupFunction, useSetup } from '../useSetup'
+
+/* export type SetupReturnType<Setup> = Setup extends (...args: any[]) => infer R
+  ? R extends (...args: any[]) => ReactElement | null
+    ? R
+    : R extends object
+      ? ShallowUnwrapRef<R>
+      : R
+  : never */
+
+export interface DefineComponentOptions<P, R extends RenderFunction | object> {
+  setup: SetupFunction<P, R>
+  name?: string
+  render?: (state: ShallowUnwrapRef<R>, props: P, ref?: React.ForwardedRef<any>) => ReactElement | null
+}
 
 /** @public */
-export function defineComponent<P> (setup: SetupFunction<P, (context?: any) => ReactElement | null>, name?: string): ForwardRefExoticComponent<PropsWithChildren<PropsWithoutRef<P> & RefAttributes<any>>>
-
-/** @public */
-export function defineComponent<P, R extends object> (setup: SetupFunction<P, R>, render: (state: R, props: PropsWithChildren<P>, context?: any) => ReactElement | null, name?: string): ForwardRefExoticComponent<PropsWithChildren<PropsWithoutRef<P> & RefAttributes<any>>>
-
-export function defineComponent<P> (setup: SetupFunction<P, any>, render?: any, name?: string): ForwardRefExoticComponent<PropsWithChildren<PropsWithoutRef<P> & RefAttributes<any>>> {
-  if (typeof setup !== 'function') {
-    throw new TypeError('setup is not a function')
+export function defineComponent<P, R extends RenderFunction | object = object> (
+  options: DefineComponentOptions<P, R> | SetupFunction<P, R>
+): ForwardRefExoticComponent<PropsWithChildren<PropsWithoutRef<P> & RefAttributes<any>>> {
+  if (typeof options === 'function') {
+    return defineComponent({
+      name: options.name,
+      setup: options
+    })
   }
 
-  if (typeof render === 'string') {
-    name = render
-    render = null
-  }
+  if (typeof options === 'object' && options !== null) {
+    const setup = options.setup
+    const renderFunctionProvided = typeof options.render === 'function'
+    const SetupComponent = forwardRef<any, P>(function (props, ref) {
+      const r = useSetup(setup, props)
+      if (typeof r === 'function') {
+        return (r as Function)(ref)
+      }
+      if (renderFunctionProvided) {
+        return options.render!(r as ShallowUnwrapRef<R>, props, ref)
+      }
 
-  const renderFunctionProvided = typeof render === 'function'
+      throw new TypeError('render function is not provided')
+    })
 
-  const SetupComponent = forwardRef<any, P>(function (props, ref) {
-    const r = useSetup(setup, props)
-    if (typeof r === 'function') {
-      return r(ref)
+    if (typeof options.name === 'string') {
+      SetupComponent.displayName = options.name
     }
-    if (renderFunctionProvided) {
-      return render(r, props, ref)
-    }
 
-    throw new TypeError('render function is not provided')
-  })
-
-  if (typeof name === 'string') {
-    SetupComponent.displayName = name
+    return SetupComponent
   }
 
-  return SetupComponent
+  throw new TypeError('Invalid component option')
 }

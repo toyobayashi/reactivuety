@@ -1,5 +1,5 @@
-import { MutableRefObject } from 'react'
-import { ref as _ref, shallowRef as _shallowRef, Ref, UnwrapRef, toRaw, reactive } from '@vue/reactivity'
+import type { MutableRefObject } from 'react'
+import { ref as _ref, shallowRef as _shallowRef, Ref, UnwrapRef, toRaw, reactive } from '@vue/runtime-core'
 import { isObject } from '@vue/shared'
 
 // eslint-disable-next-line no-self-compare

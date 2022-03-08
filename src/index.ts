@@ -5,41 +5,14 @@
  */
 
 export {
-  computed
-} from './core/apiComputed'
-
-export {
-  defineComponent
-} from './core/apiDefineComponent'
-
-export {
-  AsyncComponentResolveResult,
-  AsyncComponentLoader,
-  AsyncComponentOptions,
-  defineAsyncComponent
-} from './core/apiAsyncComponent'
-
-export {
+  watch,
+  watchEffect,
+  watchPostEffect,
+  watchSyncEffect,
+  computed,
   inject,
   provide,
-  InjectionKey
-} from './core/apiInject'
-
-export {
-  ErrorTypes,
-  ErrorCodes,
-  setGlobalErrorHandler
-} from './core/errorHandling'
-
-export {
-  nextTick
-} from './core/scheduler'
-
-export {
-  LifecycleHooks
-} from './core/component'
-
-export {
+  nextTick,
   onBeforeMount,
   onBeforeUnmount,
   onBeforeUpdate,
@@ -49,10 +22,50 @@ export {
   onRenderTriggered,
   onUnmounted,
   onUpdated,
-  WrappedHook,
-  DebuggerHook,
-  ErrorCapturedHook
-} from './core/apiLifecycle'
+
+  // core
+  reactive,
+  readonly,
+  // utilities
+  unref,
+  proxyRefs,
+  isRef,
+  toRef,
+  toRefs,
+  isProxy,
+  isReactive,
+  isReadonly,
+  isShallow,
+  // advanced
+  customRef,
+  triggerRef,
+  shallowReactive,
+  shallowReadonly,
+  markRaw,
+  toRaw,
+  // effect
+  effect,
+  stop,
+  ReactiveEffect,
+  // effect scope
+  effectScope,
+  EffectScope,
+  getCurrentScope,
+  onScopeDispose,
+  getCurrentInstance
+} from '@vue/runtime-core'
+
+export {
+  defineComponent,
+  DefineComponentOptions
+} from './core/apiDefineComponent'
+
+export {
+  defineAsyncComponent,
+  AsyncComponentLoader,
+  AsyncComponentOptions,
+  AsyncComponentResolveResult
+} from './core/apiAsyncComponent'
 
 export {
   ref,
@@ -66,22 +79,10 @@ export {
 export {
   createSetupHook,
   SetupFunction,
-  useSetup
+  SetupReturnType,
+  useSetup,
+  RenderFunction
 } from './useSetup'
-
-export {
-  watch,
-  watchEffect,
-  InvalidateCbRegistrator,
-  MapSources,
-  MultiWatchSources,
-  WatchCallback,
-  WatchEffect,
-  WatchOptionsBase,
-  WatchSource,
-  WatchOptions,
-  WatchStopHandle
-} from './core/apiWatch'
 
 export {
   Input

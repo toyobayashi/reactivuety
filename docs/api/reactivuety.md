@@ -6,44 +6,21 @@
 
 Use vue composition API with react.
 
-## Enumerations
-
-|  Enumeration | Description |
-|  --- | --- |
-|  [ErrorCodes](./reactivuety.errorcodes.md) |  |
-|  [LifecycleHooks](./reactivuety.lifecyclehooks.md) |  |
-
 ## Functions
 
 |  Function | Description |
 |  --- | --- |
-|  [computed(getter)](./reactivuety.computed.md) |  |
-|  [computed(options)](./reactivuety.computed_1.md) |  |
 |  [createSetupHook(setup)](./reactivuety.createsetuphook.md) |  |
-|  [createSetupHook(setup)](./reactivuety.createsetuphook_1.md) |  |
 |  [defineAsyncComponent(source)](./reactivuety.defineasynccomponent.md) |  |
-|  [defineComponent(setup, name)](./reactivuety.definecomponent.md) |  |
-|  [defineComponent(setup, render, name)](./reactivuety.definecomponent_1.md) |  |
-|  [inject(key)](./reactivuety.inject.md) |  |
-|  [inject(key, defaultValue, treatDefaultAsFactory)](./reactivuety.inject_1.md) |  |
-|  [inject(key, defaultValue, treatDefaultAsFactory)](./reactivuety.inject_2.md) |  |
-|  [nextTick(fn)](./reactivuety.nexttick.md) |  |
-|  [provide(key, value)](./reactivuety.provide.md) |  |
+|  [defineComponent(options)](./reactivuety.definecomponent.md) |  |
 |  [ref(value)](./reactivuety.ref.md) |  |
 |  [ref(value)](./reactivuety.ref_1.md) |  |
 |  [ref()](./reactivuety.ref_2.md) |  |
-|  [setGlobalErrorHandler(handler)](./reactivuety.setglobalerrorhandler.md) |  |
 |  [shallowRef(value)](./reactivuety.shallowref.md) |  |
 |  [shallowRef(value)](./reactivuety.shallowref_1.md) |  |
 |  [shallowRef()](./reactivuety.shallowref_2.md) |  |
 |  [useForceUpdate()](./reactivuety.useforceupdate.md) |  |
 |  [useSetup(setup, props)](./reactivuety.usesetup.md) |  |
-|  [useSetup(setup, props)](./reactivuety.usesetup_1.md) |  |
-|  [watch(sources, cb, options)](./reactivuety.watch.md) |  |
-|  [watch(source, cb, options)](./reactivuety.watch_1.md) |  |
-|  [watch(source, cb, options)](./reactivuety.watch_2.md) |  |
-|  [watch(source, cb, options)](./reactivuety.watch_3.md) |  |
-|  [watchEffect(effect, options)](./reactivuety.watcheffect.md) |  |
 
 ## Interfaces
 
@@ -51,26 +28,15 @@ Use vue composition API with react.
 |  --- | --- |
 |  [AsyncComponentOptions](./reactivuety.asynccomponentoptions.md) |  |
 |  [CheckboxProps](./reactivuety.checkboxprops.md) |  |
-|  [InjectionKey](./reactivuety.injectionkey.md) |  |
+|  [DefineComponentOptions](./reactivuety.definecomponentoptions.md) |  |
 |  [VModelProps](./reactivuety.vmodelprops.md) |  |
 |  [VModelPropsWithLazy](./reactivuety.vmodelpropswithlazy.md) |  |
-|  [WatchOptions](./reactivuety.watchoptions.md) |  |
-|  [WatchOptionsBase](./reactivuety.watchoptionsbase.md) |  |
 
 ## Variables
 
 |  Variable | Description |
 |  --- | --- |
 |  [Input](./reactivuety.input.md) |  |
-|  [onBeforeMount](./reactivuety.onbeforemount.md) |  |
-|  [onBeforeUnmount](./reactivuety.onbeforeunmount.md) |  |
-|  [onBeforeUpdate](./reactivuety.onbeforeupdate.md) |  |
-|  [onErrorCaptured](./reactivuety.onerrorcaptured.md) |  |
-|  [onMounted](./reactivuety.onmounted.md) |  |
-|  [onRenderTracked](./reactivuety.onrendertracked.md) |  |
-|  [onRenderTriggered](./reactivuety.onrendertriggered.md) |  |
-|  [onUnmounted](./reactivuety.onunmounted.md) |  |
-|  [onUpdated](./reactivuety.onupdated.md) |  |
 |  [Option\_2](./reactivuety.option_2.md) |  |
 |  [Select](./reactivuety.select.md) |  |
 |  [Textarea](./reactivuety.textarea.md) |  |
@@ -82,16 +48,7 @@ Use vue composition API with react.
 |  --- | --- |
 |  [AsyncComponentLoader](./reactivuety.asynccomponentloader.md) |  |
 |  [AsyncComponentResolveResult](./reactivuety.asynccomponentresolveresult.md) |  |
-|  [DebuggerHook](./reactivuety.debuggerhook.md) |  |
-|  [ErrorCapturedHook](./reactivuety.errorcapturedhook.md) |  |
-|  [ErrorTypes](./reactivuety.errortypes.md) |  |
-|  [InvalidateCbRegistrator](./reactivuety.invalidatecbregistrator.md) |  |
-|  [MapSources](./reactivuety.mapsources.md) |  |
-|  [MultiWatchSources](./reactivuety.multiwatchsources.md) |  |
+|  [RenderFunction](./reactivuety.renderfunction.md) |  |
 |  [SetupFunction](./reactivuety.setupfunction.md) |  |
-|  [WatchCallback](./reactivuety.watchcallback.md) |  |
-|  [WatchEffect](./reactivuety.watcheffect.md) |  |
-|  [WatchSource](./reactivuety.watchsource.md) |  |
-|  [WatchStopHandle](./reactivuety.watchstophandle.md) |  |
-|  [WrappedHook](./reactivuety.wrappedhook.md) |  |
+|  [SetupReturnType](./reactivuety.setupreturntype.md) |  |
 
