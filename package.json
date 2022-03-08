@@ -8,6 +8,7 @@
   "module": "./dist/reactivuety.esm-bundler.js",
   "main": "./index.js",
   "scripts": {
+    "postinstall": "node ./scripts/postinstall.js",
     "prepare": "npm run build",
     "cjs": "tsgo cjs",
     "esm": "tsgo esm",
