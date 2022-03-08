@@ -16,7 +16,6 @@ or
 
 ```html
 <script src="https://cdn.jsdelivr.net/npm/react/umd/react.production.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@vue/reactivity@3.0.10/dist/reactivity.global.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@tybys/reactivuety/dist/reactivuety.min.js"></script>
 ```
 
@@ -87,7 +86,6 @@ No bundler:
 <script src="https://cdn.jsdelivr.net/npm/lodash/lodash.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/marked/lib/marked.min.js"></script>
 
-<script src="https://cdn.jsdelivr.net/npm/@vue/reactivity@3.0.10/dist/reactivity.global.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@tybys/reactivuety/dist/reactivuety.min.js"></script>
 <script>
   (function () {
@@ -134,10 +132,10 @@ export default defineComponent((props) => {
   }, 300)
 
   return { input, compiledMarkdown, update }
-}, ({ input, compiledMarkdown, update }, props, context) => (
+}, (state, props, context) => (
   <div id="editor">
-    <Textarea value={input.value} onInput={update} />
-    <div dangerouslySetInnerHTML={compiledMarkdown.value}></div>
+    <Textarea value={state.input} onInput={update} />
+    <div dangerouslySetInnerHTML={state.compiledMarkdown}></div>
   </div>
 ))
 ```
@@ -150,7 +148,7 @@ import * as React from 'react'
 import { useSetup, ref, computed, Textarea } from '@tybys/reactivuety'
 
 export default (props) => {
-  const { input, compiledMarkdown, update } = useSetup(
+  const state = useSetup(
     (propsProxy) => {
       const input = ref('# hello')
       const compiledMarkdown = computed(() => ({ __html: marked(input.value) }))
@@ -166,8 +164,8 @@ export default (props) => {
 
   return (
     <div id="editor">
-      <Textarea value={input.value} onInput={update} />
-      <div dangerouslySetInnerHTML={compiledMarkdown.value}></div>
+      <Textarea value={state.input} onInput={update} />
+      <div dangerouslySetInnerHTML={state.compiledMarkdown}></div>
     </div>
   )
 }
@@ -369,5 +367,3 @@ export default defineComponent(() => {
 * if `provide()` is called outside of setup function, it will provide your variable to root.
 
 * the `onChange` event of `<Input>` and `<Textarea>` is native, not react's.
-
-* Import `ref` `shallowRef` `computed` from this package, and other reactive API from `@vue/reactivity`.

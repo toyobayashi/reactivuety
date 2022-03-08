@@ -14,7 +14,6 @@ npm install @tybys/reactivuety
 
 ```html
 <script src="https://cdn.jsdelivr.net/npm/react/umd/react.production.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@vue/reactivity@3.0.10/dist/reactivity.global.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@tybys/reactivuety/dist/reactivuety.min.js"></script>
 ```
 ## 与 Vue 的写法对比
@@ -84,7 +83,6 @@ export default defineComponent((props) => {
 <script src="https://cdn.jsdelivr.net/npm/lodash/lodash.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/marked/lib/marked.min.js"></script>
 
-<script src="https://cdn.jsdelivr.net/npm/@vue/reactivity@3.0.10/dist/reactivity.global.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@tybys/reactivuety/dist/reactivuety.min.js"></script>
 <script>
   (function () {
@@ -131,10 +129,10 @@ export default defineComponent((props) => {
   }, 300)
 
   return { input, compiledMarkdown, update }
-}, ({ input, compiledMarkdown, update }, props, context) => (
+}, (state, props, ref) => (
   <div id="editor">
-    <Textarea value={input.value} onInput={update} />
-    <div dangerouslySetInnerHTML={compiledMarkdown.value}></div>
+    <Textarea value={state.input} onInput={update} />
+    <div dangerouslySetInnerHTML={state.compiledMarkdown}></div>
   </div>
 ))
 ```
@@ -147,7 +145,7 @@ import * as React from 'react'
 import { useSetup, ref, computed, Textarea } from '@tybys/reactivuety'
 
 export default (props) => {
-  const { input, compiledMarkdown, update } = useSetup(
+  const state = useSetup(
     (propsProxy) => {
       const input = ref('# hello')
       const compiledMarkdown = computed(() => ({ __html: marked(input.value) }))
@@ -163,8 +161,8 @@ export default (props) => {
 
   return (
     <div id="editor">
-      <Textarea value={input.value} onInput={update} />
-      <div dangerouslySetInnerHTML={compiledMarkdown.value}></div>
+      <Textarea value={state.input} onInput={update} />
+      <div dangerouslySetInnerHTML={state.compiledMarkdown}></div>
     </div>
   )
 }
@@ -373,6 +371,4 @@ export default defineComponent(() => {
 
 * 除了 `vModel` 和 `ref`，**不应该** 给任何属性传入响应式对象。
 
-* `ref` 不会自动取值，传到 JSX 里要写 `.value`。
-
-* 优先从本库导入 `@vue/reactivity` 的 API，本库未提供的再从 `@vue/reactivity` 中导入使用。
+* `ref` 最顶层会自动取值，深层属性传到 JSX 里要写 `.value`。
