@@ -13,7 +13,7 @@ import {
   proxyRefs,
   ShallowUnwrapRef
 } from '@vue/runtime-core'
-import { PropsWithChildren, ReactElement, useCallback, useEffect, useRef, ForwardedRef } from 'react'
+import { PropsWithChildren, ReactElement, useEffect, useRef, ForwardedRef } from 'react'
 import { InternalInstance, LifecycleHooks, invokeLifecycle, clearAllLifecycles } from './lifecycle'
 import { useForceUpdate } from './useForceUpdate'
 
@@ -48,7 +48,7 @@ export function useSetup<P, Setup extends SetupFunction<P, RenderFunction | obje
 
   const instanceRef = useRef<InternalInstance>()
 
-  const updateProps: { (): void; __called?: boolean } = useCallback(() => {
+  useEffect(() => {
     if (instanceRef.current) {
       const currentKeys = new Set(Object.keys(instanceRef.current.props))
       const keys = Object.keys(props)
@@ -58,22 +58,14 @@ export function useSetup<P, Setup extends SetupFunction<P, RenderFunction | obje
         currentKeys.delete(key)
       }
       const it = currentKeys.values()
-      let result: IteratorResult<string, any>
-      while (true) {
-        result = it.next()
-        if (result.done) {
-          break
-        }
+      let result = it.next()
+      while (!result.done) {
         // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
         delete instanceRef.current.props[result.value]
+        result = it.next()
       }
     }
   }, [props])
-
-  if (!updateProps.__called) {
-    updateProps()
-    updateProps.__called = true
-  }
 
   if (!instanceRef.current) {
     const updateCallback = (): void => {
@@ -121,9 +113,7 @@ export function useSetup<P, Setup extends SetupFunction<P, RenderFunction | obje
       const runner = scope.current.run(() => effect(() => ret(..._args), {
         lazy: true,
         scope: scope.current!,
-        scheduler: () => {
-          void nextTick(updateCallback)
-        },
+        scheduler: updateCallback,
         onTrack (e) {
           invokeLifecycle(instanceRef.current!, LifecycleHooks.RENDER_TRACKED, e)
         },
@@ -140,9 +130,7 @@ export function useSetup<P, Setup extends SetupFunction<P, RenderFunction | obje
       }
     } else {
       scope.current.run(() => {
-        watch(() => ret, () => {
-          void nextTick(updateCallback)
-        }, {
+        watch(() => ret, updateCallback, {
           deep: true,
           onTrack (e) {
             invokeLifecycle(instanceRef.current!, LifecycleHooks.RENDER_TRACKED, e)

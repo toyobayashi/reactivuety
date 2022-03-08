@@ -65,8 +65,7 @@ const DemoGrid = defineComponent((props: {
     return str.charAt(0).toUpperCase() + str.slice(1)
   }
 
-  return (ref) => {
-    console.log(ref)
+  return () => {
     console.log('[DemoGrid] render')
     return (
       <table>
