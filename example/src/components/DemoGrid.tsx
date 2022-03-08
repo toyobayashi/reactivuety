@@ -66,7 +66,7 @@ const DemoGrid = defineComponent((props: {
   }
 
   return () => {
-    console.log('[DemoGrid] render')
+    console.log('[DemoGrid] render', props)
     return (
       <table>
         <thead>

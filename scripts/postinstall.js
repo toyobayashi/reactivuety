@@ -3,7 +3,7 @@ const { join } = require('path')
 const runtime = require.resolve('@vue/runtime-core')
 const runtimeDist = join(runtime, '../dist')
 const files = (readdirSync(runtimeDist)).filter(file => file.endsWith('.js'))
-const exp = ['setCurrentInstance', 'unsetCurrentInstance', 'currentInstance', 'createHook']
+const exp = ['setCurrentInstance', 'unsetCurrentInstance', 'currentInstance', 'createHook', 'queuePreFlushCb']
 const getExports = isEsm => exp.map(e => isEsm ? `export { ${e} };` : `exports.${e} = ${e};`).join('\n')
 for (const file of files) {
   let content = readFileSync(join(runtimeDist, file), 'utf8')

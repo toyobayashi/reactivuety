@@ -7,22 +7,35 @@ import { ref, computed, Textarea, defineComponent } from '../../..'
 
 const debounce: typeof import('lodash/debounce') = require('lodash/debounce')
 
-export default defineComponent((_props: RouteComponentProps) => {
-  const input = ref<string>('# hello')
+export default defineComponent({
+  setup: (_props: RouteComponentProps) => {
+    const input = ref<string>('# hello')
 
-  const compiledMarkdown = computed(() => ({ __html: marked(input.value) }))
+    const compiledMarkdown = computed(() => ({ __html: marked(input.value) }))
 
-  const update = debounce((e): void => {
-    input.value = e.target.value
-  }, 300)
+    const update = debounce((e): void => {
+      input.value = e.target.value
+    }, 300)
 
-  return () => {
+    // return { input, update, compiledMarkdown }
+
+    return () => {
+      console.log('[MarkdownView] render')
+      return (
+        <div id="editor">
+          <Textarea value={input.value} onInput={update} />
+          <div dangerouslySetInnerHTML={compiledMarkdown.value}></div>
+        </div>
+      )
+    }
+  }/* ,
+  render: (state) => {
     console.log('[MarkdownView] render')
     return (
       <div id="editor">
-        <Textarea value={input.value} onInput={update} />
-        <div dangerouslySetInnerHTML={compiledMarkdown.value}></div>
+        <Textarea value={state.input} onInput={state.update} />
+        <div dangerouslySetInnerHTML={state.compiledMarkdown}></div>
       </div>
     )
-  }
+  } */
 })
