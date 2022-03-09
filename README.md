@@ -68,7 +68,7 @@ export default defineComponent((vueProps) => {
     input.value = e.target.value
   }, 300)
 
-  return (reactProps, refOrContext) => ( // <-- returns a react renden function
+  return (reactProps, ref) => ( // <-- returns a react renden function
     // use other react hooks here
     <div id="editor">
       <Textarea value={input.value} onInput={update} />
@@ -108,7 +108,7 @@ No bundler:
         input.value = e.target.value;
       }, 300);
 
-      return function (reactProps, refOrContext) {
+      return function (reactProps, ref) {
         // use other react hooks here
         return h('div', { id: 'editor' },
           h(Textarea, { value: input.value, onInput: update }),

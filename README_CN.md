@@ -65,7 +65,7 @@ export default defineComponent((vueProps) => {
     input.value = e.target.value
   }, 300)
 
-  return (reactProps, refOrContext) => ( // <-- 返回 react 的 render 函数
+  return (reactProps, ref) => ( // <-- 返回 react 的 render 函数
     // 这里可以使用其它 React Hooks
     <div id="editor">
       <Textarea value={input.value} onInput={update} />
@@ -105,7 +105,7 @@ export default defineComponent((vueProps) => {
         input.value = e.target.value;
       }, 300);
 
-      return function (reactProps, refOrContext) {
+      return function (reactProps, ref) {
         // 这里可以使用其它 React Hooks
         return h('div', { id: 'editor' },
           h(Textarea, { value: input.value, onInput: update }),
