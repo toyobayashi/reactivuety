@@ -131,7 +131,7 @@ export default defineComponent((props) => {
   return { input, compiledMarkdown, update }
 }, (state, props, ref) => (
   <div id="editor">
-    <Textarea value={state.input} onInput={update} />
+    <Textarea value={state.input} onInput={state.update} />
     <div dangerouslySetInnerHTML={state.compiledMarkdown}></div>
   </div>
 ))
@@ -161,7 +161,7 @@ export default (props) => {
 
   return (
     <div id="editor">
-      <Textarea value={state.input} onInput={update} />
+      <Textarea value={state.input} onInput={state.update} />
       <div dangerouslySetInnerHTML={state.compiledMarkdown}></div>
     </div>
   )
