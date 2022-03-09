@@ -4,10 +4,11 @@
 
 ## DefineComponentOptions interface
 
+
 <b>Signature:</b>
 
 ```typescript
-export interface DefineComponentOptions<P, R extends RenderFunction | object> 
+export interface DefineComponentOptions<P, R extends RenderFunction<P, ForwardedRef<any>> | object> 
 ```
 
 ## Properties

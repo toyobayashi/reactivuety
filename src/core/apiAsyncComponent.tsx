@@ -98,9 +98,9 @@ export function defineAsyncComponent<P = any> (source: AsyncComponentLoader<P> |
 
   const AsyncComponentWrapper = defineComponent({
     name: 'AsyncComponentWrapper',
-    setup: (props: Readonly<React.PropsWithChildren<P>>) => {
+    setup: (props: Readonly<React.PropsWithChildren<P>>): React.ForwardRefRenderFunction<any, P> => {
       if (ResolvedComp) {
-        return (ref) => (
+        return (_reactProps, ref) => (
           ref !== undefined ? <ResolvedComp {...props} ref={ref} /> : <ResolvedComp {...props} />
         )
       }
@@ -145,7 +145,7 @@ export function defineAsyncComponent<P = any> (source: AsyncComponentLoader<P> |
           error.value = err
         })
 
-      return (ref) => {
+      return (_props, ref) => {
         if (loaded.value && ResolvedComp) {
           return ref !== undefined ? (<ResolvedComp {...props} ref={ref} />) : (<ResolvedComp {...props} />)
         } else if (error.value && ErrorComponent) {

@@ -8,7 +8,7 @@
 <b>Signature:</b>
 
 ```typescript
-export declare type SetupFunction<P, R extends RenderFunction | object> = (props: Readonly<PropsWithChildren<P>>) => R;
+export declare type SetupFunction<P, R extends RenderFunction<P> | object> = (props: Readonly<PropsWithChildren<P>>) => R;
 ```
 <b>References:</b> [RenderFunction](./reactivuety.renderfunction.md)
 

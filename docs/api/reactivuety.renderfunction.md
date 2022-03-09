@@ -8,5 +8,5 @@
 <b>Signature:</b>
 
 ```typescript
-export declare type RenderFunction = (ref: ForwardedRef<any>) => ReactElement | null;
+export declare type RenderFunction<P, C = any> = (reactProps: PropsWithChildren<P>, refOrContext?: C) => ReactElement | null;
 ```

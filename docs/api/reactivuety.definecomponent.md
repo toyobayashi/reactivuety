@@ -8,7 +8,7 @@
 <b>Signature:</b>
 
 ```typescript
-export declare function defineComponent<P, R extends RenderFunction | object = object>(options: DefineComponentOptions<P, R> | SetupFunction<P, R>): ForwardRefExoticComponent<PropsWithChildren<PropsWithoutRef<P> & RefAttributes<any>>>;
+export declare function defineComponent<P, R extends RenderFunction<P, ForwardedRef<any>> | object = object>(options: DefineComponentOptions<P, R> | SetupFunction<P, R>): ForwardRefExoticComponent<PropsWithChildren<PropsWithoutRef<P> & RefAttributes<any>>>;
 ```
 
 ## Parameters

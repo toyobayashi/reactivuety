@@ -8,5 +8,7 @@
 <b>Signature:</b>
 
 ```typescript
-export declare type SetupReturnType<Setup> = Setup extends (...args: any[]) => infer R ? R extends (...args: any[]) => ReactElement | null ? R : R extends object ? ShallowUnwrapRef<R> : R : never;
+export declare type SetupReturnType<Setup> = Setup extends (props: Readonly<PropsWithChildren<any>>) => infer R ? R extends RenderFunction<any> ? R : R extends object ? ShallowUnwrapRef<R> : R : never;
 ```
+<b>References:</b> [RenderFunction](./reactivuety.renderfunction.md)
+

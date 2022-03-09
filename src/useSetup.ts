@@ -14,7 +14,7 @@ import {
   DebuggerEvent
   // queuePostFlushCb,
 } from '@vue/runtime-core'
-import { PropsWithChildren, ReactElement, useState, useEffect, useRef, ForwardedRef } from 'react'
+import { PropsWithChildren, ReactElement, useState, useEffect, useRef } from 'react'
 import { InternalInstance, LifecycleHooks, invokeLifecycle, clearAllLifecycles } from './lifecycle'
 
 function resetParentInstance (parent: InternalInstance | null): void {
@@ -26,14 +26,14 @@ function resetParentInstance (parent: InternalInstance | null): void {
 }
 
 /** @public */
-export type RenderFunction = (ref: ForwardedRef<any>) => ReactElement | null
+export type RenderFunction<P, C = any> = (reactProps: PropsWithChildren<P>, refOrContext?: C) => ReactElement | null
 
 /** @public */
-export type SetupFunction<P, R extends RenderFunction | object> = (props: Readonly<PropsWithChildren<P>>) => R
+export type SetupFunction<P, R extends RenderFunction<P> | object> = (props: Readonly<PropsWithChildren<P>>) => R
 
 /** @public */
-export type SetupReturnType<Setup> = Setup extends (...args: any[]) => infer R
-  ? R extends (...args: any[]) => ReactElement | null
+export type SetupReturnType<Setup> = Setup extends (props: Readonly<PropsWithChildren<any>>) => infer R
+  ? R extends RenderFunction<any>
     ? R
     : R extends object
       ? ShallowUnwrapRef<R>
@@ -41,7 +41,7 @@ export type SetupReturnType<Setup> = Setup extends (...args: any[]) => infer R
   : never
 
 /** @public */
-export function useSetup<P, Setup extends SetupFunction<P, RenderFunction | object>> (setup: Setup, props: PropsWithChildren<P>): SetupReturnType<Setup> {
+export function useSetup<P, Setup extends SetupFunction<P, RenderFunction<P> | object>> (setup: Setup, props: PropsWithChildren<P>): SetupReturnType<Setup> {
   if (typeof setup !== 'function') {
     throw new TypeError('setup is not a function')
   }
@@ -176,7 +176,7 @@ export function useSetup<P, Setup extends SetupFunction<P, RenderFunction | obje
 }
 
 /** @public */
-export function createSetupHook<P, Setup extends SetupFunction<P, RenderFunction | object>> (setup: Setup): (props: PropsWithChildren<P>) => SetupReturnType<Setup> {
+export function createSetupHook<P, Setup extends SetupFunction<P, RenderFunction<P> | object>> (setup: Setup): (props: PropsWithChildren<P>) => SetupReturnType<Setup> {
   if (typeof setup !== 'function') {
     throw new TypeError('setup is not a function')
   }

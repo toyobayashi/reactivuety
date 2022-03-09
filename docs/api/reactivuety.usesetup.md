@@ -8,7 +8,7 @@
 <b>Signature:</b>
 
 ```typescript
-export declare function useSetup<P, Setup extends SetupFunction<P, RenderFunction | object>>(setup: Setup, props: PropsWithChildren<P>): SetupReturnType<Setup>;
+export declare function useSetup<P, Setup extends SetupFunction<P, RenderFunction<P> | object>>(setup: Setup, props: PropsWithChildren<P>): SetupReturnType<Setup>;
 ```
 
 ## Parameters
