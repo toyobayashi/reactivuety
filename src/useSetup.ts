@@ -101,9 +101,9 @@ export function useSetup<P, Setup extends SetupFunction<P, RenderFunction<P> | o
       [LifecycleHooks.ERROR_CAPTURED]: null
     }
     setCurrentInstance(instanceRef.current)
-    let ret: any
+    let setupResult: any
     try {
-      ret = instanceRef.current.scope.run(() => setup(__TSGO_DEV__ ? shallowReadonly(instanceRef.current!.props) : instanceRef.current!.props))
+      setupResult = instanceRef.current.scope.run(() => setup(__TSGO_DEV__ ? shallowReadonly(instanceRef.current!.props) : instanceRef.current!.props))
     } catch (err) {
       instanceRef.current.scope.stop()
       instanceRef.current.scope = undefined!
@@ -121,9 +121,9 @@ export function useSetup<P, Setup extends SetupFunction<P, RenderFunction<P> | o
       invokeLifecycle(instanceRef.current!, LifecycleHooks.RENDER_TRIGGERED, e)
     }
 
-    if (typeof ret === 'function') {
+    if (typeof setupResult === 'function') {
       let _args: any[] = []
-      const runner = effect(() => ret(..._args), {
+      const runner = effect(() => setupResult(..._args), {
         lazy: true,
         scope: scope,
         scheduler: () => {
@@ -145,14 +145,14 @@ export function useSetup<P, Setup extends SetupFunction<P, RenderFunction<P> | o
       }
     } else {
       scope.run(() => {
-        watch(() => ret, updateCallback, {
+        watch(() => setupResult, updateCallback, {
           deep: true,
           onTrack,
           onTrigger
         })
       })
       invokeLifecycle(instanceRef.current, LifecycleHooks.BEFORE_MOUNT)
-      instanceRef.current.setupState = proxyRefs(ret)
+      instanceRef.current.setupState = proxyRefs(setupResult)
     }
   }
 
