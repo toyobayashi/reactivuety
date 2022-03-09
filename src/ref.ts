@@ -1,25 +1,18 @@
 import type { MutableRefObject } from 'react'
-import { ref as _ref, shallowRef as _shallowRef, Ref, UnwrapRef, toRaw, reactive } from '@vue/runtime-core'
-import { isObject } from '@vue/shared'
+import { ref as _ref, shallowRef as _shallowRef, Ref, UnwrapRef } from '@vue/runtime-core'
 
-// eslint-disable-next-line no-self-compare
-const hasChanged = (value: unknown, oldValue: unknown): boolean => value !== oldValue && (value === value || oldValue === oldValue)
-const convert = <T>(val: T): T extends Record<any, any> ? (T extends Ref ? T : UnwrapRef<T>) : T => isObject(val) ? reactive(val as unknown as object) : val as any
-
-function addCurrentProperty (r: any): void {
+function addCurrentProperty<R extends Ref<any>> (r: R): R {
   Object.defineProperty(r, 'current', {
     configurable: true,
     enumerable: true,
     get () {
-      return r._value
+      return r.value
     },
     set (newVal) {
-      if (hasChanged(toRaw(newVal), r._rawValue)) {
-        r._rawValue = newVal
-        r._value = r._shallow ? newVal : convert(newVal)
-      }
+      r.value = newVal
     }
   })
+  return r
 }
 
 /** @public */
@@ -30,9 +23,7 @@ export function ref<T> (value: T): MutableRefObject<T> & Ref<UnwrapRef<T>>
 export function ref<T = any> (): MutableRefObject<T> & Ref<T | undefined>
 
 export function ref (value?: any): any {
-  const r = _ref(value)
-  addCurrentProperty(r)
-  return r
+  return addCurrentProperty(_ref(value))
 }
 
 /** @public */
@@ -43,7 +34,5 @@ export function shallowRef<T> (value: T): MutableRefObject<T> & Ref<T>
 export function shallowRef<T = any> (): MutableRefObject<T> & Ref<T | undefined>
 
 export function shallowRef (value?: any): any {
-  const r = _shallowRef(value)
-  addCurrentProperty(r)
-  return r
+  return addCurrentProperty(_shallowRef(value))
 }
