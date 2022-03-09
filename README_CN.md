@@ -50,14 +50,14 @@ export default defineComponent({
 </script>
 ```
 
-写法一：React 中用 `defineComponent`，第一个参数是 `setup` 函数，返回无 props 参数的 render 函数
+写法一：React 中用 `defineComponent`，第一个参数是 `setup` 函数，返回 react 的 render 函数
 
 ```jsx
 // import ...
 import { defineComponent, ref, computed, Textarea } from '@tybys/reactivuety'
 import * as debounce from 'lodash/debounce'
 
-export default defineComponent((props) => {
+export default defineComponent((vueProps) => {
   const input = ref('# hello')
   const compiledMarkdown = computed(() => ({ __html: marked(input.value) }))
 
@@ -65,7 +65,8 @@ export default defineComponent((props) => {
     input.value = e.target.value
   }, 300)
 
-  return () => ( // <-- 返回无 props 参数的 render 函数
+  return (reactProps, refOrContext) => ( // <-- 返回 react 的 render 函数
+    // 这里可以使用其它 React Hooks
     <div id="editor">
       <Textarea value={input.value} onInput={update} />
       <div dangerouslySetInnerHTML={compiledMarkdown.value}></div>
@@ -93,7 +94,7 @@ export default defineComponent((props) => {
     var h = React.createElement;
     var debounce = _.debounce;
 
-    var MarkdownView = defineComponent(function () {
+    var MarkdownView = defineComponent(function (vueProps) {
       var input = ref('# hello');
 
       var compiledMarkdown = computed(function () {
@@ -104,7 +105,8 @@ export default defineComponent((props) => {
         input.value = e.target.value;
       }, 300);
 
-      return function () {
+      return function (reactProps, refOrContext) {
+        // 这里可以使用其它 React Hooks
         return h('div', { id: 'editor' },
           h(Textarea, { value: input.value, onInput: update }),
           h('div', { dangerouslySetInnerHTML: compiledMarkdown.value })
@@ -120,7 +122,7 @@ export default defineComponent((props) => {
 
 ```jsx
 // import ...
-export default defineComponent((props) => {
+export default defineComponent((vueProps) => {
   const input = ref('# hello')
   const compiledMarkdown = computed(() => ({ __html: marked(input.value) }))
 
@@ -129,7 +131,8 @@ export default defineComponent((props) => {
   }, 300)
 
   return { input, compiledMarkdown, update }
-}, (state, props, ref) => (
+}, (state, reactProps, ref) => (
+  // 这里可以使用其它 React Hooks
   <div id="editor">
     <Textarea value={state.input} onInput={state.update} />
     <div dangerouslySetInnerHTML={state.compiledMarkdown}></div>
@@ -144,9 +147,9 @@ export default defineComponent((props) => {
 import * as React from 'react'
 import { useSetup, ref, computed, Textarea } from '@tybys/reactivuety'
 
-export default (props) => {
+export default (reactProps) => {
   const state = useSetup(
-    (propsProxy) => {
+    (vueProps) => {
       const input = ref('# hello')
       const compiledMarkdown = computed(() => ({ __html: marked(input.value) }))
 
@@ -156,8 +159,10 @@ export default (props) => {
 
       return { input, compiledMarkdown, update }
     },
-    props // <-- 要传入 react render 进来的 props
+    reactProps // <-- 要传入 react render 进来的 props
   )
+
+  // 这里可以使用其它 React Hooks
 
   return (
     <div id="editor">
@@ -172,9 +177,9 @@ export default (props) => {
 
 ```jsx
 // import ...
-export default (props) => {
-  return useSetup(
-    (propsProxy) => {
+export default (reactProps, refOrContext) => {
+  const render = useSetup(
+    (vueProps) => {
       const input = ref('# hello')
       const compiledMarkdown = computed(() => ({ __html: marked(input.value) }))
 
@@ -182,15 +187,18 @@ export default (props) => {
         input.value = e.target.value
       }, 300)
 
-      return () => (
+      return (reactProps, refOrContext) => (
+        // 这里可以使用其它 React Hooks
         <div id="editor">
           <Textarea value={input.value} onInput={update} />
           <div dangerouslySetInnerHTML={compiledMarkdown.value}></div>
         </div>
       )
     },
-    props
-  )()
+    reactProps
+  )
+
+  return render(reactProps, refOrContext)
 }
 ```
 

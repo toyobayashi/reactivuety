@@ -53,14 +53,14 @@ export default defineComponent({
 </script>
 ```
 
-Use `defineComponent`, the first argument is setup function, which returns a renden function without props.
+Use `defineComponent`, the first argument is setup function, which returns a react renden function.
 
 ```jsx
 // import ...
 import * as React from 'react'
 import { defineComponent, ref, computed, Textarea } from '@tybys/reactivuety'
 
-export default defineComponent((props) => {
+export default defineComponent((vueProps) => {
   const input = ref('# hello')
   const compiledMarkdown = computed(() => ({ __html: marked(input.value) }))
 
@@ -68,7 +68,8 @@ export default defineComponent((props) => {
     input.value = e.target.value
   }, 300)
 
-  return () => ( // <-- No props
+  return (reactProps, refOrContext) => ( // <-- returns a react renden function
+    // use other react hooks here
     <div id="editor">
       <Textarea value={input.value} onInput={update} />
       <div dangerouslySetInnerHTML={compiledMarkdown.value}></div>
@@ -96,7 +97,7 @@ No bundler:
     var h = React.createElement;
     var debounce = _.debounce;
 
-    var MarkdownView = defineComponent(function () {
+    var MarkdownView = defineComponent(function (vueProps) {
       var input = ref('# hello');
 
       var compiledMarkdown = computed(function () {
@@ -107,7 +108,8 @@ No bundler:
         input.value = e.target.value;
       }, 300);
 
-      return function () {
+      return function (reactProps, refOrContext) {
+        // use other react hooks here
         return h('div', { id: 'editor' },
           h(Textarea, { value: input.value, onInput: update }),
           h('div', { dangerouslySetInnerHTML: compiledMarkdown.value })
@@ -123,7 +125,7 @@ Use `defineComponent`, the first argument is setup function, which returns an ob
 
 ```jsx
 // import ...
-export default defineComponent((props) => {
+export default defineComponent((vueProps) => {
   const input = ref('# hello')
   const compiledMarkdown = computed(() => ({ __html: marked(input.value) }))
 
@@ -132,7 +134,8 @@ export default defineComponent((props) => {
   }, 300)
 
   return { input, compiledMarkdown, update }
-}, (state, props, context) => (
+}, (state, reactProps, ref) => (
+  // use other react hooks here
   <div id="editor">
     <Textarea value={state.input} onInput={state.update} />
     <div dangerouslySetInnerHTML={state.compiledMarkdown}></div>
@@ -147,9 +150,9 @@ Use `useSetup` hook, the first argument is setup function, which returns an obje
 import * as React from 'react'
 import { useSetup, ref, computed, Textarea } from '@tybys/reactivuety'
 
-export default (props) => {
+export default (reactProps) => {
   const state = useSetup(
-    (propsProxy) => {
+    (vueProps) => {
       const input = ref('# hello')
       const compiledMarkdown = computed(() => ({ __html: marked(input.value) }))
 
@@ -159,8 +162,10 @@ export default (props) => {
 
       return { input, compiledMarkdown, update }
     },
-    props
+    reactProps // <-- pass react props
   )
+
+  // use other react hooks here
 
   return (
     <div id="editor">
@@ -175,9 +180,9 @@ Use `useSetup` hook, the first argument is setup function, which returns a rende
 
 ```jsx
 // import ...
-export default (props) => {
-  return useSetup(
-    (propsProxy) => {
+export default (reactProps, refOrContext) => {
+  const render = useSetup(
+    (vueProps) => {
       const input = ref('# hello')
       const compiledMarkdown = computed(() => ({ __html: marked(input.value) }))
 
@@ -185,15 +190,18 @@ export default (props) => {
         input.value = e.target.value
       }, 300)
 
-      return () => (
+      return (reactProps, refOrContext) => (
+        // use other react hooks here
         <div id="editor">
           <Textarea value={input.value} onInput={update} />
           <div dangerouslySetInnerHTML={compiledMarkdown.value}></div>
         </div>
       )
     },
-    props
-  )()
+    reactProps
+  )
+
+  return render(reactProps, refOrContext)
 }
 ```
 
