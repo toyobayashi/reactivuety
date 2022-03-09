@@ -32,8 +32,8 @@ export type RenderFunction<P, C = any> = (reactProps: PropsWithChildren<P>, refO
 export type SetupFunction<P, R extends RenderFunction<P> | object> = (props: Readonly<PropsWithChildren<P>>) => R
 
 /** @public */
-export type SetupReturnType<Setup> = Setup extends (props: Readonly<PropsWithChildren<any>>) => infer R
-  ? R extends RenderFunction<any>
+export type SetupReturnType<Setup> = Setup extends (props: Readonly<PropsWithChildren<infer P>>) => infer R
+  ? R extends RenderFunction<P>
     ? R
     : R extends object
       ? ShallowUnwrapRef<R>
