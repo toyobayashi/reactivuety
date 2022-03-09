@@ -73,10 +73,6 @@ export {
 } from './ref'
 
 export {
-  useForceUpdate
-} from './useForceUpdate'
-
-export {
   createSetupHook,
   SetupFunction,
   SetupReturnType,

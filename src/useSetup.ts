@@ -3,23 +3,27 @@ import {
   effectScope,
   shallowReactive,
   shallowReadonly,
-  EffectScope,
   getCurrentInstance,
   // ComponentInternalInstance,
   nextTick,
   // @ts-expect-error
-  setCurrentInstance,
-  // @ts-expect-error
-  queuePreFlushCb,
+  setCurrentInstance, unsetCurrentInstance, queuePreFlushCb,
   watch,
   proxyRefs,
   ShallowUnwrapRef,
   DebuggerEvent
   // queuePostFlushCb,
 } from '@vue/runtime-core'
-import { PropsWithChildren, ReactElement, useEffect, useRef, ForwardedRef } from 'react'
+import { PropsWithChildren, ReactElement, useState, useEffect, useRef, ForwardedRef } from 'react'
 import { InternalInstance, LifecycleHooks, invokeLifecycle, clearAllLifecycles } from './lifecycle'
-import { useForceUpdate } from './useForceUpdate'
+
+function resetParentInstance (parent: InternalInstance | null): void {
+  if (parent) {
+    setCurrentInstance(parent)
+  } else {
+    unsetCurrentInstance()
+  }
+}
 
 /** @public */
 export type RenderFunction = (ref: ForwardedRef<any>) => ReactElement | null
@@ -41,12 +45,7 @@ export function useSetup<P, Setup extends SetupFunction<P, RenderFunction | obje
   if (typeof setup !== 'function') {
     throw new TypeError('setup is not a function')
   }
-  const forceUpdate = useForceUpdate()
-
-  const scope = useRef<EffectScope>()
-  if (!scope.current) {
-    scope.current = effectScope()
-  }
+  const forceUpdate = useState<{}>()[1]
 
   const instanceRef = useRef<InternalInstance>()
 
@@ -72,20 +71,22 @@ export function useSetup<P, Setup extends SetupFunction<P, RenderFunction | obje
   if (!instanceRef.current) {
     const updateCallback = (): void => {
       invokeLifecycle(instanceRef.current!, LifecycleHooks.BEFORE_UPDATE)
-      forceUpdate()
-      void nextTick(() => {
+      forceUpdate(Object.create(null))
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      nextTick(() => {
         invokeLifecycle(instanceRef.current!, LifecycleHooks.UPDATED)
       })
     }
 
-    const parent = getCurrentInstance()
+    const scope = effectScope()
+    const parent = getCurrentInstance() as InternalInstance | null
 
     instanceRef.current = {
-      scope: scope.current,
+      scope: scope,
       setupState: null!,
       render: null,
       props: shallowReactive({ ...props }),
-      parent: parent as InternalInstance | null,
+      parent: parent,
       provides: parent ? (parent as any).provides : {},
       isMounted: false,
       isUnmounted: false,
@@ -102,31 +103,29 @@ export function useSetup<P, Setup extends SetupFunction<P, RenderFunction | obje
     setCurrentInstance(instanceRef.current)
     let ret: any
     try {
-      ret = scope.current.run(() => setup(__TSGO_DEV__ ? shallowReadonly(instanceRef.current!.props) : instanceRef.current!.props))
+      ret = instanceRef.current.scope.run(() => setup(__TSGO_DEV__ ? shallowReadonly(instanceRef.current!.props) : instanceRef.current!.props))
     } catch (err) {
-      scope.current.stop()
-      scope.current = undefined
+      instanceRef.current.scope.stop()
+      instanceRef.current.scope = undefined!
       clearAllLifecycles(instanceRef.current)
       instanceRef.current = undefined
-      if (parent) setCurrentInstance(parent)
+      resetParentInstance(parent)
       throw err
     }
-    if (parent) setCurrentInstance(parent)
+    resetParentInstance(parent)
 
-    const effectDebugOptions = {
-      onTrack (e: DebuggerEvent) {
-        invokeLifecycle(instanceRef.current!, LifecycleHooks.RENDER_TRACKED, e)
-      },
-      onTrigger (e: DebuggerEvent) {
-        invokeLifecycle(instanceRef.current!, LifecycleHooks.RENDER_TRIGGERED, e)
-      }
+    const onTrack = (e: DebuggerEvent): void => {
+      invokeLifecycle(instanceRef.current!, LifecycleHooks.RENDER_TRACKED, e)
+    }
+    const onTrigger = (e: DebuggerEvent): void => {
+      invokeLifecycle(instanceRef.current!, LifecycleHooks.RENDER_TRIGGERED, e)
     }
 
     if (typeof ret === 'function') {
       let _args: any[] = []
       const runner = effect(() => ret(..._args), {
         lazy: true,
-        scope: scope.current,
+        scope: scope,
         scheduler: () => {
           if (!instanceRef.current || instanceRef.current.isMounted) {
             queuePreFlushCb(updateCallback)
@@ -134,20 +133,22 @@ export function useSetup<P, Setup extends SetupFunction<P, RenderFunction | obje
             updateCallback()
           }
         },
-        ...effectDebugOptions
+        onTrack,
+        onTrigger
       })
       invokeLifecycle(instanceRef.current, LifecycleHooks.BEFORE_MOUNT)
       instanceRef.current.render = function (...args: any[]): any {
         _args = args
-        const r = scope.current!.run(() => runner())
+        const r = scope.run(() => runner())
         _args = []
         return r
       }
     } else {
-      scope.current.run(() => {
+      scope.run(() => {
         watch(() => ret, updateCallback, {
           deep: true,
-          ...effectDebugOptions
+          onTrack,
+          onTrigger
         })
       })
       invokeLifecycle(instanceRef.current, LifecycleHooks.BEFORE_MOUNT)
@@ -161,12 +162,13 @@ export function useSetup<P, Setup extends SetupFunction<P, RenderFunction | obje
     invokeLifecycle(instanceRef.current!, LifecycleHooks.MOUNTED)
     return () => {
       invokeLifecycle(instanceRef.current!, LifecycleHooks.BEFORE_UNMOUNT)
-      scope.current!.stop()
-      scope.current = undefined
+      instanceRef.current!.scope.stop()
       invokeLifecycle(instanceRef.current!, LifecycleHooks.UNMOUNTED)
       clearAllLifecycles(instanceRef.current!)
+      instanceRef.current!.scope = undefined!
       instanceRef.current!.isMounted = false
       instanceRef.current!.isUnmounted = true
+      instanceRef.current = undefined
     }
   }, [])
 

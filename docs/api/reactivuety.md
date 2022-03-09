@@ -19,7 +19,6 @@ Use vue composition API with react.
 |  [shallowRef(value)](./reactivuety.shallowref.md) |  |
 |  [shallowRef(value)](./reactivuety.shallowref_1.md) |  |
 |  [shallowRef()](./reactivuety.shallowref_2.md) |  |
-|  [useForceUpdate()](./reactivuety.useforceupdate.md) |  |
 |  [useSetup(setup, props)](./reactivuety.usesetup.md) |  |
 
 ## Interfaces
