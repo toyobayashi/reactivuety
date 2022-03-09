@@ -128,7 +128,11 @@ export function useSetup<P, Setup extends SetupFunction<P, RenderFunction | obje
         lazy: true,
         scope: scope.current,
         scheduler: () => {
-          queuePreFlushCb(updateCallback)
+          if (!instanceRef.current || instanceRef.current.isMounted) {
+            queuePreFlushCb(updateCallback)
+          } else {
+            updateCallback()
+          }
         },
         ...effectDebugOptions
       })
